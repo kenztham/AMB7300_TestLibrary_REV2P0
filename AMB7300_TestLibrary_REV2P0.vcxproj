@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{072A8AFD-37B9-494F-8D55-7C43EE17692F}</ProjectGuid>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <Keyword>ManagedCProj</Keyword>
+    <RootNamespace>XML_Verify_V1</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
+      <AssemblyDebug>true</AssemblyDebug>
+    </Link>
+    <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>mkdir "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1"
+copy "$(TargetPath)" "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1\$(TargetFileName)"
+copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1"</Command>
+    </PostBuildEvent>
+    <Xdcmake>
+      <OutputFile>..\..\..\..\TestPrograms\SampleProfile\$(TargetName)\$(TargetName).xml</OutputFile>
+    </Xdcmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>mkdir "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1"
+copy "$(TargetPath)" "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1\$(TargetFileName)"
+copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="AMB7300\AMB7300.h" />
+    <ClInclude Include="Test Function\Aemulus.Hardware.ACM.h" />
+    <ClInclude Include="Test Function\Aemulus.Hardware.CM.h" />
+    <ClInclude Include="Test Function\Aemulus.Hardware.DIO.h" />
+    <ClInclude Include="Test Function\Aemulus.Hardware.DM.h" />
+    <ClInclude Include="Test Function\Aemulus.Hardware.SMU.h" />
+    <ClInclude Include="Test Function\Aemulus.Hardware.TMU.h" />
+    <ClInclude Include="Test Function\Defines.h" />
+    <ClInclude Include="Test Function\Enum.h" />
+    <ClInclude Include="Test Function\Globals.h" />
+    <ClInclude Include="Test Function\TestFunction.h" />
+    <ClInclude Include="Test Function\TF-Macro.h" />
+    <ClInclude Include="TestProgram.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AMB7300\ACM400Utility.cpp" />
+    <ClCompile Include="AMB7300\AM400Utility.cpp" />
+    <ClCompile Include="AMB7300\AMB7300.cpp" />
+    <ClCompile Include="AMB7300\CM400Utility.cpp" />
+    <ClCompile Include="AMB7300\IOM400Utility.cpp" />
+    <ClCompile Include="AMB7300\KeysightVnaUtility.cpp" />
+    <ClCompile Include="AMB7300\AMB7300Utility.cpp" />
+    <ClCompile Include="AMB7300\CopperMountainVnaUtility.cpp" />
+    <ClCompile Include="AMB7300\DM400Utility.cpp" />
+    <ClCompile Include="AMB7300\TM400Utility.cpp" />
+    <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="Test Function\Files.cpp" />
+    <ClCompile Include="Test Function\Globals.cpp" />
+    <ClCompile Include="Test Function\techFlow.cpp" />
+    <ClCompile Include="Test Function\TestFunction.cpp" />
+    <ClCompile Include="Test Method\TestMethod.cpp" />
+    <ClCompile Include="TestProgram.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Aemulus.Configuration.AMB7300">
+      <HintPath>..\..\..\..\..\bin\NF4\x64\Aemulus.Configuration.AMB7300.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.Hardware.DM">
+      <HintPath>..\..\..\..\..\bin\Aemulus.Hardware.DM.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.Hardware.ResourceManager">
+      <HintPath>..\..\..\..\..\bin\Aemulus.Hardware.ResourceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.Hardware.SMU">
+      <HintPath>..\..\..\..\..\bin\Aemulus.Hardware.SMU.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.Tech.Flow.Core">
+      <HintPath>..\..\..\..\..\bin\Aemulus.Tech.Flow.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Aemulus.TestLib.Utility">
+      <HintPath>..\..\..\..\..\bin\Aemulus.TestLib.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="JYPXIe69852">
+      <HintPath>x64\Debug\JYPXIe69852.dll</HintPath>
+    </Reference>
+    <Reference Include="libSync">
+      <HintPath>..\..\..\..\..\bin\libSync.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="SeeSharpTools.JY.DSP.Fundamental">
+      <HintPath>x64\Debug\SeeSharpTools.JY.DSP.Fundamental.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\System.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\System.Xml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
