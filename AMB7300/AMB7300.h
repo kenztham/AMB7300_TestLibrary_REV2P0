@@ -39,6 +39,7 @@ using namespace Aemulus::Tech::Flow::ProductionSystem;
 using namespace System::Runtime::Remoting;
 using namespace System::Globalization;
 using namespace System::Threading::Tasks;
+using namespace JYPXIe69852;
 
 namespace Functions
 {
@@ -187,6 +188,21 @@ namespace Functions
 			int returnIndex;
 		};
 		TestParameterCondition_PatternTest PatternTestTPC;
+
+		/*
+		**	----------------------------------------------------------------------------------------------------
+		**	Control Step Condition -> 'DmControl'
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		value struct ControlStepCondition_DmControl
+		{
+			String^ controlFunction;
+			array<String^> ^ moduleAlias;
+			array<String^> ^ pinAlias;
+			array<int> ^ outputTrigger0;
+			array<int> ^ outputTrigger1;
+		};
+		ControlStepCondition_DmControl DmControlCSC;
 
 		/*
 		**	----------------------------------------------------------------------------------------------------
@@ -955,6 +971,31 @@ namespace Functions
 
 		/*
 		**	----------------------------------------------------------------------------------------------------
+		**	Test Parameter Condition -> 'VnaSwTime'
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		value struct VnaSwTimeTestParameterCondition
+		{
+			String ^ measureType;
+
+			String ^ dmModuleAlias;
+			String ^ dmVectorTrigger;
+
+			String ^ analysisSetting;
+			String ^ vnaSwTime_TriggerEdge;
+			bool vnaSwTime_MovingAvgOn;
+			bool vnaSwTime_SearchLimitOn;
+			double vnaSwTime_SearchLimitLevel;
+
+			String ^ outputType;
+			String ^ outputFormat;
+
+			bool saveSnpData;
+		};
+		VnaSwTimeTestParameterCondition vnaSwTimeTPC;
+
+		/*
+		**	----------------------------------------------------------------------------------------------------
 		**	Test Parameter Condition -> 'VnaDataAnalysis' -> 'AnalysisSetting'
 		**	----------------------------------------------------------------------------------------------------
 		*/
@@ -1032,6 +1073,36 @@ namespace Functions
 		};
 		TestParameterCondition_Math MathTPC;
 
+		//External Digitizer
+		value struct PXIe9852_Info
+		{
+			JYPXIe69852AITask ^ aitask0;
+			//		JYPXIe69852AITask ^ aitask1;
+
+			array<int> ^ slotNo;
+			double sampleRate;
+			double sampleNumber_double;
+			int sampleNumber;
+			array<double> ^ readValue0;
+			array<double> ^ readValue1;
+			array<double> ^ Power_dBmSite0;
+			array<double> ^ Power_dBmSite1;
+			array<double> ^ Power_dBmSite2;
+			array<double> ^ Power_dBmSite3;
+			array<double> ^ Power_dBmSite0_Avg;
+			array<double> ^ Power_dBmSite1_Avg;
+			array<double> ^ Power_dBmSite2_Avg;
+			array<double> ^ Power_dBmSite3_Avg;
+			array<double> ^ readValueSite0;
+			array<double> ^ readValueSite1;
+			array<double> ^ readValueSite2;
+			array<double> ^ readValueSite3;
+			double deltaF;
+			double g_SINAD;
+			array<String^, 2> ^ NF_data; //debug
+			int NF_counter; //debug
+		};
+		PXIe9852_Info^ pXIe9852_Info;
 #pragma endregion
 
 #pragma region "Reference struct"
@@ -1486,6 +1557,7 @@ namespace Functions
 			int configType;
 			array<String^>^ validParams;
 		};
+
 #pragma endregion
 
 #pragma region "AMB7300.cpp"
@@ -1548,6 +1620,12 @@ namespace Functions
 		int SaveToTouchstoneFile(Site ^ site, int tfSite, int vnaSiteIndex);
 		int VnaFetch_TrueParallel(int tfSite, int vnaSiteIndex);
 		int VnaDataAnalysis_TrueParallel(int tfSite, int vnaSiteIndex, double % result);
+
+		int VnaSwTime(int tfSite, int vnaSiteIndex, double % result);
+
+		// Log Detector & Digitizer (for switching time)
+		int InitializeExtModule(int tfSite, int siteIndex);
+		int UninitializeExtModule(int tfSite, int siteIndex);
 
 		/*
 		**	----------------------------------------------------------------------------------------------------
@@ -1627,6 +1705,13 @@ namespace Functions
 		*/
 		int PatternControl(int tfSite, int siteIndex);
 		int PatternTest(int tfSite, int siteIndex, int % result, String^ % resultMessage);
+
+		/*
+		**	----------------------------------------------------------------------------------------------------
+		**	DM Operation
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		int DmControl(int tfSite, int siteIndex);
 
 		/*
 		**	----------------------------------------------------------------------------------------------------
@@ -1774,6 +1859,13 @@ namespace Functions
 
 		/*
 		**	----------------------------------------------------------------------------------------------------
+		**	APIs : CW Time Sweep Settings [Sweep->Sweep Type->CW Time Sweep]
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		int ConfigureCWTimeSweepSetting_Keysight(int tfSite, int vnaSiteIndex);
+
+		/*
+		**	----------------------------------------------------------------------------------------------------
 		**	APIs : Trigger Settings [Stimulus->Trigger]
 		**	----------------------------------------------------------------------------------------------------
 		*/
@@ -1895,6 +1987,7 @@ namespace Functions
 		int DmConfigurePinToPeMode(int tfSite, int siteIndex, String ^ dmModuleAlias, String ^ dmPinAlias, bool isEnableInputTermination, bool isEnableHv, bool isEnableActiveLoad, bool isEnableDiffComparator, bool isEnableTrigger, bool isEnableContinuous, double vih, double vil, double voh, double vol, double ioh, double iol, double vch, double vcl, double vth);
 		int DmConfigurePinToPmuMode(int tfSite, int siteIndex, String ^ dmPinAlias, String ^ forceMode, bool isEnableInputTermination, bool isEnableHv, bool isEnableActiveLoad, bool isEnableDiffComparator, double currentLevel, double voltageLevel, double nplc);
 		int DmConfigurePinToDioMode(int tfSite, int siteIndex, String ^ dmPinAlias);
+		int DmConfigureDmOutputTrigger(int tfSite, int siteIndex, String ^ dmModuleAlias, int triggerOutput0, int triggerOutput1);
 
 		/*
 		**	----------------------------------------------------------------------------------------------------

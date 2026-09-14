@@ -871,6 +871,88 @@ namespace Functions
 
 	/*
 	**	----------------------------------------------------------------------------------------------------
+	**	APIs : CW Time Sweep Settings [Sweep->Sweep Type->CW Time Sweep]
+	**	----------------------------------------------------------------------------------------------------
+	*/
+	int AMB7300TestLibrary::ConfigureCWTimeSweepSetting_Keysight(int tfSite, int vnaSiteIndex) //Under development, not support yet
+	{
+		/*****************************************************************************************************
+		**	ConfigureCWTimeSweepSetting_Keysight
+		**		tfSite			- This is techFlow site index.
+		**		vnaSiteIndex	- This is vna's object index, normally start from 0.
+		**
+		**	Descriptions:
+		**		This is a function to configure the CW Time sweep settings at the active channel (VNA stimulus).
+		******************************************************************************************************/
+
+		// Local variable
+		int ret = 0;
+		array<int>^ vnaChannel = gcnew array<int>(1);
+		vnaChannel[0] = 999;
+
+		String^ command;
+		String^ Val = String::Empty;
+		int sourcePort = 1;
+		int measurePort = 2;
+
+		try
+		{
+
+#pragma region "Configure segment settings"
+			for (int iChannel = 0; iChannel < vnaSetting[vnaSiteIndex].vna_chn->Length; iChannel++)
+			{
+				if (vnaSetting[vnaSiteIndex].vna_chn[iChannel] != Vna_Channel_Reset)
+				{
+					// Local variable channelarr for wrapper used
+					vnaChannel[0] = vnaSetting[vnaSiteIndex].vna_chn[iChannel];
+					//vnaChannel[0] = vnaSetting[vnaSiteIndex].currentVnaFetchChannel;
+
+					command = "SENSe" + vnaChannel + ":SWEep:TYPE CW\n";
+					amb7300_NA[vnaSiteIndex]->System_Scpi_WriteString(command);
+
+					command = "SENSe" + vnaChannel + ":SWEep:SRCPort "+ sourcePort + "\n"; //Hardcode source port to be 1
+					amb7300_NA[vnaSiteIndex]->System_Scpi_WriteString(command);
+					command = "SENSe" + vnaChannel + ":SWEep:POINt " + segmentSetting[vnaSiteIndex].point[0] + "\n";
+					amb7300_NA[vnaSiteIndex]->System_Scpi_WriteString(command);
+					command = "SENSe" + vnaChannel + ":BANDwidth:RESolution " + segmentSetting[vnaSiteIndex].ifbw[0] + "\n";
+					amb7300_NA[vnaSiteIndex]->System_Scpi_WriteString(command);
+					command = "SENSe" + vnaChannel + ":FREQuency:CW " + segmentSetting[vnaSiteIndex].startFreq[0] + "\n";
+					amb7300_NA[vnaSiteIndex]->System_Scpi_WriteString(command);
+					command = "SENSe" + vnaChannel + ":SWEep:TIME:AUTO ON\n";
+					amb7300_NA[vnaSiteIndex]->System_Scpi_WriteString(command);
+					command = "SOURce" + vnaChannel + ":POWer" + measurePort + ":MODE OFF\n";	//Hardcode the measure port as 2 and off port
+					amb7300_NA[vnaSiteIndex]->System_Scpi_WriteString(command);
+					
+					do
+					{
+
+						command = String::Format("*OPC?\n");
+
+						amb7300_NA[vnaSiteIndex]->System_Scpi_WriteString(command);
+						amb7300_NA[vnaSiteIndex]->System_Scpi_ReadString(Val);
+						//Util->WaitSecond(1 mS);
+						if (Val->Contains("1"))
+							break;
+					} while (true);
+				}
+			}
+#pragma endregion
+
+		}
+		catch (Exception^ ex)
+		{
+			ret = ER_CONST_CONFIGURE_POWERSWEEP_SETTING_FAIL;
+			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[KeysightVnaUtility -> ConfigurePowerSweepSetting_Keysight] Fail to configure power sweep setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[KeysightVnaUtility -> ConfigurePowerSweepSetting_Keysight] Fail to configure power sweep setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			goto EndOfTest;
+		}
+
+	EndOfTest:
+		return ret;
+	}
+
+	/*
+	**	----------------------------------------------------------------------------------------------------
 	**	APIs : Trigger Settings [Stimulus->Trigger]
 	**	----------------------------------------------------------------------------------------------------
 	*/

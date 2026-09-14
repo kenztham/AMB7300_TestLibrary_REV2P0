@@ -1273,6 +1273,204 @@ namespace AMB7300_TestLibrary_REV2P0
 		return ret;
 	}
 
+
+	/*
+	**	----------------------------------------------------------------------------------------------------
+	**	Control Step: DmControl
+	**	----------------------------------------------------------------------------------------------------
+	*/
+#pragma region ".xml file -> Control Step -> DmControl"
+
+	/// <summary> DmControl
+	/// <list type="ControlStep" name="TestLib_ControlStep_DmControl" category="DmControl" group="Items" conditiontype="splitbysemicolon" methodname="seq_TestMethod">
+	/// <item attribute="name">DmControl</item>
+	/// <item attribute="displayas">DmControl</item>
+	/// <item attribute="description">The is 'DmControl' item, which is to control and configure dc pin resource.</item>
+	/// <list type="StepCondition">
+	/// <item attribute="name">Module</item>
+	/// <item attribute="description">Specifies the module type of the target pin resource.</item>
+	/// <item attribute="value">AM</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="StepCondition">
+	/// <item attribute="name">PinAlias</item>
+	/// <item attribute="description">Specifies the pin alias of the target pin. The pin alias must exist in the resource planner.</item>
+	/// <item attribute="value">VIO</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="StepCondition">
+	/// <item attribute="name">ControlFunction</item>
+	/// <item attribute="description">Specifies the control function to apply on the target pin.</item>
+	/// <item attribute="value">DVCI</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="StepCondition">
+	/// <item attribute="name">NPLC</item>
+	/// <item attribute="description">Specifies the nplc to apply on the target pin.</item>
+	/// <item attribute="value">0.1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="StepCondition">
+	/// <item attribute="name">VoltageLevel</item>
+	/// <item attribute="description">Specifies the voltage level for the target pin (applicable for drive or clamp).</item>
+	/// <item attribute="value">1.8</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">V</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="StepCondition">
+	/// <item attribute="name">CurrentLevel</item>
+	/// <item attribute="description">Specifies the current level for the target pin (applicable for drive or clamp).</item>
+	/// <item attribute="value">100</item>
+	/// <item attribute="prefix">Micro</item>
+	/// <item attribute="unit">A</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="StepCondition">
+	/// <item attribute="name">Delay</item>
+	/// <item attribute="description">Specifies the delay time after execute the target pin.</item>
+	/// <item attribute="value">2</item>
+	/// <item attribute="prefix">Milli</item>
+	/// <item attribute="unit">sec</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// </list>
+	/// <param name="site">This is techFlow site object.</param>
+	/// </summary>
+
+#pragma endregion
+	int TestProgram::TestLib_ControlStep_DmControl(Site ^ site)
+	{
+		/*
+		** Dummy control step function.
+		** To generate Project Library's control step item, and let techFlow3 user to drag into the test recipes editor.
+		** Only applicable for techFlow3 user (using test recipes editor).
+		** It will link to the all-in-one generic Test Method --> seq_TestMethod()
+		*/
+
+		// Local variable
+		int ret = 0;
+
+		ret = seq_TestMethod(site);
+		if (ret != 0) goto EndOfTest;
+
+	EndOfTest:
+		return ret;
+	}
+	int TestProgram::TestLib_ControlStep_DmControl_CastCondition(Site ^ site, int tfSite, int siteIndex)
+	{
+		/*****************************************************************************************************
+		**	TestLib_ControlStep_DmControl_CastCondition
+		**	site			- This is techFlow site object.
+		**	tfSite			- This is techFlow site index.
+		**	siteIndex		- This is resource object index, normally start from 0.
+		**
+		**	Descriptions:
+		**		This function is to cast condition from the control step item 'DmControl'.
+		******************************************************************************************************/
+
+		// Local variable
+		int ret										= 0;
+		array<String^> ^ reservedForNA				= nullptr;
+		int totalConditionCount						= 0;
+		int totalConfigurationSets					= 0;
+		int singleConfigurationSetItemCount			= 0; 
+
+#pragma region "Get ControlFunction"
+		if (!(tf_FlowStep_ConditionExist(tl->glob->currentSubItemName[siteIndex], DcControlConditionName_ControlFunction)))
+		{
+			amb7300tl->DmControlCSC.controlFunction = (String^)tf_FlowStep_ConditionCast(tl->glob->currentSubItemName[siteIndex], DcControlConditionName_ControlFunction);
+		}
+		else
+		{
+			ret = ER_CONST_DMCONTROL_CONDITION_NAME_NOT_FOUND;
+			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, DcControlConditionName_ControlFunction);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['DmControl' condition name verification] 'ControlFunction' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['DmControl' condition name verification] 'ControlFunction' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+#pragma endregion
+
+#pragma region "Get total configuration sets count"
+
+		//-------------------- Get Condition List Count --------------------
+		totalConditionCount = tf_FlowStep_ConditionCount(tl->glob->currentSubItemName[siteIndex]);
+
+		if (amb7300tl->DmControlCSC.controlFunction == "ConfigureOutputTrigger")
+		{
+			singleConfigurationSetItemCount = 3;
+		}
+
+		//-------------------- Get Configuration Sets --------------------
+		totalConfigurationSets = ( totalConditionCount - 1) / singleConfigurationSetItemCount; //Minus 1 to exclude the ControlFunction condition
+
+		if ((totalConditionCount % singleConfigurationSetItemCount) != 0)
+		{
+			ret = ER_CONST_DCCONTROL_CONDITION_NAME_NOT_FOUND;
+			String ^ additionalMessage =	"One complete set of 'DmControl' condition consists of " + singleConfigurationSetItemCount.ToString() + "x conditions."									+ "\n" +
+				"Multiple sets of 'DmControl' condition are allowed by duplicate the condition with an additional '_1', '_2', '_3' at the end of the condition name."	+ "\n" +
+				"Example: Module, PinAlias, ControlFunction, NPLC, VoltageLevel, CurrentLevel, Delay"																	+ "\n" +
+				"Module_1, PinAlias_1, ControlFunction_1, NPLC_1, VoltageLevel_1, CurrentLevel_1, Delay_1"																+ "\n" +
+				"Module_2, PinAlias_2, ControlFunction_2, NPLC_2, VoltageLevel_2, CurrentLeve_2, Delay_2";
+			//amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, DmControlConditionName_Module + " & "  + DmControlConditionName_PinAlias + " & " + DmControlConditionName_ControlFunction + " & " + DmControlConditionName_NPLC + " & " + DmControlConditionName_VoltageLevel + " & " + DmControlConditionName_CurrentLevel);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['DmControl' condition set verification] 'DmControl' condition set amount invalid. 1x condition set should contain " + singleConfigurationSetItemCount.ToString() + "x condition." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['DmControl' condition set verification] 'DmControl' condition set amount invalid. 1x condition set should contain " + singleConfigurationSetItemCount.ToString() + "x condition." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+
+#pragma endregion
+
+#pragma region "ConfigureOutputTrigger"
+
+		//-------------------- Array initialization --------------------
+		amb7300tl->DmControlCSC.moduleAlias = gcnew array<String^>(totalConfigurationSets);
+		amb7300tl->DmControlCSC.outputTrigger0 = gcnew array<int>(totalConfigurationSets);
+		amb7300tl->DmControlCSC.outputTrigger1 = gcnew array<int>(totalConfigurationSets);
+
+		for (int i = 0; i < totalConfigurationSets; i++)
+		{
+			if ((i == 0) && (tf_FlowStep_ConditionExist(tl->glob->currentSubItemName[siteIndex], DmControlConditionName_ModuleAlias)))
+			{
+				amb7300tl->DmControlCSC.moduleAlias[i] = (String^)tf_FlowStep_ConditionCast(tl->glob->currentSubItemName[siteIndex], DmControlConditionName_ModuleAlias);
+			}
+			else if ((i > 0) && (tf_FlowStep_ConditionExist(tl->glob->currentSubItemName[siteIndex], DmControlConditionName_TriggerOutput0 + i.ToString())))
+			{
+				amb7300tl->DmControlCSC.outputTrigger0[i] = (int)tf_FlowStep_ConditionCast(tl->glob->currentSubItemName[siteIndex], DmControlConditionName_TriggerOutput0 + i.ToString());
+			}
+			else if ((i > 0) && (tf_FlowStep_ConditionExist(tl->glob->currentSubItemName[siteIndex], DmControlConditionName_TriggerOutput1 + i.ToString())))
+			{
+				amb7300tl->DmControlCSC.outputTrigger1[i] = (int)tf_FlowStep_ConditionCast(tl->glob->currentSubItemName[siteIndex], DmControlConditionName_TriggerOutput1 + i.ToString());
+			}
+			else
+			{
+				ret = ER_CONST_DCCONTROL_CONDITION_NAME_NOT_FOUND;
+				amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, DcControlConditionName_Module);
+				tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['DcControl' condition name verification] 'Module' or 'Module_x' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['DcControl' condition name verification] 'Module' or 'Module_x' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				return ret;
+			}
+		}
+
+		// Validate condition value input
+		ret = ValidateConditionValueInput_DmControl(tfSite, siteIndex, DmControlConditionName_ModuleAlias, reservedForNA, totalConfigurationSets);
+		ret = ValidateConditionValueInput_DmControl(tfSite, siteIndex, DmControlConditionName_TriggerOutput0, reservedForNA, totalConfigurationSets);
+		ret = ValidateConditionValueInput_DmControl(tfSite, siteIndex, DmControlConditionName_TriggerOutput1, reservedForNA, totalConfigurationSets);
+		if (ret != 0) goto EndOfTest;
+
+#pragma endregion
+
+		EndOfTest:
+				 return ret;
+	}
+
 	/*
 	**	----------------------------------------------------------------------------------------------------
 	**	Control Step: VnaConfig
@@ -2213,6 +2411,400 @@ namespace AMB7300_TestLibrary_REV2P0
 
 #pragma endregion*/
 
+	EndOfTest:
+		return ret;
+	}
+
+	/*
+	**	----------------------------------------------------------------------------------------------------
+	**	Test Parameter: VnaDataStore
+	**	----------------------------------------------------------------------------------------------------
+	*/
+#pragma region ".xml file -> Test Parameter -> VnaDataStore"
+
+	/// <summary> VnaDataStore
+	/// <list type="TestItem" name="TestLib_TestParameter_VnaDataStore" category="VnaDataStore" group="Items" conditiontype="splitbysemicoloncomma" methodname="seq_TestMethod">
+	/// <item attribute="name">VnaDataStore_TestItemName</item>
+	/// <item attribute="displayas">VnaDataStore_TestItemName</item>
+	/// <item attribute="description">This is 'VnaDataStore' item with the combination of test item and test parameter, which is to execute test function and return result to test parameter.</item>
+	/// <list type="TestParameter" name="TestLib_TestParameter_VnaDataStore" category="VnaDataStore" group="Items">
+	/// <item attribute="name">VnaDataStore_TestParameterName_S11</item>
+	/// <item attribute="displayas">VnaDataStore_TestParameterName_S11</item>
+	/// <item attribute="description">VnaDataStore</item>
+	/// <item attribute="datatype">Double</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">dB</item>
+	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
+	/// <item attribute="lolimit">-999</item>
+	/// <item attribute="lolimitprefix">None</item>
+	/// <item attribute="hilimit">999</item>        
+	/// <item attribute="hilimitprefix">None</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">TraceIndex</item>
+	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
+	/// <item attribute="value">1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Int32</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">Function</item>
+	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
+	/// <item attribute="value">TraceData</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">AnalysisSetting</item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
+	/// <item attribute="value"></item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">SmoothingSetting</item>
+	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
+	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">Freq</item>
+	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
+	/// <item attribute="value">1000</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStart</item>
+	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStop</item>
+	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputType</item>
+	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Data</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputFormat</item>
+	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Real</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// </list>
+	/// <list type="TestParameter" name="TestLib_TestParameter_VnaDataStore" category="VnaDataStore" group="Items">
+	/// <item attribute="name">VnaDataStore_TestParameterName_S21</item>
+	/// <item attribute="displayas">VnaDataStore_TestParameterName_S21</item>
+	/// <item attribute="description">VnaDataStore</item>
+	/// <item attribute="datatype">Double</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">dB</item>
+	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
+	/// <item attribute="lolimit">-999</item>
+	/// <item attribute="lolimitprefix">None</item>
+	/// <item attribute="hilimit">999</item>        
+	/// <item attribute="hilimitprefix">None</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">TraceIndex</item>
+	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
+	/// <item attribute="value">2</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Int32</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">Function</item>
+	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
+	/// <item attribute="value">TraceData</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">AnalysisSetting</item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
+	/// <item attribute="value"></item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">SmoothingSetting</item>
+	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
+	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">Freq</item>
+	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
+	/// <item attribute="value">1000</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStart</item>
+	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStop</item>
+	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputType</item>
+	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Data</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputFormat</item>
+	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Real</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// </list>
+	/// <list type="TestParameter" name="TestLib_TestParameter_VnaDataStore" category="VnaDataStore" group="Items">
+	/// <item attribute="name">VnaDataStore_TestParameterName_S12</item>
+	/// <item attribute="displayas">VnaDataStore_TestParameterName_S12</item>
+	/// <item attribute="description">VnaDataStore</item>
+	/// <item attribute="datatype">Double</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">dB</item>
+	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
+	/// <item attribute="lolimit">-999</item>
+	/// <item attribute="lolimitprefix">None</item>
+	/// <item attribute="hilimit">999</item>        
+	/// <item attribute="hilimitprefix">None</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">TraceIndex</item>
+	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
+	/// <item attribute="value">3</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Int32</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">Function</item>
+	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
+	/// <item attribute="value">TraceData</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">AnalysisSetting</item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
+	/// <item attribute="value"></item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">SmoothingSetting</item>
+	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
+	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">Freq</item>
+	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
+	/// <item attribute="value">1000</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStart</item>
+	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStop</item>
+	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputType</item>
+	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Data</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputFormat</item>
+	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Real</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// </list>
+	/// <list type="TestParameter" name="TestLib_TestParameter_VnaDataStore" category="VnaDataStore" group="Items">
+	/// <item attribute="name">VnaDataStore_TestParameterName_S22</item>
+	/// <item attribute="displayas">VnaDataStore_TestParameterName_S22</item>
+	/// <item attribute="description">VnaDataStore</item>
+	/// <item attribute="datatype">Double</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">dB</item>
+	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
+	/// <item attribute="lolimit">-999</item>
+	/// <item attribute="lolimitprefix">None</item>
+	/// <item attribute="hilimit">999</item>        
+	/// <item attribute="hilimitprefix">None</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">TraceIndex</item>
+	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
+	/// <item attribute="value">4</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Int32</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">Function</item>
+	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
+	/// <item attribute="value">TraceData</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">AnalysisSetting</item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
+	/// <item attribute="value"></item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">SmoothingSetting</item>
+	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
+	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">Freq</item>
+	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
+	/// <item attribute="value">1000</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStart</item>
+	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStop</item>
+	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputType</item>
+	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Data</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputFormat</item>
+	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Real</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// </list>
+	/// </list>
+	/// </summary>
+	/// <param name="site">This is techFlow site object.</param>
+
+#pragma endregion
+	int TestProgram::TestLib_TestParameter_VnaDataStore(Site ^ site)
+	{
+		/* 
+		** Dummy test parameter function.
+		** To generate Project Library's test parameter item, and let techFlow3 user to drag into the test recipes editor.
+		** Only applicable for techFlow3 user (using test recipes editor).
+		** It will link to the all-in-one generic Test Method --> seq_TestMethod() 
+		*/
+
+		// Local variable
+		int ret = 0;
+
+		ret = seq_TestMethod(site);
+		if (ret != 0) goto EndOfTest;
+
+	EndOfTest:
+		return ret;
+	}
+	int TestProgram::TestLib_TestParameter_VnaDataStore_CastCondition(Site ^ site, int tfSite, int siteIndex)
+	{
+		/*****************************************************************************************************
+		**	TestLib_TestParameter_VnaDataStore_CastCondition
+		**	site			- This is techFlow site object.
+		**	tfSite			- This is techFlow site index.
+		**	siteIndex		- This is vna's object index, normally start from 0.
+		**
+		**	Descriptions:
+		**		This function is to cast condition from the control step item 'VnaDataStore'.
+		******************************************************************************************************/
+		int ret = 0;
+
+		ret = TestLib_TestParameter_VnaDataAnalysis_CastCondition(site, tfSite, siteIndex);
+		
 	EndOfTest:
 		return ret;
 	}
@@ -3424,6 +4016,584 @@ namespace AMB7300_TestLibrary_REV2P0
 		return ret;
 	}
 
+	/*
+	**	----------------------------------------------------------------------------------------------------
+	**	Test Parameter: VnaSwTime
+	**	----------------------------------------------------------------------------------------------------
+	*/
+#pragma region ".xml file -> Test Parameter -> VnaSwTime"
+
+	/// <summary> VnaSwTime
+	/// <list type="TestItem" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items" conditiontype="splitbysemicoloncomma" methodname="seq_TestMethod">
+	/// <item attribute="name">VnaSwTime_TestItemName</item>
+	/// <item attribute="displayas">VnaSwTime_TestItemName</item>
+	/// <item attribute="description">This is 'VnaSwTime' item with the combination of test item and test parameter, which is to execute test function and return result to test parameter.</item>
+	/// <list type="TestParameter" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items">
+	/// <item attribute="name">VnaSwTime_TestParameterName_S11</item>
+	/// <item attribute="displayas">VnaSwTime_TestParameterName_S11</item>
+	/// <item attribute="description">VnaSwTime</item>
+	/// <item attribute="datatype">Double</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">dB</item>
+	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
+	/// <item attribute="lolimit">-999</item>
+	/// <item attribute="lolimitprefix">None</item>
+	/// <item attribute="hilimit">999</item>        
+	/// <item attribute="hilimitprefix">None</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">TraceIndex</item>
+	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
+	/// <item attribute="value">1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Int32</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">Function</item>
+	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
+	/// <item attribute="value">TraceData</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">AnalysisSetting</item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
+	/// <item attribute="value"></item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">SmoothingSetting</item>
+	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
+	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">Freq</item>
+	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
+	/// <item attribute="value">1000</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStart</item>
+	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStop</item>
+	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputType</item>
+	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Data</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputFormat</item>
+	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Real</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// </list>
+	/// <list type="TestParameter" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items">
+	/// <item attribute="name">VnaSwTime_TestParameterName_S21</item>
+	/// <item attribute="displayas">VnaSwTime_TestParameterName_S21</item>
+	/// <item attribute="description">VnaSwTime</item>
+	/// <item attribute="datatype">Double</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">dB</item>
+	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
+	/// <item attribute="lolimit">-999</item>
+	/// <item attribute="lolimitprefix">None</item>
+	/// <item attribute="hilimit">999</item>        
+	/// <item attribute="hilimitprefix">None</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">TraceIndex</item>
+	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
+	/// <item attribute="value">2</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Int32</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">Function</item>
+	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
+	/// <item attribute="value">TraceData</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">AnalysisSetting</item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
+	/// <item attribute="value"></item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">SmoothingSetting</item>
+	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
+	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">Freq</item>
+	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
+	/// <item attribute="value">1000</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStart</item>
+	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStop</item>
+	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputType</item>
+	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Data</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputFormat</item>
+	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Real</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// </list>
+	/// <list type="TestParameter" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items">
+	/// <item attribute="name">VnaSwTime_TestParameterName_S12</item>
+	/// <item attribute="displayas">VnaSwTime_TestParameterName_S12</item>
+	/// <item attribute="description">VnaSwTime</item>
+	/// <item attribute="datatype">Double</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">dB</item>
+	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
+	/// <item attribute="lolimit">-999</item>
+	/// <item attribute="lolimitprefix">None</item>
+	/// <item attribute="hilimit">999</item>        
+	/// <item attribute="hilimitprefix">None</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">TraceIndex</item>
+	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
+	/// <item attribute="value">3</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Int32</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">Function</item>
+	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
+	/// <item attribute="value">TraceData</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">AnalysisSetting</item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
+	/// <item attribute="value"></item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">SmoothingSetting</item>
+	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
+	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">Freq</item>
+	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
+	/// <item attribute="value">1000</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStart</item>
+	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStop</item>
+	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputType</item>
+	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Data</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputFormat</item>
+	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Real</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// </list>
+	/// <list type="TestParameter" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items">
+	/// <item attribute="name">VnaSwTime_TestParameterName_S22</item>
+	/// <item attribute="displayas">VnaSwTime_TestParameterName_S22</item>
+	/// <item attribute="description">VnaSwTime</item>
+	/// <item attribute="datatype">Double</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit">dB</item>
+	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
+	/// <item attribute="lolimit">-999</item>
+	/// <item attribute="lolimitprefix">None</item>
+	/// <item attribute="hilimit">999</item>        
+	/// <item attribute="hilimitprefix">None</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">TraceIndex</item>
+	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
+	/// <item attribute="value">4</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">Int32</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">Function</item>
+	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
+	/// <item attribute="value">TraceData</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">AnalysisSetting</item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
+	/// <item attribute="value"></item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">SmoothingSetting</item>
+	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
+	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">Freq</item>
+	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
+	/// <item attribute="value">1000</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStart</item>
+	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition" excelname="">
+	/// <item attribute="name">FreqRangeStop</item>
+	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
+	/// <item attribute="value">0</item>
+	/// <item attribute="prefix">Mega</item>
+	/// <item attribute="unit">Hz</item>
+	/// <item attribute="datatype">Double</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputType</item>
+	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Data</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">OutputFormat</item>
+	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
+	/// <item attribute="value">Real</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
+	/// </list>
+	/// </list>
+	/// </list>
+	/// </summary>
+	/// <param name="site">This is techFlow site object.</param>
+
+#pragma endregion
+	int TestProgram::TestLib_TestParameter_VnaSwTime(Site ^ site)
+	{
+		/* 
+		** Dummy test parameter function.
+		** To generate Project Library's test parameter item, and let techFlow3 user to drag into the test recipes editor.
+		** Only applicable for techFlow3 user (using test recipes editor).
+		** It will link to the all-in-one generic Test Method --> seq_TestMethod() 
+		*/
+
+		// Local variable
+		int ret = 0;
+
+		ret = seq_TestMethod(site);
+		if (ret != 0) goto EndOfTest;
+
+	EndOfTest:
+		return ret;
+	}
+	int TestProgram::TestLib_TestParameter_VnaSwTime_CastCondition(Site ^ site, int tfSite, int siteIndex)
+	{
+		/*****************************************************************************************************
+		**	TestLib_TestParameter_VnaSwTime_CastCondition
+		**	site			- This is techFlow site object.
+		**	tfSite			- This is techFlow site index.
+		**	siteIndex		- This is vna's object index, normally start from 0.
+		**
+		**	Descriptions:
+		**		This function is to cast condition from the test parameter item 'VnaSwTime'.
+		******************************************************************************************************/
+
+		// Local variable
+		int ret										= 0;
+		array<String^> ^ reservedForNA				= nullptr;
+		array<String^> ^ arrStr						= gcnew array<String^>(0);
+		array<String^> ^ separator					= gcnew array<String^>(1);
+		array<String^> ^ arrStr2					= gcnew array<String^>(0);
+		array<String^> ^ separator2					= gcnew array<String^>(1);
+		ConditionCollection ^ conditionCollection	= gcnew ConditionCollection;
+		Condition ^ condition;
+
+#pragma region "MeasureType"
+
+		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_MeasureType))
+		{
+			amb7300tl->vnaSwTimeTPC.measureType = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_MeasureType);
+		}
+		else
+		{
+			ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, VnaSwTimeConditionName_MeasureType);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'MeasureType' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'MeasureType' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+
+		// Validate condition value input --> 'MeasureType'
+		ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_MeasureType, reservedForNA);
+		if (ret != 0) goto EndOfTest;
+
+#pragma endregion
+
+#pragma region "DMModuleAlias"
+
+		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_DMModuleAlias))
+		{
+			amb7300tl->vnaSwTimeTPC.dmModuleAlias = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_DMModuleAlias);
+		}
+		else
+		{
+			ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, VnaSwTimeConditionName_DMModuleAlias);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'DMModuleAlias' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'DMModuleAlias' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+
+		// Validate condition value input --> 'DMVectorTrigger'
+		ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_DMModuleAlias, reservedForNA);
+		if (ret != 0) goto EndOfTest;
+
+#pragma endregion
+
+#pragma region "DMVectorTrigger"
+
+		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_DMVectorTrigger))
+		{
+			amb7300tl->vnaSwTimeTPC.dmVectorTrigger = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_DMVectorTrigger);
+		}
+		else
+		{
+			ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, VnaSwTimeConditionName_DMVectorTrigger);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'DMVectorTrigger' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'DMVectorTrigger' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+
+		// Validate condition value input --> 'DMVectorTrigger'
+		ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_DMVectorTrigger, reservedForNA);
+		if (ret != 0) goto EndOfTest;
+
+#pragma endregion
+
+#pragma region "AnalysisSetting"
+
+		/*
+		**	The index usage and variable in array format are reserved for the multiple set of analysis settings in future.
+		*/
+
+		//-------------------- AnalysisSetting --------------------
+		String ^ analysisSetting = String::Empty;
+		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_AnalysisSetting))
+		{
+			analysisSetting = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_AnalysisSetting);
+		}
+		else
+		{
+			ret = ER_CONST_VNADATAANALYSIS_CONDITION_NAME_NOT_FOUND;
+			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, VnaSwTimeConditionName_AnalysisSetting);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'AnalysisSetting' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'AnalysisSetting' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+
+		//-------------------- Handle Analysis Settings For Each DataAnalysis's Type --------------------
+		arrStr			= gcnew array<String^>(0);
+		separator		= gcnew array<String^>(1);
+		separator[0]	= ",";
+		arrStr			= analysisSetting->Split(separator, StringSplitOptions::None);
+		arrStr2			= gcnew array<String^>(0);
+		separator2		= gcnew array<String^>(1);
+		separator2[0]	= "/";
+
+		for (int i = 0; i < arrStr->Length; i++)
+		{
+			// TraceData
+			if (amb7300tl->vnaSwTimeTPC.measureType == Cond_MeasureType_DM_PXIE9852)
+			{
+				arrStr2 = gcnew array<String^>(0);
+				arrStr2 = arrStr[i]->Split(separator2, StringSplitOptions::None);
+
+				// Validate condition value input --> 'AnalysisSetting -> msMinMax'
+				ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_AnalysisSetting, arrStr2);
+				if (ret != 0) goto EndOfTest;
+			}
+		}
+
+#pragma endregion
+
+#pragma region "DMVectorTrigger"
+
+		//-------------------- SmoothingSetting --------------------
+		String ^ dmVectorTrigg = String::Empty;
+		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_DMVectorTrigger))
+		{
+			dmVectorTrigg = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_DMVectorTrigger);
+		}
+		else
+		{
+			ret = ER_CONST_VNASWTIME_CONDITION_NAME_NOT_FOUND;
+			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, VnaSwTimeConditionName_DMVectorTrigger);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'DMVectorTrigger' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'DMVectorTrigger' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+
+		// Validate condition value input --> 'SmoothingSetting'
+		ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_DMVectorTrigger, reservedForNA);
+		if (ret != 0) goto EndOfTest;
+
+#pragma endregion
+
+#pragma region "OutputType"
+
+		// [Future Enchancement] The variable's array are reserved for the multiple set of analysis settings but only return one result to TP in future.
+
+		//-------------------- OutputType --------------------
+		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_OutputType))
+		{
+			amb7300tl->vnaSwTimeTPC.outputType = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_OutputType);
+		}
+		else
+		{
+			ret = ER_CONST_VNASWTIME_CONDITION_NAME_NOT_FOUND;
+			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, VnaSwTimeConditionName_OutputType);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'OutputType' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'OutputType' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+
+		// Validate condition value input --> 'OutputType'
+		ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_OutputType, reservedForNA);
+		if (ret != 0) goto EndOfTest;
+
+#pragma endregion
+
+#pragma region "OutputFormat"
+
+		//-------------------- OutputFormat --------------------
+		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_OutputFormat))
+		{
+			amb7300tl->vnaSwTimeTPC.outputFormat = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_OutputFormat);
+		}
+		else
+		{
+			ret = ER_CONST_VNASWTIME_CONDITION_NAME_NOT_FOUND;
+			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, VnaSwTimeConditionName_OutputFormat);
+			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'OutputFormat' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'OutputFormat' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+			return ret;
+		}
+
+		// Validate condition value input --> 'OutputFormat'
+		ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_OutputFormat, reservedForNA);
+		if (ret != 0) goto EndOfTest;
+
+#pragma endregion
+
+	EndOfTest:
+		return ret;
+	}
 	/*
 	**	----------------------------------------------------------------------------------------------------
 	**	Test Parameter: Math
@@ -5111,6 +6281,88 @@ namespace AMB7300_TestLibrary_REV2P0
 
 	EndOfTest:
 		return ret;
+	}
+
+	/*
+	**	----------------------------------------------------------------------------------------------------
+	**	Validate condition value input ---> DmControl
+	**	----------------------------------------------------------------------------------------------------
+	*/
+	int TestProgram::ValidateConditionValueInput_DmControl(int tfSite, int siteIndex, String ^ conditionName, array<String^> ^ conditionValueRaw, int totalConfigurationSets)
+	{
+		/*****************************************************************************************************
+		**	ValidateConditionValueInput_DmControl
+		**	tfSite					- This is techFlow site object.
+		**	siteIndex				- This is techFlow site index.
+		**	conditionName			- This is the condition name.
+		**	conditionValueRaw		- This is the condition value input (raw) in the array form.
+		**	totalConfigurationSets	- This is the total sets of configuration.
+		**
+		**	Descriptions:
+		**		This function is to validate all the condition value input in 'DmControl'.
+		******************************************************************************************************/
+
+		// Local variable
+		int ret = 0;
+
+#pragma region "ModuleAlias"
+
+		if (conditionName == DmControlConditionName_ModuleAlias)
+		{
+			for (int i = 0; i < totalConfigurationSets; i++)
+			{
+				//Check if value is DM resource from amap
+				/*if ((amb7300tl->DcControlCSC.module[i] != Cond_Module_CM)	&&
+					(amb7300tl->DcControlCSC.module[i] != Cond_Module_AM)	&&
+					(amb7300tl->DcControlCSC.module[i] != Cond_Module_DM)	&&
+					(amb7300tl->DcControlCSC.module[i] != Cond_Module_IOM)	&&
+					(amb7300tl->DcControlCSC.module[i] != Cond_Module_ACM)	&&
+					(amb7300tl->DcControlCSC.module[i] != Cond_Module_TM))
+				{
+					ret = ER_CONST_DCCONTROL_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage =	"'Module' available settings: " + "\n" +
+						"-> CM"							+ "\n" +
+						"-> AM"							+ "\n" +
+						"-> DM"							+ "\n" +
+						"-> IOM"						+ "\n" +
+						"-> ACM"						+ "\n" + 
+						"-> TMU";
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, DcControlConditionName_Module, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['DcControl' condition value verification] 'Module' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['DcControl' condition value verification] 'Module' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}*/
+			}
+		}
+
+#pragma endregion
+
+
+#pragma region "TriggerOutput0"
+
+		if (conditionName == DmControlConditionName_TriggerOutput0)
+		{
+			for (int i = 0; i < totalConfigurationSets; i++)
+			{
+				//Validate the trigger value
+			}
+		}
+
+#pragma endregion
+
+#pragma region "TriggerOutput1"
+
+		if (conditionName == DmControlConditionName_TriggerOutput1)
+		{
+			for (int i = 0; i < totalConfigurationSets; i++)
+			{
+				//Validate the trigger value
+			}
+		}
+
+#pragma endregion
+		EndOfTest:
+				 return ret;
 	}
 
 	/*
@@ -8885,6 +10137,218 @@ namespace AMB7300_TestLibrary_REV2P0
 
 	/*
 	**	----------------------------------------------------------------------------------------------------
+	**	Validate condition value input ---> VnaDataAnalysis
+	**	----------------------------------------------------------------------------------------------------
+	*/
+	int TestProgram::ValidateConditionValueInput_VnaSwTime(int tfSite, int siteIndex, String ^ conditionName, array<String^> ^ conditionValueRaw)
+	{
+		/*****************************************************************************************************
+		**	ValidateConditionValueInput_VnaSwTime
+		**	tfSite				- This is techFlow site object.
+		**	siteIndex			- This is techFlow site index.
+		**	conditionName		- This is the condition name.
+		**	conditionValueRaw	- This is the condition value input (raw) in the array form.
+		**
+		**	Descriptions:
+		**		This function is to validate all the condition value input in the 'VnaSwTime'.
+		**		Include: 'TraceIndex', 'Function', 'AnalysisSetting', 'SmoothingSetting', 
+		**		'Freq', 'FreqRangeStart', 'FreqRangeStop', 'OutputType', 'OutputFormat'.
+		******************************************************************************************************/
+
+		// Local variable
+		int ret = 0;
+
+#pragma region "MeasureType"
+
+		if (conditionName == VnaSwTimeConditionName_MeasureType)
+		{
+			if (amb7300tl->sysConfigInfo.moduleConfigurationName == VnaModel_CMT_SC5090)
+			{
+				//[Future Improvement]
+			}
+			else if (amb7300tl->sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
+			{
+				if ((amb7300tl->vnaSwTimeTPC.measureType != Cond_MeasureType_DM_PXIE9852)					)
+				{
+					ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage =	"'Function' available settings: "	+ "\n" +
+						"-> DM+PXIE9852"						;
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaSwTimeConditionName_MeasureType, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'MeasureType' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'MeasureType' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}
+			}
+		}
+
+#pragma endregion
+
+#pragma region "DMModuleAlias"
+
+		if (conditionName == VnaSwTimeConditionName_DMModuleAlias)
+		{
+			//if ((amb7300tl->vnaSwTimeTPC.dmModuleAlias))
+			{
+				////[Future Improvement] Compare if module alias is an DM module
+			}
+
+		}
+
+#pragma endregion
+
+#pragma region "DMVectorTrigger"
+
+		if (conditionName == VnaSwTimeConditionName_DMVectorTrigger)
+		{
+			if ((amb7300tl->vnaSwTimeTPC.measureType == Cond_MeasureType_DM_PXIE9852))
+			{
+				////[Future Improvement] Compare if vector exist from global vector list variable
+				//ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+				//String ^ additionalMessage =	"'SmoothingSetting' 1st parameter available settings: " + "\n" +
+				//	"-> VectorName1";
+				//amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaSwTimeConditionName_DMVectorTrigger, additionalMessage);
+				//tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'DMVectorTrigger' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				//tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'DMVectorTrigger' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				//return ret;
+			}
+
+		}
+
+#pragma endregion
+
+#pragma region "AnalysisSetting"
+
+		if (conditionName == VnaSwTimeConditionName_AnalysisSetting)
+		{
+			// DM+PXIE9852
+			if (amb7300tl->vnaSwTimeTPC.analysisSetting == Cond_MeasureType_DM_PXIE9852)
+			{
+				// AnalysisSetting parameter: TriggerEdge | MovingAverage | SearchLevel | SearchLimitLevel
+				if (conditionValueRaw->Length != 4)
+				{
+					ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage =	"'AnalysisSetting' for 'VnaSwTime' function contain 2x parameter which is differentiate by '/'." + "\n" +  
+						"1st parameter: Trigger edge."													+ "\n" + 
+						"2nd parameter: Enable Moving Average calculation."								+ "\n" + 
+						"3rd parameter: Enable search limit."											+ "\n" + 
+						"4th parameter: Search limit level."											+ "\n" + 
+						"Example: SearchRangeOn/Max --> meaning enable marker search range, searching for maximum value.";
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaSwTimeConditionName_AnalysisSetting, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'AnalysisSetting' condition value for 'VnaSwTime' mode is invalid. It should contain 4 value parameter, which is differentiate by a '/' symbol." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'AnalysisSetting' condition value for 'VnaSwTime' mode is invalid. It should contain 4 value parameter, which is differentiate by a '/' symbol." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}
+				// Rising/Falling Edges
+				if ((conditionValueRaw[0] != Cond_AnalysisSetting_VnaSwTime_Rising) &&
+					(conditionValueRaw[0] != Cond_AnalysisSetting_VnaSwTime_Falling))
+				{
+					ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage =	"'AnalysisSetting' for 'VnaSwTime' function, 1st parameter available settings: "	+ "\n" +
+						"-> Rising"																+ "\n" +
+						"-> Falling";
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaSwTimeConditionName_AnalysisSetting, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'AnalysisSetting' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'AnalysisSetting' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}
+
+				// MovingAvg On/Off
+				if ((conditionValueRaw[1] != Cond_AnalysisSetting_VnaSwTime_MovingAvgOn) && 
+					(conditionValueRaw[1] != Cond_AnalysisSetting_VnaSwTime_MovingAvgOff))
+				{
+					ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage =	"'AnalysisSetting' for 'VnaSwTime' function, 2nd parameter available settings: "	+ "\n" +
+						"-> MovingAvgOn"																		+ "\n" +
+						"-> MovingAvgOff";
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaSwTimeConditionName_AnalysisSetting, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'AnalysisSetting' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'AnalysisSetting' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}
+
+				// SearchLimit On/Off
+				if ((conditionValueRaw[2] != Cond_AnalysisSetting_VnaSwTime_SearchLimitOn) && 
+					(conditionValueRaw[2] != Cond_AnalysisSetting_VnaSwTime_SearchLimitOff))
+				{
+					ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage =	"'AnalysisSetting' for 'VnaSwTime' function, 3rd parameter available settings: "	+ "\n" +
+						"-> SearchLimitOn"																		+ "\n" +
+						"-> SearchLimitOff";
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaSwTimeConditionName_AnalysisSetting, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'AnalysisSetting' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'AnalysisSetting' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}
+
+				// SwTime Power Limit Value
+				if ((Double::Parse(conditionValueRaw[3]) < -500.0 dB) ||
+					(Double::Parse(conditionValueRaw[3]) > 500.0 dB))
+				{
+					ret = ER_CONST_VNADATAANALYSIS_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage =	"'AnalysisSetting' for 'VnaSwTime' function, 4th parameter available settings: " + "\n" +
+						"-> -500.0 dB ~ +500.0 dB";
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaDataAnalysisConditionName_AnalysisSetting, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaDataAnalysis' condition value verification] 'AnalysisSetting' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaDataAnalysis' condition value verification] 'AnalysisSetting' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}
+			}
+		}
+
+#pragma endregion
+
+#pragma region "OutputType"
+
+		if (conditionName == VnaSwTimeConditionName_OutputType)
+		{
+			if ((amb7300tl->vnaSwTimeTPC.measureType == Cond_MeasureType_DM_PXIE9852))
+			{
+				if ((amb7300tl->vnaSwTimeTPC.outputType != Cond_OutputType_Generic_Data))
+				{
+					ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage =	"'OutputType' for 'mmBwSearch', 'mmBwSearchAbs', 'SharedMemoryDataBWSearch' function, the available settings: "	+ "\n" +
+						"-> Data";
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaSwTimeConditionName_OutputType, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'OutputType' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'OutputType' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}
+			}
+		}
+
+#pragma endregion
+
+#pragma region "OutputFormat"
+
+		if (conditionName == VnaSwTimeConditionName_OutputFormat)
+		{
+			if ((amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_Time)				||
+				(amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_MaxPower)				||
+				(amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_MinPower)				||
+				(amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_AvgPower))
+			{
+				ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;
+				String ^ additionalMessage =	"'OutputType' for 'VnaSwTime' function," + "\n" +
+					"the available settings: "																								+ "\n" +
+					"-> Time"																												+ "\n" +
+					"-> MaxPower"																												+ "\n" +
+					"-> MinPower"																											+ "\n" +
+					"-> AvgPower";
+				amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaSwTimeConditionName_OutputFormat, additionalMessage);
+				tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'OutputFormat' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition value verification] 'OutputFormat' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				return ret;
+			}
+		}
+
+#pragma endregion
+
+	EndOfTest:
+		return ret;
+	}
+
+	/*
+	**	----------------------------------------------------------------------------------------------------
 	**	Validate condition value input ---> Math
 	**	----------------------------------------------------------------------------------------------------
 	*/
@@ -9039,8 +10503,9 @@ namespace AMB7300_TestLibrary_REV2P0
 
 *** Version	: v1.0.0.11
 *** Date	: 2 September 2026
-*** PIC		: Xuli
+*** PIC		: Xuli & Zhi Kean
 * Updated TestLib_ControlStep_VnaConfig_CastCondition for segmentSetting[siteIndex].totalPoint
+* Added support for DmControl -> ConfigureOutputTrigger for SW time test
 
 *** Version : v1.0.0.10
 *** Date	: 4 April 2025

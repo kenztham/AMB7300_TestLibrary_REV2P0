@@ -2329,13 +2329,21 @@ namespace Functions
 				ret = ConfigureSegmentSetting_Keysight(tfSite, vnaSiteIndex);
 				if (ret != 0) goto EndOfTest;
 			}
-			if ((segmentSetting[vnaSiteIndex].sweepType == Vna_Stimulus_SweepType_PowerSweep) || // Under development, not support yet
+			else if ((segmentSetting[vnaSiteIndex].sweepType == Vna_Stimulus_SweepType_PowerSweep) || // Under development, not support yet
 				(segmentSetting[vnaSiteIndex].sweepType == Vna_SharedMemoryTransfer_PowerSweep))
 			{
 				tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaConfig -> KeysightVnaUtility -> ConfigurePowerSweep_Keysight] Configure power sweep setting at the active channel.");
 				tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaConfig -> KeysightVnaUtility -> ConfigurePowerSweep_Keysight] Configure power sweep setting at the active channel.");
 				// Configure segment settings on every available channel in mapping file
 				ret = ConfigurePowerSweepSetting_Keysight(tfSite, vnaSiteIndex);
+				if (ret != 0) goto EndOfTest;
+			}
+			else if ((segmentSetting[vnaSiteIndex].sweepType == Vna_Stimulus_SweepType_CWTime))
+			{
+				tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaConfig -> KeysightVnaUtility -> ConfigureCWTime_Keysight] Configure CW Time sweep setting at the active channel.");
+				tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaConfig -> KeysightVnaUtility -> ConfigureCWTime_Keysight] Configure CW Time sweep setting at the active channel.");
+				// Configure segment settings on every available channel in mapping file
+				ret = ConfigureCWTimeSweepSetting_Keysight(tfSite, vnaSiteIndex);
 				if (ret != 0) goto EndOfTest;
 			}
 			else if (segmentSetting[vnaSiteIndex].sweepType == Vna_SweepType_GetFromStateFile)
@@ -4531,6 +4539,119 @@ namespace Functions
 		return ret;
 	}
 
+
+	int AMB7300TestLibrary::VnaSwTime(int tfSite, int vnaSiteIndex, double % result)
+	{
+		/*****************************************************************************************************
+		** VnaDataAnalysis
+		**		tfSite			- This is techFlow site index.
+		**		vnaSiteIndex	- This is VNA object index, normally start from 0.
+		**		result			- Return test result.
+		**
+		** Descriptions:
+		**		This is a function to execute 'VnaDataAnalysis' phase.
+		******************************************************************************************************/
+
+		/*	Info
+		**	LogMag		--> SFP 1x parameter	--> API return as real raw
+		**	SWR			--> SFP 1x parameter	--> API return as real raw
+		**	Phase		--> SFP 1x parameter	--> API return as real raw
+		**	ExPhase		--> SFP 1x parameter	--> API return as real raw
+		**	Delay		--> SFP 1x parameter	--> API return as real raw
+		**	LinMag		--> SFP 1x parameter	--> API return as real raw
+		**	Reak		--> SFP 1x parameter	--> API return as real raw
+		**	Imag		--> SFP 1x parameter	--> API return as real raw
+		**	SmithLog	--> SFP 2x parameter	--> [wrapper special handle] API return: 1st para as real raw | 2nd para as imag raw
+		**	SmithLin	--> SFP 2x parameter	--> [wrapper special handle] (error)return wrong												!
+		**	SmithReIm	--> SFP 2x parameter	--> API return: 1st para as real raw | 2nd para as imag raw
+		**	SmithR+JX	--> SFP 2x parameter	--> API return: 1st para as real raw | 2nd para as imag raw | (error)does not have 3rd para		!
+		**	SmithG+JB	--> SFP 2x parameter	--> API return: 1st para as real raw | 2nd para as imag raw | (error)does not have 3rd para		!
+		**	PolarLog	--> SFP 2x parameter	--> [wrapper special handle] API return: 1st para as real raw | 2nd para as imag raw
+		**	PolarLin	--> SFP 2x parameter	--> [wrapper special handle] (error)return wrong												!
+		**	PolarReIm	--> SFP 2x parameter	--> API return: 1st para as real raw | 2nd para as imag raw
+		*/
+
+		// Local variable
+		int ret = 0;
+		result	= (double)CONST_INVALID_RESULT;
+
+		tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime] Executing 'VnaSwTime' phase.");
+		tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime] Executing 'VnaSwTime' phase.");
+
+		if (sysConfigInfo.moduleConfigurationName == VnaModel_CMT_SC5090)
+		{
+			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime -> CopperMountainVnaUtility] Run the Switching Time test.");
+			tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime -> CopperMountainVnaUtility]  Run the Switching Time test.");
+			
+		}
+		else if (sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
+		{
+			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime -> KeysightVnaUtility] Run the Switching Time test.");
+			tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime -> KeysightVnaUtility] Run the Switching Time test.");
+		
+			// Execute data analysis function
+			if (vnaSwTimeTPC.measureType == Cond_MeasureType_DM_PXIE9852)
+			{
+				bool IsDone0 = false;
+				int c_as = 0;
+
+				pXIe9852_Info->aitask0->Start();
+
+				ret = DmRunVector(tfSite, tfSite,vnaSwTimeTPC.dmModuleAlias,vnaSwTimeTPC.dmVectorTrigger);
+				if (ret != 0)
+				{
+					pXIe9852_Info->aitask0->Stop();
+					goto EndOfTest;
+				}
+
+				while (!IsDone0)
+				{
+					//util->WaitSecond(1 mS);
+
+					if (pXIe9852_Info->aitask0->AvailableSamples >= pXIe9852_Info->sampleNumber)
+					{
+						IsDone0 = true;
+					}
+					c_as++;
+					if (c_as >= 10)
+					{
+						IsDone0 = true;
+					}
+				}
+				if (c_as < 10)
+				{
+					pXIe9852_Info->aitask0->ReadData(pXIe9852_Info->readValue0, 5000 mS);//-1
+
+					int j = 0;
+
+					for (int i = 0; i < pXIe9852_Info->readValue0->Length; i++)
+					{
+						if (i % 2 == 0)
+						{
+							pXIe9852_Info->readValueSite0[j] = pXIe9852_Info->readValue0[i]; //readValueSite0
+						}
+						else
+						{
+							pXIe9852_Info->readValueSite1[j] = pXIe9852_Info->readValue0[i]; //readValueSite1
+							j++;
+						}
+					}
+
+					//Store data into global result variable
+					//
+					//PrintWaveformToFile(testSite, "digitizer_V_record", pXIe9852_Info->readValueSite0);
+
+				}
+
+				pXIe9852_Info->aitask0->Stop();
+			}
+			
+		}
+
+	EndOfTest:
+		return ret;
+	}
+
 	int AMB7300TestLibrary::VnaFetch_TrueParallel(int tfSite, int vnaSiteIndex)
 	{
 		/*****************************************************************************************************
@@ -6611,6 +6732,143 @@ namespace Functions
 		return ret;
 	}
 	
+
+	// Log Detector & Digitizer (For switching time test)
+	int AMB7300TestLibrary::InitializeExtModule(int tfSite, int siteIndex)
+	{
+		/*****************************************************************************************************
+		** InitializeExtModule
+		**		tfSite		- This is techFlow site index.
+		**		siteIndex	- This is VNA object index, normally start from 0.
+		**
+		** Descriptions:
+		**		This is a function to initialize external hardware.
+		******************************************************************************************************/
+
+		// Local variable
+		int ret					= 0;
+
+		double g_SINAD;
+		g_SINAD = 0.0;
+
+		//tracerLogger->WriteToTracer(MainTracer, "JY9852 Init...");
+		double sampleNumber_double;
+		pXIe9852_Info = gcnew PXIe9852_Info();
+
+		//pXIe9852_Info->sampleRate = (double)(tf_FlowStep_ConditionCast("sampleRate"));
+		//pXIe9852_Info->sampleNumber_double = (double)(tf_FlowStep_ConditionCast("sampleNumber"));
+		pXIe9852_Info->sampleNumber = (int)sampleNumber_double;
+
+		pXIe9852_Info->readValue0 = gcnew array<double>(pXIe9852_Info->sampleNumber * 2);
+		pXIe9852_Info->readValue1 = gcnew array<double>(pXIe9852_Info->sampleNumber * 2);
+
+		pXIe9852_Info->readValueSite0 = gcnew array<double>(pXIe9852_Info->sampleNumber);
+		pXIe9852_Info->readValueSite1 = gcnew array<double>(pXIe9852_Info->sampleNumber);
+	
+		pXIe9852_Info->Power_dBmSite0 = gcnew array<double>(pXIe9852_Info->sampleNumber / 2);
+		pXIe9852_Info->Power_dBmSite1 = gcnew array<double>(pXIe9852_Info->sampleNumber / 2);
+	
+		pXIe9852_Info->Power_dBmSite0_Avg = gcnew array<double>(pXIe9852_Info->sampleNumber / 2);
+		pXIe9852_Info->Power_dBmSite1_Avg = gcnew array<double>(pXIe9852_Info->sampleNumber / 2);
+	
+		pXIe9852_Info->slotNo = gcnew array<int>(1);//2
+
+		//pXIe9852_Info->slotNo[0] = (int)(tf_FlowStep_ConditionCast("JY69852"));
+
+		double Vrange = 2;
+
+		//	for (int testSite = testSiteStart; testSite < totalSite; testSite++)
+		{
+			//	if (testSite == 0) //0
+			{
+
+				pXIe9852_Info->aitask0 = gcnew JYPXIe69852AITask(pXIe9852_Info->slotNo[0]);
+				pXIe9852_Info->aitask0->AddChannel(0, -Vrange, Vrange, AICoupling::DC, AIImpedance::ImpedanceHigh);//Impedance50Ohm
+				pXIe9852_Info->aitask0->AddChannel(1, -Vrange, Vrange, AICoupling::DC, AIImpedance::ImpedanceHigh);//JYPXIe69852::AIImpedance::ImpedanceHigh
+				pXIe9852_Info->aitask0->Mode = AIMode::Finite;//SFP: Sample Mode
+				pXIe9852_Info->aitask0->SampleRate = pXIe9852_Info->sampleRate;
+				pXIe9852_Info->aitask0->SamplesToAcquire = pXIe9852_Info->sampleNumber;
+				pXIe9852_Info->aitask0->Trigger->Mode = AITriggerMode::Start;//SFP:Trigger Mode???
+				pXIe9852_Info->aitask0->Trigger->Type = AITriggerType::Software;//SFP:Trigger Source
+				pXIe9852_Info->aitask0->Trigger->ReTriggerCount = -1;//SFP:Re-Trigger/Re-Trigger Count
+				pXIe9852_Info->aitask0->Trigger->ReTriggerFrequency = 1;
+				pXIe9852_Info->aitask0->Start();
+				pXIe9852_Info->aitask0->SendSoftwareTrigger();
+
+				bool IsDone0 = false;
+				while (!IsDone0)
+				{
+					//util->WaitSecond(1 mS);
+
+					if (pXIe9852_Info->aitask0->AvailableSamples >= pXIe9852_Info->sampleNumber)
+					{
+						IsDone0 = true;
+					}
+				}
+
+				pXIe9852_Info->aitask0->ReadData(pXIe9852_Info->readValue0, 5000 mS);//-1
+
+				int j = 0;
+
+				for (int i = 0; i < pXIe9852_Info->readValue0->Length; i++)
+				{
+					if (i % 2 == 0)
+					{
+						pXIe9852_Info->readValueSite0[j] = pXIe9852_Info->readValue0[i]; //readValueSite0
+					}
+					else
+					{
+						pXIe9852_Info->readValueSite1[j] = pXIe9852_Info->readValue0[i]; //readValueSite1
+						j++;
+					}
+				}
+
+				//if (debug)
+				{
+					//PrintWaveformToFile(testSite, "digitizer_V_load", readValueSite0);
+				}
+
+				pXIe9852_Info->aitask0->Stop();
+
+				pXIe9852_Info->aitask0->Trigger->Mode = AITriggerMode::Start;//SFP:Trigger Mode???
+				pXIe9852_Info->aitask0->Trigger->Type = AITriggerType::Digital;// use external trigger 
+				pXIe9852_Info->aitask0->Trigger->Digital->Edge = AIDigitalTriggerEdge::Rising;
+				pXIe9852_Info->aitask0->Trigger->Digital->Source = AIDigitalTriggerSource::TRGIN;
+
+				pXIe9852_Info->aitask0->Trigger->ReTriggerCount = 0;//SFP:Re-Trigger/Re-Trigger Count  -1
+				pXIe9852_Info->aitask0->Trigger->ReTriggerFrequency = 0;
+				pXIe9852_Info->aitask0->Trigger->PreTriggerSamples = 100;
+				//	aitask0->Start();
+			}
+		}
+	EndOfTest:
+		return ret;
+	}
+	int AMB7300TestLibrary::UninitializeExtModule(int tfSite, int siteIndex)
+	{
+		/*****************************************************************************************************
+		** UninitializeExtModule
+		**		tfSite		- This is techFlow site index.
+		**		siteIndex	- This is VNA object index, normally start from 0.
+		**
+		** Descriptions:
+		**		This is a function to uninitialize external hardware.
+		******************************************************************************************************/
+
+		// Local variable
+		int ret = 0;
+
+		if (pXIe9852_Info->aitask0 != nullptr)
+		{
+			pXIe9852_Info->aitask0->Stop();
+			//pXIe9852_Info->aitask0->RemoveChannel(-1);
+
+		}
+
+	EndOfTest:
+		return ret;
+	}
+
 	/*
 	**	----------------------------------------------------------------------------------------------------
 	**	VnaDataAnalysis -> Trace Data Helper functions
@@ -7866,6 +8124,47 @@ namespace Functions
 
 	/*
 	**	----------------------------------------------------------------------------------------------------
+	**	DM Operation
+	**	----------------------------------------------------------------------------------------------------
+	*/
+	int AMB7300TestLibrary::DmControl(int tfSite, int siteIndex)
+	{
+		/*****************************************************************************************************
+		** DmControl
+		**		tfSite		- This is techFlow site index.
+		**		siteIndex	- This is DM resource object index, normally start from 0.
+		**
+		** Descriptions:
+		**		This is a function to execute 'DmControl' phase.
+		******************************************************************************************************/
+
+		// Local variable
+		int ret = 0;
+
+		tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[DmControl] Executing 'DmControl' phase.");
+		tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[DmControl] Executing 'DmControl' phase.");
+
+		for (int i = 0; i < DmControlCSC.moduleAlias->Length; i++) //Iterate count based on size of first condition
+		{
+			if ((DmControlCSC.controlFunction == Cond_ControlFunction_DM_ConfigureOutputTrigger))
+			{ 
+				// Configure DM pin
+				ret = DmConfigureDmOutputTrigger(tfSite, siteIndex,DmControlCSC.moduleAlias[i],
+					DmControlCSC.outputTrigger0[i],
+					DmControlCSC.outputTrigger1[i]);
+				if (ret != 0) goto EndOfTest;
+				tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[DmControl -> DM400Utility -> DmConfigureDmOutputTrigger]");
+				tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[DmControl -> DM400Utility -> DmConfigureDmOutputTrigger]");
+			}
+			
+		}
+
+	EndOfTest:
+		return ret;
+	}
+
+	/*
+	**	----------------------------------------------------------------------------------------------------
 	**	Other Utilities
 	**	----------------------------------------------------------------------------------------------------
 	*/
@@ -8207,9 +8506,10 @@ namespace Functions
 
 *** Version	: v1.0.0.6
 *** Date	: 2 September 2026
-*** PIC		: Xuli
+*** PIC		: Xuli & Zhi Kean
 * Commented calibration date check in InitializeVna
-* Updated SaveToTouchstoneFile CustLotId value
+* Updated SmaveToTouchstoneFile CustLotId value
+* Added supprot for PXI9852 module switching time test
 
 *** Version	: v1.0.0.5
 *** Date	: 4 April 2025

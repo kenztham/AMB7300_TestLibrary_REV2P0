@@ -579,6 +579,38 @@ namespace Functions
 	EndOfTest:
 		return ret;
 	}
+	int AMB7300TestLibrary::DmConfigureDmOutputTrigger(int tfSite, int siteIndex, String ^ dmModuleAlias, int triggerOutput0, int triggerOutput1)
+	{
+		/*****************************************************************************************************
+		**	ConfigureDmOutputTrigger
+		**		tfSite				- This is techFlow site index.
+		**		siteIndex			- This is dc resource's object index, normally start from 0.
+		**		dmModuleAlias		- This is DM module alias.
+		**		sclkAlias			- This is I2C clk pin alias.
+		**		sdataAlias			- This is I2C data pin alias.
+		**
+		**	Descriptions:
+		**		This is a function to configure DM output trigger
+		******************************************************************************************************/
+
+		// Local variable
+		int ret = 0;
+
+		try
+		{
+			tl->CheckError(tfSite, dm[siteIndex]->ConfigureOutputTriggerSelect(dmModuleAlias, triggerOutput0, triggerOutput1));
+		}
+		catch (Exception^ ex)
+		{
+			ret = ER_CONST_CONFIGURE_DM_OUTPUT_TRIGGER_FAIL;
+			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[DM400Utility -> DmConfigureDmOutputTrigger] Fail to configure DM output trigger." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[DM400Utility -> DmConfigureDmOutputTrigger] Fail to configure DM output trigger." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			goto EndOfTest;
+		}
+
+	EndOfTest:
+		return ret;
+	}
 
 
 

@@ -130,6 +130,13 @@ namespace AMB7300_TestLibrary_REV2P0
 		int TestLib_TestParameter_PatternTest_CastCondition(Site ^ site, int tfSite, int siteIndex);
 		/*
 		**	----------------------------------------------------------------------------------------------------
+		**	Control Step: DmControl
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		int TestLib_ControlStep_DmControl(Site ^ site);
+		int TestLib_ControlStep_DmControl_CastCondition(Site ^ site, int tfSite, int siteIndex);
+		/*
+		**	----------------------------------------------------------------------------------------------------
 		**	Control Step: VnaConfig
 		**	----------------------------------------------------------------------------------------------------
 		*/
@@ -144,11 +151,25 @@ namespace AMB7300_TestLibrary_REV2P0
 		int TestLib_ControlStep_VnaFetch_CastCondition(Site ^ site, int tfSite, int siteIndex);
 		/*
 		**	----------------------------------------------------------------------------------------------------
+		**	Test Parameter: VnaDataStore
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		int TestLib_TestParameter_VnaDataStore(Site ^ site);
+		int TestLib_TestParameter_VnaDataStore_CastCondition(Site ^ site, int tfSite, int siteIndex);
+		/*
+		**	----------------------------------------------------------------------------------------------------
 		**	Test Parameter: VnaDataAnalysis
 		**	----------------------------------------------------------------------------------------------------
 		*/
 		int TestLib_TestParameter_VnaDataAnalysis(Site ^ site);
 		int TestLib_TestParameter_VnaDataAnalysis_CastCondition(Site ^ site, int tfSite, int siteIndex);
+		/*
+		**	----------------------------------------------------------------------------------------------------
+		**	Test Parameter: VnaSwTime
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		int TestLib_TestParameter_VnaSwTime(Site ^ site);
+		int TestLib_TestParameter_VnaSwTime_CastCondition(Site ^ site, int tfSite, int siteIndex);
 		/*
 		**	----------------------------------------------------------------------------------------------------
 		**	Test Parameter: Math
@@ -185,6 +206,13 @@ namespace AMB7300_TestLibrary_REV2P0
 
 		/*
 		**	----------------------------------------------------------------------------------------------------
+		**	Validate condition value input ---> DmControl
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		int ValidateConditionValueInput_DmControl(int tfSite, int siteIndex, String ^ conditionName, array<String^> ^ conditionValueRaw, int totalConfigurationSets);
+
+		/*
+		**	----------------------------------------------------------------------------------------------------
 		**	Validate condition value input ---> VnaConfig
 		**	----------------------------------------------------------------------------------------------------
 		*/
@@ -201,9 +229,16 @@ namespace AMB7300_TestLibrary_REV2P0
 		**	----------------------------------------------------------------------------------------------------
 		*/
 		int ValidateConditionValueInput_VnaDataAnalysis(int tfSite, int siteIndex, String ^ conditionName, array<String^> ^ conditionValueRaw);
+
 		/*
 		**	----------------------------------------------------------------------------------------------------
-		**	Validate condition value input ---> VnaDataAnalysis
+		**	Validate condition value input ---> VnaSwTime
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		int ValidateConditionValueInput_VnaSwTime(int tfSite, int siteIndex, String ^ conditionName, array<String^> ^ conditionValueRaw);
+		/*
+		**	----------------------------------------------------------------------------------------------------
+		**	Validate condition value input ---> Math
 		**	----------------------------------------------------------------------------------------------------
 		*/
 		int ValidateConditionValueInput_Math(int tfSite, int siteIndex, String ^ conditionName, array<String^> ^ conditionValueRaw);

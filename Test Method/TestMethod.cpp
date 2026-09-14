@@ -257,6 +257,28 @@ namespace AMB7300_TestLibrary_REV2P0
 								}
 							}
 						}
+						else if (tl->glob->currentSubItemName[siteIndex]->Contains(PHASE_CONST_VNA_DATA_STORE))
+						{
+							for (int l_siteIndex = 0; l_siteIndex < tl->glob->tf.NumberOfTestSites; l_siteIndex++)
+							{
+								if (site->UUTOffsetResolver->UUTOffsets[l_siteIndex]->Active)
+								{
+									String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + l_siteIndex;
+
+									// Cast condition from 'VnaDataAnalysis' @ AMB7300Utility
+									ret = TestLib_TestParameter_VnaDataStore_CastCondition(site, tfSite, l_siteIndex);
+									if (ret != 0) goto EndOfTest;
+
+									// Execute 'VnaDataAnalysis' phase @ AMB7300
+									result[l_siteIndex] = (double)CONST_INVALID_RESULT;
+									amb7300tl->VnaDataAnalysis_TrueParallel(tfSite, l_siteIndex, result[l_siteIndex]);
+
+									// Save to Dictionary
+									ret = tl->UpdateControlStepTestResulToDictionary(site, l_siteIndex, identifier, result[l_siteIndex]);
+
+								}
+							}
+						}
 					}
 					else
 					{
@@ -346,6 +368,16 @@ namespace AMB7300_TestLibrary_REV2P0
 
 									// Execute 'DcControl' phase @ AMB7300
 									ret = amb7300tl->DcControl(tfSite, siteIndex);
+									if (ret != 0) goto EndOfTest;
+								}
+								else if (tl->glob->currentSubItemName[siteIndex]->Contains(PHASE_CONST_DM_CONTROL))
+								{
+									// Cast condition from 'DcControl' @ AMB7300Utility
+									ret = TestLib_ControlStep_DmControl_CastCondition(site, tfSite, siteIndex);
+									if (ret != 0) goto EndOfTest;
+
+									// Execute 'DcControl' phase @ AMB7300
+									ret = amb7300tl->DmControl(tfSite, siteIndex);
 									if (ret != 0) goto EndOfTest;
 								}
 								else if (tl->glob->currentSubItemName[siteIndex]->Contains(PHASE_CONST_PATTERN_CONTROL))
@@ -476,6 +508,7 @@ namespace AMB7300_TestLibrary_REV2P0
 										"\t Test Result: " + result.ToString() + tpUnit + "\n");
 
 									// Save to result object
+									tl->glob->TestProperty[siteIndex].IsHardwareInvolved[resultIndex[siteIndex]] = true; //Set true for hardware result duplicate checking
 									TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];// +GetOffset(siteIndex, tIName, TPName);
 									result[siteIndex];
 									resultIndex[siteIndex]++;
@@ -644,6 +677,35 @@ namespace AMB7300_TestLibrary_REV2P0
 										"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
 
 									// Save to result object
+									tl->glob->TestProperty[siteIndex].IsHardwareInvolved[resultIndex[siteIndex]] = true; //Set true for hardware result duplicate checking
+									TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];// +GetOffset(siteIndex, tIName, TPName);
+									resultIndex[siteIndex]++;
+								}
+								else if (currentPhase == PHASE_CONST_VNA_SWTIME)
+								{
+									// Cast condition from 'VnaDataAnalysis' @ AMB7300Utility
+									lineNUM = (gcnew System::Diagnostics::StackFrame(0, true))->GetFileLineNumber();
+									ret = TestLib_TestParameter_VnaDataAnalysis_CastCondition(site, tfSite, siteIndex);
+									if (ret != 0) goto EndOfTest;
+
+									// Execute 'VnaDataAnalysis' phase @ AMB7300
+									result[siteIndex] = (double)CONST_INVALID_RESULT;
+									amb7300tl->VnaDataAnalysis(tfSite, siteIndex, result[siteIndex]);
+									//Util->/(tfSite, timerFilename, lineNUM.ToString() + " VNA_DataAnalysis", 1); //ticktecktock
+
+									// Result logger
+									String ^ tpUnit = tf_TestParameter_Unit(tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]]);
+									amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[VnaDataAnalysis Result] " + "\n" +
+										"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
+										"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
+										"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
+									amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[VnaDataAnalysis Result] " + "\n" +
+										"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
+										"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
+										"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
+
+									// Save to result object
+									tl->glob->TestProperty[siteIndex].IsHardwareInvolved[resultIndex[siteIndex]] = true; //Set true for hardware result duplicate checking
 									TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];// +GetOffset(siteIndex, tIName, TPName);
 									resultIndex[siteIndex]++;
 								}

@@ -275,7 +275,14 @@ namespace Functions
 		**	----------------------------------------------------------------------------------------------------
 		*/
 		int UpdateTestProperty(Site ^ site, int siteIndex);
-	
+
+		/*
+		**	----------------------------------------------------------------------------------------------------
+		**	Update Control Step Test Result To Dicitionary
+		**	----------------------------------------------------------------------------------------------------
+		*/
+		int UpdateControlStepTestResulToDictionary(Site^ site, int siteIndex, String^ Identifier, double CSTestResult);
+
 		/*
 		**	----------------------------------------------------------------------------------------------------
 		**	Update Test Result To techFlow

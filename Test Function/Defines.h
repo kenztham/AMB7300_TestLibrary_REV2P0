@@ -2043,6 +2043,7 @@ Version:		v1.0.0.5
 #define ER_CONST_I2C_VECTOR_READ_BACK_HISTORYRAM_FAIL					-3234
 #define ER_CONST_I2C_VECTOR_READ_BACK_FAILCOUNT_FAIL					-3235
 #define ER_CONST_DM_RUN_VECTOR_FAIL										-3236
+#define ER_CONST_CONFIGURE_DM_OUTPUT_TRIGGER_FAIL						-3237
 /*
 **	----------------------------------------------------------------------------------------------------
 **	DM Related - VectorStateFile Content Checking (DM400Utility.cpp)
@@ -2151,6 +2152,7 @@ Version:		v1.0.0.5
 #define ER_CONST_CONFIGURE_POWERSWEEP_SETTING_FAIL						-3633
 #define ER_CONST_GET_TOTAL_ACTIVE_CHANNEL_FAIL							-3634
 #define ER_CONST_SET_PORT_MATCHING_CIRCUIT_FAIL							-3635
+#define ER_CONST_SWITCHING_TIME_FETCH_DATA_FAIL							-3636
 /*
 **	----------------------------------------------------------------------------------------------------
 **	Helper Function (AMB7300.cpp)
@@ -2165,6 +2167,7 @@ Version:		v1.0.0.5
 */
 #define ER_CONST_UPDATE_TEST_PROPERTY_FAIL								-3801
 #define ER_CONST_UPDATE_RESULT_TO_TF3_FAIL								-3802
+#define ER_CONST_UPDATE_CONTROL_STEP_RESULT_TO_DICT_FAIL				-3803
 #pragma endregion
 
 
@@ -2182,6 +2185,8 @@ Version:		v1.0.0.5
 #define ER_CONST_VNAFETCH_CONDITION_NAME_NOT_FOUND						-4006	
 #define ER_CONST_VNADATAANALYSIS_CONDITION_NAME_NOT_FOUND				-4007	
 #define ER_CONST_MATH_CONDITION_NAME_NOT_FOUND							-4008
+#define ER_CONST_DMCONTROL_CONDITION_NAME_NOT_FOUND						-4009	
+#define ER_CONST_VNASWTIME_CONDITION_NAME_NOT_FOUND						-4010	
 /*
 **	----------------------------------------------------------------------------------------------------
 **	Condition Value Related
@@ -2195,6 +2200,7 @@ Version:		v1.0.0.5
 #define ER_CONST_VNAFETCH_CONDITION_VALUE_INPUT_INVALID					-4106	
 #define ER_CONST_VNADATAANALYSIS_CONDITION_VALUE_INPUT_INVALID			-4107	
 #define ER_CONST_MATH_CONDITION_VALUE_INPUT_INVALID						-4108
+#define ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID				-4109	
 /*
 **	----------------------------------------------------------------------------------------------------
 **	Other @ TestMethod.cpp
@@ -2336,6 +2342,16 @@ Version:		v1.0.0.5
 #define PatternTestConditionName_ReturnIndex							"ReturnIndex"
 /*
 **	----------------------------------------------------------------------------------------------------
+**	Condition Name ---> DmControl
+**	----------------------------------------------------------------------------------------------------
+*/
+#define DmControlConditionName_ControlFunction							"ControlFunction"
+#define DmControlConditionName_ControlFunction_							"ControlFunction_"
+#define DmControlConditionName_ModuleAlias								"ModuleAlias"
+#define DmControlConditionName_TriggerOutput0							"TriggerOutput0"
+#define DmControlConditionName_TriggerOutput1							"TriggerOutput1"
+/*
+**	----------------------------------------------------------------------------------------------------
 **	Condition value selection list ---> Math
 **	----------------------------------------------------------------------------------------------------
 */
@@ -2400,6 +2416,18 @@ Version:		v1.0.0.5
 #define VnaDataAnalysisConditionName_PowerRangeStop_						"PowerRangeStop_"
 #pragma endregion
 
+/*
+**	----------------------------------------------------------------------------------------------------
+**	Condition Name ---> VnaSwTime
+**	----------------------------------------------------------------------------------------------------
+*/
+#define VnaSwTimeConditionName_MeasureType							"MeasureType"
+#define VnaSwTimeConditionName_DMModuleAlias						"DMModuleAlias"
+#define VnaSwTimeConditionName_DMVectorTrigger						"DMVectorTrigger"
+#define VnaSwTimeConditionName_AnalysisSetting						"AnalysisSetting"
+#define VnaSwTimeConditionName_OutputType							"OutputType"
+#define VnaSwTimeConditionName_OutputFormat							"OutputFormat"
+#pragma endregion
 
 #pragma region"AMB7300 Test Libray -> Math Function"
 /*
@@ -2433,6 +2461,7 @@ Version:		v1.0.0.5
 #define Cond_ControlFunction_DM_PMU_DICV								"DICV"
 #define Cond_ControlFunction_DM_PE										"PE"
 #define Cond_ControlFunction_DM_DIO										"DIO"
+#define Cond_ControlFunction_DM_ConfigureOutputTrigger					"ConfigureOutputTrigger"
 #define Cond_ControlFunction_IOM_xxx									""
 #define Cond_ControlFunction_ACM_xxx									""
 #define Cond_ControlFunction_TMU_xxx									""
@@ -2732,7 +2761,7 @@ Version:		v1.0.0.5
 #define Cond_SaveSnpData_SNPFormat_dBAngle								"dB_Angle"
 /*
 **	----------------------------------------------------------------------------------------------------
-**	Condition value selection list ---> VnaDataAnalysis
+**	Condition value selection list ---> VnaDataAnalysis & VnaSwTime
 **	----------------------------------------------------------------------------------------------------
 */
 /* special handle TraceIndex */
@@ -2753,12 +2782,15 @@ Version:		v1.0.0.5
 #define Cond_Function_P1dB												"P1dB"
 #define Cond_Function_P1dBTarget										"P1dBTarget"
 #define Cond_Function_SharedMemoryDataP1dB								"SharedMemoryDataP1dB"
+
 // ms Generic
 #define Cond_AnalysisSetting_GenericMS_Enable_SearchRangeOn				"SearchRangeOn"
 #define Cond_AnalysisSetting_GenericMS_Enable_SearchRangeOff			"SearchRangeOff"
+
 // msMinMax
 #define Cond_AnalysisSetting_MS_Type_Maximum							"Max"
 #define Cond_AnalysisSetting_MS_Type_Minimum							"Min"
+
 // msPeak
 #define Cond_AnalysisSetting_MSPeak_Type_SearchPeak						"SearchPeak"
 #define Cond_AnalysisSetting_MSPeak_Type_SearchMaxPeak					"SearchMaxPeak"
@@ -2768,6 +2800,7 @@ Version:		v1.0.0.5
 #define Cond_AnalysisSetting_MSPeak_PeakPolarity_Positive				"Positive"
 #define Cond_AnalysisSetting_MSPeak_PeakPolarity_Negative				"Negative"
 #define Cond_AnalysisSetting_MSPeak_PeakPolarity_Both					"Both"
+
 // msTarget
 #define Cond_AnalysisSetting_MSTarget_Type_SearchTarget					"SearchTarget"
 #define Cond_AnalysisSetting_MSTarget_Type_SearchTargetLeft				"SearchTargetLeft"
@@ -2778,9 +2811,11 @@ Version:		v1.0.0.5
 #define Cond_AnalysisSetting_MSTarget_TargetTransition_Both				"Both"
 #define Cond_AnalysisSetting_MSTarget_Enable_TargetLineOn				"TargetLineOn"
 #define Cond_AnalysisSetting_MSTarget_Enable_TargetLineOff				"TargetLineOff"
+
 // mmStatistics
 #define Cond_AnalysisSetting_MMStatistics_Enable_StatisticsRangeOn		"StatisticsRangeOn"
 #define Cond_AnalysisSetting_MMStatistics_Enable_StatisticsRangeOff		"StatisticsRangeOff"
+
 // mmBwSearch
 #define Cond_AnalysisSetting_MMBwSearch_Type_Bandpass					"Bandpass"
 #define Cond_AnalysisSetting_MMBwSearch_Type_Notch						"Notch"
@@ -2788,12 +2823,22 @@ Version:		v1.0.0.5
 #define Cond_AnalysisSetting_MMBwSearch_SearchRef_Maximum				"Max"
 #define Cond_AnalysisSetting_MMBwSearch_SearchRef_Minimum				"Min"
 #define Cond_AnalysisSetting_MMBwSearch_SearchRef_Peak					"Peak"	// Keysight VNA
+
 // P1dB
 #define Cond_AnalysisSetting_P1dB_Pin									"Pin"
 #define Cond_AnalysisSetting_P1dB_Pout									"Pout"
 #define Cond_AnalysisSetting_P1dB_Gain									"Gain"
 /* special handle mmBwSearch_BandwidthValue */
 #define Cond_AnalysisSetting_MMBwSearch_Abs_SearchRef_Condition			"Abs"
+
+// VnaSwTime
+#define Cond_AnalysisSetting_VnaSwTime_Rising							"Rising"
+#define Cond_AnalysisSetting_VnaSwTime_Falling							"Falling"
+#define Cond_AnalysisSetting_VnaSwTime_MovingAvgOn						"MovingAvgOn"
+#define Cond_AnalysisSetting_VnaSwTime_MovingAvgOff						"MovingAvgOff"
+#define Cond_AnalysisSetting_VnaSwTime_SearchLimitOn					"SearchLimitOn"
+#define Cond_AnalysisSetting_VnaSwTime_SearchLimitOff					"SearchLimitOff"
+
 // mmFlatness -- NA
 #define Cond_SmoothingSetting_Enable_SmoOn								"SmoOn"
 #define Cond_SmoothingSetting_Enable_SmoOff								"SmoOff"
@@ -2827,6 +2872,14 @@ Version:		v1.0.0.5
 #define Cond_OutputFormat_SmithGJB_CapInduc								"CapInduc"
 #define Cond_OutputFormat_Power_Watt									"Watt"
 #define Cond_OutputFormat_Power_dBm										"dBm"
+#define Cond_OutputFormat_VnaSwTime_Time								"Time"
+#define Cond_OutputFormat_VnaSwTime_MaxPower							"MaxPower"
+#define Cond_OutputFormat_VnaSwTime_MinPower							"MinPower"
+#define Cond_OutputFormat_VnaSwTime_AvgPower							"AvgPower"
+
+// VnaSwTime
+#define Cond_MeasureType_DM_PXIE9852											"DM+PXIE9852"
+
 #pragma endregion
 
 
@@ -2842,8 +2895,11 @@ Version:		v1.0.0.5
 #define PHASE_CONST_PATTERN_TEST										"PatternTest"
 #define PHASE_CONST_VNA_CONFIG											"VnaConfig"
 #define PHASE_CONST_VNA_FETCH											"VnaFetch"
+#define PHASE_CONST_VNA_SWTIME											"VnaSwTime"
+#define PHASE_CONST_VNA_DATA_STORE										"VnaDataStore"
 #define PHASE_CONST_VNA_DATA_ANALYSIS									"VnaDataAnalysis"
 #define PHASE_CONST_MATH												"Math"
+#define PHASE_CONST_DM_CONTROL											"DmControl"
 #pragma endregion
 
 
@@ -3112,6 +3168,7 @@ Version:		v1.0.0.5
 #define Vna_Stimulus_SweepType_LogFreq									"LogFreq"	
 #define Vna_Stimulus_SweepType_Segment									"Segment"	
 #define Vna_Stimulus_SweepType_PowerSweep								"PowerSweep"	
+#define Vna_Stimulus_SweepType_CWTime									"CWTime"	
 #define Vna_SweepType_GetFromStateFile									"GetFromStateFile"	
 #define Vna_SharedMemoryTransfer										"SharedMemoryTransfer"
 #define Vna_SharedMemoryTransfer_PowerSweep								"SharedMemoryTransferPower"
@@ -3451,7 +3508,7 @@ Version:		v1.0.0.5
 
 *** Version	: v1.0.0.5
 *** Date	: 2 September 2026
-*** PIC		: Xuli
+*** PIC		: Xuli & Zhi Kean
 * Updated General constants
 
 *** Version	: v1.0.0.4

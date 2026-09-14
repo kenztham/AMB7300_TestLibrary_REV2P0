@@ -152,7 +152,63 @@ namespace Functions
 	EndOfTest:
 		return ret;
 	}
-	
+
+	/*
+	**	----------------------------------------------------------------------------------------------------
+	**	Update Test Result To Dicitionary
+	**	----------------------------------------------------------------------------------------------------
+	*/
+	int TestFunction::UpdateControlStepTestResulToDictionary(Site^ site, int siteIndex, String^ Identifier, double CSTestResult)
+	{
+		int ret = 0;
+		int tfSite = glob->tf.TestSite;
+		//String ^ Identifier = String::Empty;
+		bool isCurrentTPByPassed = false;
+		String ^ ResultUnit = String::Empty;
+		String ^ ResultUnitPrefix = String::Empty;
+		bool IsInfinityStatus = false;
+		double OffsetFactor = 0.0;
+		String^ key;
+
+		WriteToTracerLogger(glob->tf.TestSite, siteIndex, INFO, "[Update CS Result To Dict] Updating control step result to Dictionary.");
+		WriteToFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update CS Result To Dict] Updating test result to Dictionary.");
+
+		try {
+
+			//Identifier = glob->TestProperty[siteIndex].TestParameterDisplayName[i] + "_S" + siteIndex.ToString();
+			key = Identifier;
+			//OffsetFactor			= GetFixedOffsetValue(tfSite, siteIndex, key);
+			glob->ResultWithDataType[siteIndex].DoubleTypeResult = Convert::ToDouble(CSTestResult);// + OffsetFactor;
+
+			if (glob->TestProperty[siteIndex].TestResults[Identifier] ==
+				glob->TestProperty[siteIndex].PreviousTestResults[Identifier])
+			{
+				glob->ResultWithDataType[siteIndex].DoubleTypeResult = ER_CONST_ERROR_HARDWARE_DUPLICATED_RESULT;
+			}
+
+			if (glob->TestProperty[siteIndex].TestResults->ContainsKey(Identifier))
+			{
+				glob->TestProperty[siteIndex].TestResults[Identifier] = glob->ResultWithDataType[siteIndex].DoubleTypeResult;
+				glob->TestProperty[siteIndex].PreviousTestResults[Identifier] = glob->ResultWithDataType[siteIndex].DoubleTypeResult;
+			}
+			else
+			{
+				glob->TestProperty[siteIndex].TestResults->Add(Identifier, glob->ResultWithDataType[siteIndex].DoubleTypeResult);
+				glob->TestProperty[siteIndex].PreviousTestResults->Add(Identifier, glob->ResultWithDataType[siteIndex].DoubleTypeResult);
+			}
+		}
+		catch (Exception ^ ex)
+		{
+			ret = ER_CONST_UPDATE_CONTROL_STEP_RESULT_TO_DICT_FAIL;
+			WriteToTracerLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateControlStepTestResulToDictionary] Fail to update control step result to Dictionary." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			WriteToFileLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateControlStepTestResulToDictionary] Fail to update control step result to Dictionary." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			goto EndOfTest;
+		}
+
+		EndOfTest:
+		return ret;
+	}
+
 	/*
 	**	----------------------------------------------------------------------------------------------------
 	**	Update Test Result To techFlow
