@@ -226,7 +226,7 @@ namespace AMB7300_TestLibrary_REV2P0
 							}
 
 							// Execute 'VnaConfig' phase @ AMB7300
-							ret = amb7300tl->VnaConfig(tfSite, vnaSiteIndex);
+							//ret = amb7300tl->VnaConfig(tfSite, vnaSiteIndex);
 							if (ret != 0) goto EndOfTest;
 
 						}
@@ -448,7 +448,7 @@ namespace AMB7300_TestLibrary_REV2P0
 									if (ret != 0) goto EndOfTest;
 
 									// Execute 'VnaConfig' phase @ AMB7300SR
-									ret = amb7300tl->VnaConfig(tfSite, siteIndex);
+									//ret = amb7300tl->VnaConfig(tfSite, siteIndex);
 									if (ret != 0) goto EndOfTest;
 								}
 								else if (tl->glob->currentSubItemName[siteIndex]->Contains(PHASE_CONST_VNA_FETCH))
@@ -466,6 +466,28 @@ namespace AMB7300_TestLibrary_REV2P0
 									{
 										ret = amb7300tl->SaveToTouchstoneFile(site, tfSite, siteIndex);
 										if (ret != 0) goto EndOfTest;
+									}
+								}
+								else if (tl->glob->currentSubItemName[siteIndex]->Contains(PHASE_CONST_VNA_DATA_STORE))
+								{
+									for (int l_siteIndex = 0; l_siteIndex < tl->glob->tf.NumberOfTestSites; l_siteIndex++)
+									{
+										if (site->UUTOffsetResolver->UUTOffsets[l_siteIndex]->Active)
+										{
+											String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + l_siteIndex;
+
+											// Cast condition from 'VnaDataAnalysis' @ AMB7300Utility
+											ret = TestLib_TestParameter_VnaDataStore_CastCondition(site, tfSite, l_siteIndex);
+											if (ret != 0) goto EndOfTest;
+
+											// Execute 'VnaDataAnalysis' phase @ AMB7300
+											result[l_siteIndex] = (double)CONST_INVALID_RESULT;
+											amb7300tl->VnaDataAnalysis_TrueParallel(tfSite, l_siteIndex, result[l_siteIndex]);
+
+											// Save to Dictionary
+											ret = tl->UpdateControlStepTestResulToDictionary(site, l_siteIndex, identifier, result[l_siteIndex]);
+
+										}
 									}
 								}
 							}
@@ -685,12 +707,12 @@ namespace AMB7300_TestLibrary_REV2P0
 								{
 									// Cast condition from 'VnaDataAnalysis' @ AMB7300Utility
 									lineNUM = (gcnew System::Diagnostics::StackFrame(0, true))->GetFileLineNumber();
-									ret = TestLib_TestParameter_VnaDataAnalysis_CastCondition(site, tfSite, siteIndex);
+									ret = TestLib_TestParameter_VnaSwTime_CastCondition(site, tfSite, siteIndex);
 									if (ret != 0) goto EndOfTest;
 
 									// Execute 'VnaDataAnalysis' phase @ AMB7300
 									result[siteIndex] = (double)CONST_INVALID_RESULT;
-									amb7300tl->VnaDataAnalysis(tfSite, siteIndex, result[siteIndex]);
+									amb7300tl->VnaSwTime(tfSite, siteIndex, result[siteIndex]);
 									//Util->/(tfSite, timerFilename, lineNUM.ToString() + " VNA_DataAnalysis", 1); //ticktecktock
 
 									// Result logger

@@ -5,8 +5,9 @@ Purpose:		Contain AMB7300 platform utility functions
 Version:		v1.0.0.6
 ----------------------------------------------------------------------*/
 
-
+#define _USE_MATH_DEFINES
 #include "AMB7300.h"
+#include <math.h>
 
 namespace Functions
 {
@@ -199,8 +200,12 @@ namespace Functions
 		
 		for (int siteIndex = 0; siteIndex < tl->glob->tf.NumberOfTestSites; siteIndex++)
 		{
-			ret = InitializeVna(tfSite, siteIndex);
+			//ret = InitializeVna(tfSite, siteIndex);
 			if (ret != 0) goto EndOfTest;
+
+			ret =  InitializeExtModule(tfSite, siteIndex);
+			if (ret != 0) goto EndOfTest;
+
 		}
 
 #pragma endregion
@@ -229,7 +234,7 @@ namespace Functions
 			
 			for (int siteIndex = 0; siteIndex < tl->glob->tf.NumberOfTestSites; siteIndex++)
 			{
-				ret = InitializeAmSeriesResource(tfSite, siteIndex);
+				//ret = InitializeAmSeriesResource(tfSite, siteIndex);
 				if (ret != 0) goto EndOfTest;
 			}
 		}
@@ -244,7 +249,7 @@ namespace Functions
 		
 			for (int siteIndex = 0; siteIndex < tl->glob->tf.NumberOfTestSites; siteIndex++)
 			{
-				ret = InitializeDmSeriesResource(tfSite, siteIndex);
+				//ret = InitializeDmSeriesResource(tfSite, siteIndex);
 				if (ret != 0) goto EndOfTest;
 			}
 		}
@@ -397,47 +402,47 @@ namespace Functions
 #pragma endregion
 
 		int siteIndex = 0;
-
-#pragma region "Get Current Channel and Trace Info"
-
-		if (sysConfigInfo.moduleConfigurationName == VnaModel_CMT_SC5090)
-		{
-			ret = GetChannelandTraceSetting_CMT(tfSite, siteIndex);
-			if (ret != 0) goto EndOfTest;
-		}
-		else if (sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
-		{
-			
-			ret = GetChannelandTraceSetting_Keysight(tfSite, siteIndex);
-			if (ret != 0) goto EndOfTest;
-
-			//SharedMemoryTransfer
-			if(tl->glob->tf.ProjectType == int(ProjectType::SingleTFSiteMultiUUTOffsetSharedVNA))
-			{
-				tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[VnaFetch -> KeysightVnaUtility -> ConfigureChannelCoupling_Keysight] . ");
-				tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[VnaFetch -> KeysightVnaUtility -> ConfigureChannelCoupling_Keysight] . ");
-				
-				ret = ConfigureChannelCoupling_Keysight(tfSite, siteIndex);
-				if (ret != 0) goto EndOfTest;
-			}
-		}
-
-#pragma endregion
-
-#pragma region "Set Port Matching circuit to Port"
-		if (sysConfigInfo.moduleConfigurationName == VnaModel_CMT_SC5090)
-		{
-			ret = SetPortMatchingCircuit_CMT(tfSite, siteIndex);
-			if (ret != 0) goto EndOfTest;
-		}
-		else if (sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
-		{
-			ret = SetPortMatchingCircuit_Keysight(tfSite, siteIndex);
-			if (ret != 0) goto EndOfTest;
-		}
-		
-#pragma endregion
-
+//
+//#pragma region "Get Current Channel and Trace Info"
+//
+//		if (sysConfigInfo.moduleConfigurationName == VnaModel_CMT_SC5090)
+//		{
+//			ret = GetChannelandTraceSetting_CMT(tfSite, siteIndex);
+//			if (ret != 0) goto EndOfTest;
+//		}
+//		else if (sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
+//		{
+//			
+//			ret = GetChannelandTraceSetting_Keysight(tfSite, siteIndex);
+//			if (ret != 0) goto EndOfTest;
+//
+//			//SharedMemoryTransfer
+//			if(tl->glob->tf.ProjectType == int(ProjectType::SingleTFSiteMultiUUTOffsetSharedVNA))
+//			{
+//				tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[VnaFetch -> KeysightVnaUtility -> ConfigureChannelCoupling_Keysight] . ");
+//				tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[VnaFetch -> KeysightVnaUtility -> ConfigureChannelCoupling_Keysight] . ");
+//				
+//				ret = ConfigureChannelCoupling_Keysight(tfSite, siteIndex);
+//				if (ret != 0) goto EndOfTest;
+//			}
+//		}
+//
+//#pragma endregion
+//
+//#pragma region "Set Port Matching circuit to Port"
+//		if (sysConfigInfo.moduleConfigurationName == VnaModel_CMT_SC5090)
+//		{
+//			ret = SetPortMatchingCircuit_CMT(tfSite, siteIndex);
+//			if (ret != 0) goto EndOfTest;
+//		}
+//		else if (sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
+//		{
+//			ret = SetPortMatchingCircuit_Keysight(tfSite, siteIndex);
+//			if (ret != 0) goto EndOfTest;
+//		}
+//		
+//#pragma endregion
+//
 		// Spare for future use
 #pragma region "Get total num of Channel from TestRecipe > VnaFetch Conditions"
 		//int TestRecipeUsedChannel_Count = 0;
@@ -3062,6 +3067,484 @@ namespace Functions
 					result = (double)CONST_INVALID_RESULT;
 				}
 			}
+			else if (vnaDataAnalysisTPC.function == Cond_Function_TraceData_Sds)
+			{
+				if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+				{
+					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaDataAnalysis -> CopperMountainVnaUtility -> GetTraceFormatData_CMT] Get trace format data.");
+					tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaDataAnalysis -> CopperMountainVnaUtility -> GetTraceFormatData_CMT] Get trace format data.");
+					// Get trace format data
+					ret = GetTraceFormatData_CMT_Sds(tfSite, vnaSiteIndex);
+					if (ret != 0) goto EndOfTest;
+
+					// Assign data
+					double l_Real = 0.0; //for S21 & S11
+					double l_Imag = 0.0; //for S21 & S11
+					double delta_Real = 0.0;
+					double delta_Imag = 0.0;
+					double normalized = 0.0;
+					double Compare_Value0 = 0.0;
+					double Compare_Value1 = 0.0;
+					int FristCount = 0;
+					if (analysisSetting.TraceData_Sds_SearchRangeEnable[0] == Cond_AnalysisSetting_TraceData_Sds_SdsSearch)
+					{
+
+						if (analysisSetting.TraceData_Sds_SearchType[0] == "Min")
+						{
+
+							for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+							{
+								if ((traceFormatData->freqPoint[vnaSiteIndex, j] >= vnaDataAnalysisTPC.testFreqRangeStart[0]) &&
+									(traceFormatData->freqPoint[vnaSiteIndex, j] <= vnaDataAnalysisTPC.testFreqRangeStop[0]))
+								{
+									delta_Real = traceFormatData->S21Real[vnaSiteIndex, j] - traceFormatData->S21Real2[vnaSiteIndex, j];
+									delta_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j] - traceFormatData->S21Imaginary2[vnaSiteIndex, j];
+									normalized = (sqrt(delta_Real * delta_Real + delta_Imag * delta_Imag)) / (sqrt(2));
+
+
+									if ((normalized > 0) && (FristCount == 0))
+									{
+										Compare_Value0 = 20 * (std::log10(normalized)); //change to dB
+										FristCount++;
+									}
+									else if (normalized > 0)
+									{
+										Compare_Value1 = 20 * (std::log10(normalized));
+										if (Compare_Value0 <= Compare_Value1)
+										{
+											result = Compare_Value0;
+										}
+										else
+										{
+											Compare_Value0 = Compare_Value1;
+											result = Compare_Value0;
+										}
+									}
+
+								}
+							}
+						}
+						else if (analysisSetting.TraceData_Sds_SearchType[0] == "Max")
+						{
+
+							for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+							{
+								if ((traceFormatData->freqPoint[vnaSiteIndex, j] >= vnaDataAnalysisTPC.testFreqRangeStart[0]) &&
+									(traceFormatData->freqPoint[vnaSiteIndex, j] <= vnaDataAnalysisTPC.testFreqRangeStop[0]))
+								{
+									delta_Real = traceFormatData->S21Real[vnaSiteIndex, j] - traceFormatData->S21Real2[vnaSiteIndex, j];
+									delta_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j] - traceFormatData->S21Imaginary2[vnaSiteIndex, j];
+									normalized = (std::sqrt(delta_Real * delta_Real + delta_Imag * delta_Imag)) / (std::sqrt(2));
+
+									if ((normalized > 0) && (FristCount == 0))
+									{
+										Compare_Value0 = 20 * (std::log10(normalized)); //change to dB
+										FristCount++;
+									}
+									else if (normalized > 0)
+									{
+										Compare_Value1 = 20 * (std::log10(normalized));
+										if (Compare_Value0 >= Compare_Value1)
+										{
+											result = Compare_Value0;
+										}
+										else
+										{
+											Compare_Value0 = Compare_Value1;
+											result = Compare_Value0;
+										}
+									}
+
+								}
+							}
+						}
+						else if (analysisSetting.TraceData_Sds_SearchType[0] == "FixedFreq")
+						{
+							//test freq <= centerFreq,search from start, test freq > centerFreq,search from stop, 
+							double centerFreq = (traceFormatData->freqPoint[vnaSiteIndex, 0] + traceFormatData->freqPoint[vnaSiteIndex, (traceFormatData->totalFreqPoints - 1)]) / 2;
+							//	double centerFreq = (vnaDataAnalysisTPC.testFreqRangeStart[0] + vnaDataAnalysisTPC.testFreqRangeStop[0]) / 2;
+							if (vnaDataAnalysisTPC.testFreq[0] <= centerFreq)
+							{
+								for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+								{
+									if (traceFormatData->freqPoint[vnaSiteIndex, j] == vnaDataAnalysisTPC.testFreq[0])
+									{
+										delta_Real = traceFormatData->S21Real[vnaSiteIndex, j] - traceFormatData->S21Real2[vnaSiteIndex, j];
+										delta_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j] - traceFormatData->S21Imaginary2[vnaSiteIndex, j];
+										normalized = (std::sqrt(delta_Real * delta_Real + delta_Imag * delta_Imag)) / (std::sqrt(2));
+										result = 20 * (std::log10(normalized)); //change to dB
+
+									}
+								}
+							}
+							else
+							{
+								for (int j = traceFormatData->totalFreqPoints - 1; j >= 0; j--)
+								{
+									if (traceFormatData->freqPoint[vnaSiteIndex, j] == vnaDataAnalysisTPC.testFreq[0])
+									{
+										delta_Real = traceFormatData->S21Real[vnaSiteIndex, j] - traceFormatData->S21Real2[vnaSiteIndex, j];
+										delta_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j] - traceFormatData->S21Imaginary2[vnaSiteIndex, j];
+										//normalized = ((delta_Real * delta_Real) + (delta_Imag * delta_Imag)) / (std::sqrt(2));
+										normalized = (std::sqrt(delta_Real * delta_Real + delta_Imag * delta_Imag)) / (std::sqrt(2));
+										result = 20 * (std::log10(normalized)); //change to dB
+
+									}
+								}
+							}
+
+						}
+
+					}
+					else if (analysisSetting.TraceData_Sds_SearchRangeEnable[0] == Cond_AnalysisSetting_TraceData_Sds_Sdd22Search)
+					{
+						if (analysisSetting.TraceData_Sds_SearchType[0] == "Max")
+						{
+
+							for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+							{
+								if ((traceFormatData->freqPoint[vnaSiteIndex, j] >= vnaDataAnalysisTPC.testFreqRangeStart[0]) &&
+									(traceFormatData->freqPoint[vnaSiteIndex, j] <= vnaDataAnalysisTPC.testFreqRangeStop[0]))
+								{
+									//delta_Real = (traceFormatData->S22Real[vnaSiteIndex, j] - traceFormatData->S21Rea23[vnaSiteIndex, j] - traceFormatData->S12Rea23[vnaSiteIndex, j] + traceFormatData->S22Rea13[vnaSiteIndex, j]) / 2;
+									//delta_Imag = (traceFormatData->S22Imaginary[vnaSiteIndex, j] - traceFormatData->S21Imaginary4[vnaSiteIndex, j] - traceFormatData->S12Imaginary4[vnaSiteIndex, j] + traceFormatData->S22Imaginary3[vnaSiteIndex, j]) / 2;
+									delta_Real = (traceFormatData->S11Real[vnaSiteIndex, j] - traceFormatData->S21Real[vnaSiteIndex, j] - traceFormatData->S12Real[vnaSiteIndex, j] + traceFormatData->S22Real[vnaSiteIndex, j])/2 ;
+									delta_Imag = (traceFormatData->S11Imaginary[vnaSiteIndex, j] - traceFormatData->S21Imaginary[vnaSiteIndex, j] - traceFormatData->S12Imaginary[vnaSiteIndex, j] + traceFormatData->S22Imaginary[vnaSiteIndex, j])/2 ;
+									//normalized = (sqrt(delta_Real * delta_Real + delta_Imag * delta_Imag)) / 2;
+									normalized = (sqrt(delta_Real * delta_Real + delta_Imag * delta_Imag));
+
+									if ((normalized > 0) && (FristCount == 0))
+									{
+										Compare_Value0 = 20 * log10(normalized); //change to dB
+										FristCount++;
+									}
+									else if (normalized > 0)
+									{
+										Compare_Value1 = 20 * log10(normalized);
+										if (Compare_Value0 >= Compare_Value1)
+										{
+											result = Compare_Value0;
+										}
+										else
+										{
+											Compare_Value0 = Compare_Value1;
+											result = Compare_Value0;
+										}
+									}
+
+								}
+							}
+						}
+
+					}
+					else if (analysisSetting.TraceData_Sds_SearchRangeEnable[0] == Cond_AnalysisSetting_TraceData_Sds_AmpImbalance)
+					{
+						if (analysisSetting.TraceData_Sds_SearchType[0] == "Max")
+						{
+
+							for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+							{
+								if ((traceFormatData->freqPoint[vnaSiteIndex, j] >= vnaDataAnalysisTPC.testFreqRangeStart[0]) &&
+									(traceFormatData->freqPoint[vnaSiteIndex, j] <= vnaDataAnalysisTPC.testFreqRangeStop[0]))
+								{
+									//delta_Real = traceFormatData->S21Real[vnaSiteIndex, j] - traceFormatData->S21Real2[vnaSiteIndex, j];
+									//delta_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j] - traceFormatData->S21Imaginary2[vnaSiteIndex, j];
+									//normalized = sqrt(delta_Real * delta_Real + delta_Imag * delta_Imag);
+
+									// 一次性计算幅度不平衡度，直接赋给 normalized,normalized = fabs( 20 * log10( sqrt( S21_real² + S21_imag² ) )-20 * log10(sqrt(S31_real² + S31_imag²)) );
+									normalized = fabs(20 * log10(sqrt(traceFormatData->S21Real[vnaSiteIndex, j] * traceFormatData->S21Real[vnaSiteIndex, j]
+										+ traceFormatData->S21Imaginary[vnaSiteIndex, j] * traceFormatData->S21Imaginary[vnaSiteIndex, j]))
+										- 20 * log10(sqrt(traceFormatData->S21Real2[vnaSiteIndex, j] * traceFormatData->S21Real2[vnaSiteIndex, j]
+											+ traceFormatData->S21Imaginary2[vnaSiteIndex, j] * traceFormatData->S21Imaginary2[vnaSiteIndex, j])));
+
+
+									if ((normalized > 0) && (FristCount == 0))
+									{
+										//Compare_Value0 = abs(20 * log10(normalized)); //change to dB
+										Compare_Value0 = normalized;
+										FristCount++;
+									}
+									else if (normalized > 0)
+									{
+										//Compare_Value1 = abs(20 * log10(normalized));
+										Compare_Value1 = normalized;
+										if (Compare_Value0 >= Compare_Value1)
+										{
+											result = Compare_Value0;
+										}
+										else
+										{
+											Compare_Value0 = Compare_Value1;
+											result = Compare_Value0;
+										}
+									}
+
+								}
+							}
+						}
+					}
+					else if (analysisSetting.TraceData_Sds_SearchRangeEnable[0] == Cond_AnalysisSetting_TraceData_Sds_PhaseImbalance)
+					{
+						double Phase_Angle_S21 = 0.0;
+						double Phase_Angle_S31 = 0.0;
+						double Angle_S21_Pre = 0.0;
+						double Angle_S31_Pre = 0.0;
+						double UnwrapAngle_S21 = 0.0;
+						double UnwrapAngle_S31 = 0.0;
+						double Diff_S21 = 0.0;
+						double Diff_S31 = 0.0;
+						if (analysisSetting.TraceData_Sds_SearchType[0] == "Max")
+						{
+
+							for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+							{
+								if ((traceFormatData->freqPoint[vnaSiteIndex, j] >= vnaDataAnalysisTPC.testFreqRangeStart[0]) &&
+									(traceFormatData->freqPoint[vnaSiteIndex, j] <= vnaDataAnalysisTPC.testFreqRangeStop[0]))
+								{
+									//change to Phase Angle
+									Phase_Angle_S21 = (atan2(traceFormatData->S21Imaginary[vnaSiteIndex, j], traceFormatData->S21Real[vnaSiteIndex, j])) * 180 / M_PI;
+									Phase_Angle_S31 = (atan2(traceFormatData->S21Imaginary2[vnaSiteIndex, j], traceFormatData->S21Real2[vnaSiteIndex, j])) * 180 / M_PI;
+									//unwrap angle
+									if (FristCount == 0)
+									{
+										Angle_S21_Pre = Phase_Angle_S21;
+										Angle_S31_Pre = Phase_Angle_S31;
+
+									}
+									else
+									{
+										Diff_S21 = Phase_Angle_S21 - Angle_S21_Pre;
+										Diff_S31 = Phase_Angle_S31 - Angle_S31_Pre;
+										if (Diff_S21 > 180)
+										{
+											Phase_Angle_S21 -= 360;
+										}
+										else if (Diff_S21 < -180)
+										{
+											Phase_Angle_S21 += 360;
+										}
+
+										if (Diff_S31 > 180)
+										{
+											Phase_Angle_S31 -= 360;
+										}
+										else if (Diff_S31 < -180)
+										{
+											Phase_Angle_S31 += 360;
+										}
+										//set Pre value
+										Angle_S21_Pre = Phase_Angle_S21;
+										Angle_S31_Pre = Phase_Angle_S31;
+									}
+
+									// calculat Max Value
+									if (FristCount == 0)
+									{
+										//Compare_Value0 = 180 - abs(Phase_Angle_S21 - Phase_Angle_S31);
+										Compare_Value0 = abs(Phase_Angle_S21 - Phase_Angle_S31 - 180);
+										FristCount++;
+									}
+									else
+									{
+										Compare_Value1 = abs(Phase_Angle_S21 - Phase_Angle_S31 - 180);
+										if (Compare_Value0 >= Compare_Value1)
+										{
+											result = Compare_Value0;
+										}
+										else
+										{
+											Compare_Value0 = Compare_Value1;
+											result = Compare_Value0;
+										}
+									}
+
+
+								}
+							}
+						}
+					}
+					else if (analysisSetting.TraceData_Sds_SearchRangeEnable[0] == Cond_AnalysisSetting_TraceData_Sds_ComRejectRatio)
+					{
+
+						double add_normalized = 0.0;
+						double add_Real = 0.0;
+						double add_Imag = 0.0;
+						double dB_Value = 0.0;
+						double add_dB_Value = 0.0;
+
+						if (analysisSetting.TraceData_Sds_SearchType[0] == "Min")
+						{
+							for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+							{
+								if ((traceFormatData->freqPoint[vnaSiteIndex, j] >= vnaDataAnalysisTPC.testFreqRangeStart[0]) &&
+									(traceFormatData->freqPoint[vnaSiteIndex, j] <= vnaDataAnalysisTPC.testFreqRangeStop[0]))
+								{
+									delta_Real = traceFormatData->S21Real[vnaSiteIndex, j] - traceFormatData->S21Real2[vnaSiteIndex, j];
+									delta_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j] - traceFormatData->S21Imaginary2[vnaSiteIndex, j];
+									normalized = (sqrt(delta_Real * delta_Real + delta_Imag * delta_Imag)) / (sqrt(2));
+									dB_Value = 20 * log10(normalized);
+
+									add_Real = traceFormatData->S21Real[vnaSiteIndex, j] + traceFormatData->S21Real2[vnaSiteIndex, j];
+									add_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j] + traceFormatData->S21Imaginary2[vnaSiteIndex, j];
+									add_normalized = (sqrt(add_Real * add_Real + add_Imag * add_Imag)) / (sqrt(2));
+									add_dB_Value = 20 * log10(add_normalized);
+
+									if ((normalized > 0) && (FristCount == 0))
+									{
+										Compare_Value0 = abs(dB_Value - add_dB_Value);
+										FristCount++;
+									}
+									else if (normalized > 0)
+									{
+										Compare_Value1 = abs(dB_Value - add_dB_Value);
+										if (Compare_Value0 <= Compare_Value1)
+										{
+											result = Compare_Value0;
+										}
+										else
+										{
+											Compare_Value0 = Compare_Value1;
+											result = Compare_Value0;
+										}
+									}
+
+								}
+							}
+						}
+
+					}
+					else if (analysisSetting.TraceData_Sds_SearchRangeEnable[0] == Cond_AnalysisSetting_TraceData_Sds_S21Search)
+					{
+
+						if (analysisSetting.TraceData_Sds_SearchType[0] == "FixedFreq")
+						{
+							double	incidentPower_dBm = 0.0 dBm;
+							//test freq <= centerFreq,search from start, test freq > centerFreq,search from stop, 
+							double centerFreq = (traceFormatData->freqPoint[vnaSiteIndex, 0] + traceFormatData->freqPoint[vnaSiteIndex, (traceFormatData->totalFreqPoints - 1)]) / 2;
+							//	double centerFreq = (vnaDataAnalysisTPC.testFreqRangeStart[0] + vnaDataAnalysisTPC.testFreqRangeStop[0]) / 2;
+							if (vnaDataAnalysisTPC.testFreq[0] <= centerFreq)
+							{
+								for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+								{
+									if (traceFormatData->freqPoint[vnaSiteIndex, j] == vnaDataAnalysisTPC.testFreq[0])
+									{
+										l_Real = traceFormatData->S21Real[vnaSiteIndex, j];
+										l_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j];
+										normalized = sqrt(l_Real * l_Real + l_Imag * l_Imag);
+										result = 20 * (log10(normalized)); //change to dB
+
+									}
+								}
+							}
+							else
+							{
+								for (int j = traceFormatData->totalFreqPoints - 1; j >= 0; j--)
+								{
+									if (traceFormatData->freqPoint[vnaSiteIndex, j] == vnaDataAnalysisTPC.testFreq[0])
+									{
+										l_Real = traceFormatData->S21Real[vnaSiteIndex, j];
+										l_Imag = traceFormatData->S21Imaginary[vnaSiteIndex, j];
+										normalized = sqrt(l_Real * l_Real + l_Imag * l_Imag);
+										result = 20 * (log10(normalized)); //change to dB
+
+									}
+								}
+							}
+
+						}
+
+					}
+					else if (analysisSetting.TraceData_Sds_SearchRangeEnable[0] == Cond_AnalysisSetting_TraceData_Sds_S11Search)
+					{
+
+						if (analysisSetting.TraceData_Sds_SearchType[0] == "Max")
+						{
+
+							for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+							{
+								if ((traceFormatData->freqPoint[vnaSiteIndex, j] >= vnaDataAnalysisTPC.testFreqRangeStart[0]) &&
+									(traceFormatData->freqPoint[vnaSiteIndex, j] <= vnaDataAnalysisTPC.testFreqRangeStop[0]))
+								{
+									l_Real = traceFormatData->S11Real[vnaSiteIndex, j];
+									l_Imag = traceFormatData->S11Imaginary[vnaSiteIndex, j];
+									normalized = sqrt(l_Real * l_Real + l_Imag * l_Imag);
+
+
+									if ((normalized > 0) && (FristCount == 0))
+									{
+										Compare_Value0 = 20 * (log10(normalized)); //change to dB
+										FristCount++;
+									}
+									else if (normalized > 0)
+									{
+										Compare_Value1 = 20 * (log10(normalized));
+										if (Compare_Value0 >= Compare_Value1)
+										{
+											result = Compare_Value0;
+										}
+										else
+										{
+											Compare_Value0 = Compare_Value1;
+											result = Compare_Value0;
+										}
+									}
+
+								}
+							}
+						}
+						else if (analysisSetting.TraceData_Sds_SearchType[0] == "Min")
+						{
+
+							for (int j = 0; j < traceFormatData->totalFreqPoints; j++)
+							{
+								if ((traceFormatData->freqPoint[vnaSiteIndex, j] >= vnaDataAnalysisTPC.testFreqRangeStart[0]) &&
+									(traceFormatData->freqPoint[vnaSiteIndex, j] <= vnaDataAnalysisTPC.testFreqRangeStop[0]))
+								{
+									l_Real = traceFormatData->S11Real[vnaSiteIndex, j];
+									l_Imag = traceFormatData->S11Imaginary[vnaSiteIndex, j];
+									normalized = sqrt(l_Real * l_Real + l_Imag * l_Imag);
+
+
+									if ((normalized > 0) && (FristCount == 0))
+									{
+										Compare_Value0 = 20 * (log10(normalized)); //change to dB
+										FristCount++;
+									}
+									else if (normalized > 0)
+									{
+										Compare_Value1 = 20 * (log10(normalized));
+										if (Compare_Value0 <= Compare_Value1)
+										{
+											result = Compare_Value0;
+										}
+										else
+										{
+											Compare_Value0 = Compare_Value1;
+											result = Compare_Value0;
+										}
+									}
+
+								}
+							}
+						}
+
+					}
+
+					// If target test freq does not exists in the segment range
+					if (result == (double)CONST_INVALID_RESULT)
+					{
+						result = (double)CONST_INVALID_RESULT;
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[VnaDataAnalysis -> CopperMountainVnaUtility -> GetTraceFormatData] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[VnaDataAnalysis -> CopperMountainVnaUtility -> GetTraceFormatData] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+				}
+				else
+				{
+					result = (double)CONST_INVALID_RESULT;
+				}
+			}
 		}
 		else if (sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
 		{
@@ -4539,117 +5022,637 @@ namespace Functions
 		return ret;
 	}
 
-
 	int AMB7300TestLibrary::VnaSwTime(int tfSite, int vnaSiteIndex, double % result)
 	{
-		/*****************************************************************************************************
-		** VnaDataAnalysis
-		**		tfSite			- This is techFlow site index.
-		**		vnaSiteIndex	- This is VNA object index, normally start from 0.
-		**		result			- Return test result.
-		**
-		** Descriptions:
-		**		This is a function to execute 'VnaDataAnalysis' phase.
-		******************************************************************************************************/
-
-		/*	Info
-		**	LogMag		--> SFP 1x parameter	--> API return as real raw
-		**	SWR			--> SFP 1x parameter	--> API return as real raw
-		**	Phase		--> SFP 1x parameter	--> API return as real raw
-		**	ExPhase		--> SFP 1x parameter	--> API return as real raw
-		**	Delay		--> SFP 1x parameter	--> API return as real raw
-		**	LinMag		--> SFP 1x parameter	--> API return as real raw
-		**	Reak		--> SFP 1x parameter	--> API return as real raw
-		**	Imag		--> SFP 1x parameter	--> API return as real raw
-		**	SmithLog	--> SFP 2x parameter	--> [wrapper special handle] API return: 1st para as real raw | 2nd para as imag raw
-		**	SmithLin	--> SFP 2x parameter	--> [wrapper special handle] (error)return wrong												!
-		**	SmithReIm	--> SFP 2x parameter	--> API return: 1st para as real raw | 2nd para as imag raw
-		**	SmithR+JX	--> SFP 2x parameter	--> API return: 1st para as real raw | 2nd para as imag raw | (error)does not have 3rd para		!
-		**	SmithG+JB	--> SFP 2x parameter	--> API return: 1st para as real raw | 2nd para as imag raw | (error)does not have 3rd para		!
-		**	PolarLog	--> SFP 2x parameter	--> [wrapper special handle] API return: 1st para as real raw | 2nd para as imag raw
-		**	PolarLin	--> SFP 2x parameter	--> [wrapper special handle] (error)return wrong												!
-		**	PolarReIm	--> SFP 2x parameter	--> API return: 1st para as real raw | 2nd para as imag raw
-		*/
-
-		// Local variable
 		int ret = 0;
 		result	= (double)CONST_INVALID_RESULT;
 
 		tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime] Executing 'VnaSwTime' phase.");
-		tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime] Executing 'VnaSwTime' phase.");
 
-		if (sysConfigInfo.moduleConfigurationName == VnaModel_CMT_SC5090)
+		if (sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
 		{
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime -> CopperMountainVnaUtility] Run the Switching Time test.");
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime -> CopperMountainVnaUtility]  Run the Switching Time test.");
-			
-		}
-		else if (sysConfigInfo.moduleConfigurationName == VnaModel_Keysight_M9804A)
-		{
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime -> KeysightVnaUtility] Run the Switching Time test.");
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, INFO, "[VnaSwTime -> KeysightVnaUtility] Run the Switching Time test.");
-		
-			// Execute data analysis function
 			if (vnaSwTimeTPC.measureType == Cond_MeasureType_DM_PXIE9852)
 			{
 				bool IsDone0 = false;
 				int c_as = 0;
 
-				pXIe9852_Info->aitask0->Start();
-
-				ret = DmRunVector(tfSite, tfSite,vnaSwTimeTPC.dmModuleAlias,vnaSwTimeTPC.dmVectorTrigger);
-				if (ret != 0)
+				try
 				{
-					pXIe9852_Info->aitask0->Stop();
-					goto EndOfTest;
-				}
-
-				while (!IsDone0)
-				{
-					//util->WaitSecond(1 mS);
-
-					if (pXIe9852_Info->aitask0->AvailableSamples >= pXIe9852_Info->sampleNumber)
+					if (!tl->glob->AWV.Offline)
 					{
-						IsDone0 = true;
-					}
-					c_as++;
-					if (c_as >= 10)
-					{
-						IsDone0 = true;
-					}
-				}
-				if (c_as < 10)
-				{
-					pXIe9852_Info->aitask0->ReadData(pXIe9852_Info->readValue0, 5000 mS);//-1
+						pXIe9852_Info->aitask0->Start();
 
-					int j = 0;
-
-					for (int i = 0; i < pXIe9852_Info->readValue0->Length; i++)
-					{
-						if (i % 2 == 0)
+						ret = DmRunVector(tfSite, tfSite, vnaSwTimeTPC.dmModuleAlias, vnaSwTimeTPC.dmVectorTrigger);
+						if (ret != 0)
 						{
-							pXIe9852_Info->readValueSite0[j] = pXIe9852_Info->readValue0[i]; //readValueSite0
+							pXIe9852_Info->aitask0->Stop();
+							goto EndOfTest;
 						}
-						else
+
+						while (!IsDone0)
 						{
-							pXIe9852_Info->readValueSite1[j] = pXIe9852_Info->readValue0[i]; //readValueSite1
-							j++;
+							if (pXIe9852_Info->aitask0->AvailableSamples >= pXIe9852_Info->sampleNumber) IsDone0 = true;
+							c_as++;
+							if (c_as >= 10) IsDone0 = true;
 						}
+
+						if (c_as < 10)
+						{
+							pXIe9852_Info->aitask0->ReadData(pXIe9852_Info->readValue0, 5000 mS);
+
+							// Separate Port 1 (readValueSite0)
+							int sampleCount = 0;
+							for (int i = 0; i < pXIe9852_Info->readValue0->Length; i += 2)
+							{
+								pXIe9852_Info->readValueSite0[sampleCount] = pXIe9852_Info->readValue0[i];
+								sampleCount++;
+							}
+
+							if (sampleCount > 0)
+							{
+								// 1. Lookup Table (mV to dBm)
+								cli::array<double, 2>^ lookupTable = gcnew cli::array<double, 2> {
+									{ 354.00, 5.0 }, { 391.23,   0.0 }, { 406.25,  -1.0 },
+									{ 420.41,  -2.0 }, { 436.27,  -3.0 }, { 454.83,  -4.0 },
+									{ 464.60,  -4.5 }, { 474.12,  -5.0 }, { 581.18, -10.0 },
+									{ 805.30, -20.0 }, { 1028.68, -30.0 }, { 1255.00, -40.0 },
+									{ 1358.76, -45.0 }, { 1457.76, -50.0 }
+								};
+								int tableRows = lookupTable->GetLength(0);
+
+								// 2. Convert Voltage to dBm Array
+								cli::array<double>^ dbmArray = gcnew cli::array<double>(sampleCount);
+								double max_dBm = -9999.0;
+								double min_dBm = 9999.0;
+								double sumVoltage = 0.0;
+
+								for (int count = 0; count < sampleCount; count++)
+								{
+									double vol_mV = pXIe9852_Info->readValueSite0[count] * 1000.0;
+									sumVoltage += pXIe9852_Info->readValueSite0[count];
+									double curr_dBm = 0.0;
+
+									if (vol_mV <= lookupTable[0, 0]) curr_dBm = lookupTable[0, 1];
+									else if (vol_mV >= lookupTable[tableRows - 1, 0]) curr_dBm = lookupTable[tableRows - 1, 1];
+									else
+									{
+										for (int r = 0; r < tableRows - 1; r++)
+										{
+											if (vol_mV >= lookupTable[r, 0] && vol_mV <= lookupTable[r + 1, 0])
+											{
+												double p0 = lookupTable[r, 1];
+												double p1 = lookupTable[r + 1, 1];
+												curr_dBm = p0 + (vol_mV - lookupTable[r, 0]) * (p1 - p0) / (lookupTable[r + 1, 0] - lookupTable[r, 0]);
+												break;
+											}
+										}
+									}
+									dbmArray[count] = curr_dBm;
+									if (curr_dBm > max_dBm) max_dBm = curr_dBm;
+									if (curr_dBm < min_dBm) min_dBm = curr_dBm;
+								}
+
+								// 3. Process Requested Output Format
+								if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_Time)
+								{
+									int edge = (vnaSwTimeTPC.vnaSwTime_TriggerEdge == Cond_AnalysisSetting_VnaSwTime_Rising) ? 1 : 0;
+									double dummyInit = 0.0, dummySettle = 0.0;
+									double triggerDelay = 0.0; // Update with real digitizer delay if available
+									
+									if (vnaSwTimeTPC.vnaSwTime_MovingAvgState == Cond_AnalysisSetting_VnaSwTime_MovingAvgOn)
+									{
+										result = CalculateSwTime_WithMA(dbmArray, edge, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+									}
+									else if (vnaSwTimeTPC.vnaSwTime_MovingAvgState == Cond_AnalysisSetting_VnaSwTime_MovingAvgOff)
+									{
+										result = CalculateSwTime_NoMA(dbmArray, edge, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+									}
+								}
+								else if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_MaxPower) result = max_dBm;
+								else if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_MinPower) result = min_dBm;
+								else if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_AvgPower)
+								{
+									// Average using the linear voltage
+									double avgVoltagemV = (sumVoltage / sampleCount) * 1000.0;
+									if (avgVoltagemV <= lookupTable[0, 0]) result = lookupTable[0, 1];
+									else if (avgVoltagemV >= lookupTable[tableRows - 1, 0]) result = lookupTable[tableRows - 1, 1];
+									else
+									{
+										for (int r = 0; r < tableRows - 1; r++)
+										{
+											if (avgVoltagemV >= lookupTable[r, 0] && avgVoltagemV <= lookupTable[r + 1, 0])
+											{
+												result = lookupTable[r, 1] + (avgVoltagemV - lookupTable[r, 0]) * (lookupTable[r + 1, 1] - lookupTable[r, 1]) / (lookupTable[r + 1, 0] - lookupTable[r, 0]);
+												break;
+											}
+										}
+									}
+								}
+							}
+						}
+						pXIe9852_Info->aitask0->Stop();
 					}
+					else
+					{
 
-					//Store data into global result variable
-					//
-					//PrintWaveformToFile(testSite, "digitizer_V_record", pXIe9852_Info->readValueSite0);
+						// Read the dummy debug file and extract CH1 samples.
+						// File layout: line0=CH1, line1=CH2, line2=CH1, line3=CH2, ...
+						String^ csvPath = Environment::GetFolderPath(Environment::SpecialFolder::UserProfile) + "\\Downloads\\DebugFile.csv";
+						array<String^>^ allLines = File::ReadAllLines(csvPath);
 
+						int sampleCount = allLines->Length / 2; // interleaved CH1/CH2 -> half are CH1
+						pXIe9852_Info->readValueSite0 = gcnew array<double>(sampleCount);
+
+						for (int i = 0; i < sampleCount; i++)
+						{
+							// index i*2 = CH1 sample, i*2+1 = CH2 (skipped, mirrors the online i+=2 extraction)
+							pXIe9852_Info->readValueSite0[i] = Double::Parse(
+								allLines[i * 2],
+								System::Globalization::CultureInfo::InvariantCulture);
+						}
+							if (sampleCount > 0)
+							{
+								// 1. Lookup Table (mV to dBm)
+								cli::array<double, 2>^ lookupTable = gcnew cli::array<double, 2> {
+									{ 354.00, 5.0 }, { 391.23,   0.0 }, { 406.25,  -1.0 },
+									{ 420.41,  -2.0 }, { 436.27,  -3.0 }, { 454.83,  -4.0 },
+									{ 464.60,  -4.5 }, { 474.12,  -5.0 }, { 581.18, -10.0 },
+									{ 805.30, -20.0 }, { 1028.68, -30.0 }, { 1255.00, -40.0 },
+									{ 1358.76, -45.0 }, { 1457.76, -50.0 }
+								};
+								int tableRows = lookupTable->GetLength(0);
+
+								// 2. Convert Voltage to dBm Array
+								cli::array<double>^ dbmArray = gcnew cli::array<double>(sampleCount);
+								double max_dBm = -9999.0;
+								double min_dBm = 9999.0;
+								double sumVoltage = 0.0;
+
+								for (int count = 0; count < sampleCount; count++)
+								{
+									double vol_mV = pXIe9852_Info->readValueSite0[count] * 1000.0;
+									sumVoltage += pXIe9852_Info->readValueSite0[count];
+									double curr_dBm = 0.0;
+
+									if (vol_mV <= lookupTable[0, 0]) curr_dBm = lookupTable[0, 1];
+									else if (vol_mV >= lookupTable[tableRows - 1, 0]) curr_dBm = lookupTable[tableRows - 1, 1];
+									else
+									{
+										for (int r = 0; r < tableRows - 1; r++)
+										{
+											if (vol_mV >= lookupTable[r, 0] && vol_mV <= lookupTable[r + 1, 0])
+											{
+												double p0 = lookupTable[r, 1];
+												double p1 = lookupTable[r + 1, 1];
+												curr_dBm = p0 + (vol_mV - lookupTable[r, 0]) * (p1 - p0) / (lookupTable[r + 1, 0] - lookupTable[r, 0]);
+												break;
+											}
+										}
+									}
+									dbmArray[count] = curr_dBm;
+									if (curr_dBm > max_dBm) max_dBm = curr_dBm;
+									if (curr_dBm < min_dBm) min_dBm = curr_dBm;
+								}
+
+								// 3. Process Requested Output Format
+								if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_Time)
+								{
+									int edge = (vnaSwTimeTPC.vnaSwTime_TriggerEdge == Cond_AnalysisSetting_VnaSwTime_Rising) ? 1 : 0;
+									double dummyInit = 0.0, dummySettle = 0.0;
+									double triggerDelay = 0.0; // Update with real digitizer delay if available
+									double dummy_sampleRate = 1 MHz;
+									if (vnaSwTimeTPC.vnaSwTime_MovingAvgState == Cond_AnalysisSetting_VnaSwTime_MovingAvgOn)
+									{
+										result = CalculateSwTime_WithMA(dbmArray, edge, dummy_sampleRate, triggerDelay, dummyInit, dummySettle);
+									}
+									else if (vnaSwTimeTPC.vnaSwTime_MovingAvgState == Cond_AnalysisSetting_VnaSwTime_MovingAvgOff)
+									{
+										result = CalculateSwTime_NoMA(dbmArray, edge, dummy_sampleRate, triggerDelay, dummyInit, dummySettle);
+									}
+								}
+								else if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_MaxPower) result = max_dBm;
+								else if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_MinPower) result = min_dBm;
+								else if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_AvgPower)
+								{
+									// Average using the linear voltage
+									double avgVoltagemV = (sumVoltage / sampleCount) * 1000.0;
+									if (avgVoltagemV <= lookupTable[0, 0]) result = lookupTable[0, 1];
+									else if (avgVoltagemV >= lookupTable[tableRows - 1, 0]) result = lookupTable[tableRows - 1, 1];
+									else
+									{
+										for (int r = 0; r < tableRows - 1; r++)
+										{
+											if (avgVoltagemV >= lookupTable[r, 0] && avgVoltagemV <= lookupTable[r + 1, 0])
+											{
+												result = lookupTable[r, 1] + (avgVoltagemV - lookupTable[r, 0]) * (lookupTable[r + 1, 1] - lookupTable[r, 1]) / (lookupTable[r + 1, 0] - lookupTable[r, 0]);
+												break;
+											}
+										}
+									}
+								}
+							}
+					}
 				}
-
-				pXIe9852_Info->aitask0->Stop();
+				catch (Exception^ ex)
+				{
+					if (pXIe9852_Info->aitask0 != nullptr) pXIe9852_Info->aitask0->Stop();
+					throw gcnew Aemulus::Hardware::AlarmException ("VnaSwTime test error", ex);
+				}
 			}
-			
 		}
 
 	EndOfTest:
 		return ret;
+	}
+	double AMB7300TestLibrary::CalculateSwTime_WithMA(cli::array<double>^ dbmArray, int rise_h_fall_l, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle)
+	{
+		double timing = CONST_INVALID_RESULT;
+		int sampleNum = dbmArray->Length;
+
+		cli::array<double>^ pData_Watt = gcnew cli::array<double>(sampleNum);
+		cli::array<double>^ pData_MA = gcnew cli::array<double>(sampleNum);
+
+		// Convert dBm directly to Watts for smoothing
+		for (int i = 0; i < sampleNum; i++)
+		{
+			pData_Watt[i] = 1e-3 * Math::Pow(10, dbmArray[i] / 10.0);
+		}
+
+		// Moving Average logic
+		int factor = 20; 
+		int delta = 0;
+
+		for (int i = 0; i < sampleNum; i++)
+		{
+			if (i < factor / 2)
+			{
+				delta = factor / 2 - i;
+
+				if (i != 0) 
+				{
+					for (int idx = i - 1; idx >= i - (factor / 2) + delta; idx--) 
+					{
+						pData_MA[i] += pData_Watt[idx];
+					}
+				}
+
+				for (int idx = i + 1; idx <= i + factor / 2 + delta; idx++) 
+				{
+					pData_MA[i] += pData_Watt[idx];
+				}
+
+				pData_MA[i] = (pData_MA[i] + pData_Watt[i]) / (factor + 1);
+			}
+			else if (i + factor / 2 > sampleNum - 1)
+			{
+				delta = factor / 2 + i - (sampleNum - 1);
+
+				for (int idx = i - 1; idx >= i - (factor / 2) - delta; idx--) 
+				{
+					pData_MA[i] += pData_Watt[idx];
+				}
+
+				if (i != sampleNum - 1) 
+				{
+					for (int idx = i + 1; idx <= i + factor / 2 - delta; idx++) 
+					{
+						pData_MA[i] += pData_Watt[idx];
+					}
+				}
+
+				pData_MA[i] = (pData_MA[i] + pData_Watt[i]) / (factor + 1);
+			}
+			else
+			{
+				for (int idx = i - 1; idx >= i - factor / 2; idx--) 
+				{
+					pData_MA[i] += pData_Watt[idx];
+				}
+
+				for (int idx = i + 1; idx <= i + factor / 2; idx++) 
+				{
+					pData_MA[i] += pData_Watt[idx];
+				}
+
+				pData_MA[i] = (pData_MA[i] + pData_Watt[i]) / (factor + 1);
+			}
+		}
+
+		// Get initiate power and settled power
+		int pCount = 0;
+		double pInit = 0.0;
+		double pSettle = 0.0;
+		double pDynamicRange = 0.0;
+		double power_at_threshold = 0.0;
+		double pStart = 0.0;
+
+		if (rise_h_fall_l == 0) // Falling edge
+		{
+			for (int i = 0; i < 100 && i < sampleNum; i++) 
+			{ 
+				pInit += pData_MA[i]; 
+				pCount++; 
+			}
+
+			pInit /= pCount; 
+			pCount = 0;
+
+			for (int i = sampleNum - 1; i > sampleNum - 101 && i >= 0; i--) 
+			{ 
+				pSettle += pData_MA[i]; 
+				pCount++; 
+			}
+
+			pSettle /= pCount;
+
+			pDynamicRange = pInit - pSettle;
+			pStart = pInit - (0.1 * pDynamicRange);
+			power_at_threshold = pSettle + (0.1 * pDynamicRange);
+		}
+		else // Rising edge
+		{
+			for (int i = 0; i < 30 && i < sampleNum; i++) 
+			{ 
+				pInit += pData_MA[i]; 
+				pCount++; 
+			}
+
+			pInit /= pCount; 
+			pCount = 0;
+
+			for (int i = sampleNum - 1; i > sampleNum - 601 && i >= 0; i--) 
+			{ 
+				pSettle += pData_MA[i]; 
+				pCount++; 
+			}
+
+			pSettle /= pCount;
+
+			pDynamicRange = pSettle - pInit;
+			pStart = pInit; 
+			power_at_threshold = pSettle - (0.1 * pDynamicRange);
+		}
+
+		powerInit = pInit;
+		powerSettle = pSettle;
+
+		// Threshold evaluation
+		int iStart = 0;
+		int count = 0;
+		int resultCounter = 0;
+
+		if (rise_h_fall_l == 1) // Rising
+		{
+			int pStartConsecutiveFound = 3;
+			int pStartConsecutiveCount = 0;
+			int consecutiveFound = 1;
+
+			for (int i = 0; i < sampleNum; i++)
+			{
+				if (pData_MA[i] > pStart) 
+				{
+					pStartConsecutiveCount++;
+
+					if (pStartConsecutiveCount == pStartConsecutiveFound) 
+					{ 
+						iStart = i - pStartConsecutiveCount; 
+						break; 
+					}
+				} 
+				else 
+				{
+					pStartConsecutiveCount = 0;
+				}
+			}
+
+			for (int i = 0; i < sampleNum; i++)
+			{
+				if (pData_MA[i] > power_at_threshold) 
+				{
+					count++;
+					resultCounter = Math::Max(resultCounter, count);
+
+					if (resultCounter >= consecutiveFound) 
+					{
+						timing = ((i - iStart) - consecutiveFound) * (1.0 / sampleRate) + digitizerTriggerDelay;
+						break;
+					}
+				} 
+				else 
+				{
+					count = 0;
+				}
+			}
+		}
+		else // Falling
+		{
+			int pStartConsecutiveFound = 3;
+			int pStartConsecutiveCount = 0;
+			int consecutiveFound = 3;
+
+			for (int i = sampleNum - 1; i > 1; i--)
+			{
+				if (pData_MA[i] > pStart) 
+				{
+					pStartConsecutiveCount++;
+
+					if (pStartConsecutiveCount == pStartConsecutiveFound) 
+					{ 
+						iStart = i + pStartConsecutiveCount; 
+						break; 
+					}
+				} 
+				else 
+				{
+					pStartConsecutiveCount = 0;
+				}
+			}
+
+			for (int i = sampleNum - 1; i > 1; i--)
+			{
+				if (pData_MA[i] > power_at_threshold) 
+				{
+					count++;
+					resultCounter = Math::Max(resultCounter, count);
+
+					if (resultCounter >= consecutiveFound) 
+					{
+						timing = ((i + consecutiveFound) - iStart) * (1.0 / sampleRate) + digitizerTriggerDelay;
+						break;
+					}
+				} 
+				else 
+				{
+					count = 0;
+				}
+			}
+		}
+
+		return timing;
+	}
+	double AMB7300TestLibrary::CalculateSwTime_NoMA(cli::array<double>^ dbmArray, int rise_h_fall_l, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle)
+	{
+		double timing = CONST_INVALID_RESULT;
+		int sampleNum = dbmArray->Length;
+		cli::array<double>^ pData_Watt = gcnew cli::array<double>(sampleNum);
+
+		// Convert dBm directly to Watts (NO moving average applied)
+		for (int i = 0; i < sampleNum; i++)
+		{
+			pData_Watt[i] = 1e-3 * Math::Pow(10, dbmArray[i] / 10.0);
+		}
+
+		// Get initiate power and settled power straight from raw Watts
+		int pCount = 0;
+		double pInit = 0.0;
+		double pSettle = 0.0;
+		double pDynamicRange = 0.0;
+		double power_at_threshold = 0.0;
+		double pStart = 0.0;
+
+		if (rise_h_fall_l == 0) // Falling edge
+		{
+			for (int i = 0; i < 100 && i < sampleNum; i++) 
+			{ 
+				pInit += pData_Watt[i]; 
+				pCount++; 
+			}
+
+			pInit /= pCount; 
+			pCount = 0;
+
+			for (int i = sampleNum - 1; i > sampleNum - 101 && i >= 0; i--) 
+			{ 
+				pSettle += pData_Watt[i]; 
+				pCount++; 
+			}
+
+			pSettle /= pCount;
+
+			pDynamicRange = pInit - pSettle;
+			pStart = pInit - (0.1 * pDynamicRange);
+			power_at_threshold = pSettle + (0.1 * pDynamicRange);
+		}
+		else // Rising edge
+		{
+			for (int i = 0; i < 30 && i < sampleNum; i++) 
+			{ 
+				pInit += pData_Watt[i]; 
+				pCount++; 
+			}
+
+			pInit /= pCount; 
+			pCount = 0;
+
+			for (int i = sampleNum - 1; i > sampleNum - 601 && i >= 0; i--) 
+			{ 
+				pSettle += pData_Watt[i]; 
+				pCount++; 
+			}
+
+			pSettle /= pCount;
+
+			pDynamicRange = pSettle - pInit;
+			pStart = pInit; 
+			power_at_threshold = pSettle - (0.1 * pDynamicRange);
+		}
+
+		powerInit = pInit;
+		powerSettle = pSettle;
+
+		// Threshold evaluation directly on pData_Watt
+		int iStart = 0;
+		int count = 0;
+		int resultCounter = 0;
+
+		if (rise_h_fall_l == 1) // Rising
+		{
+			int pStartConsecutiveFound = 3;
+			int pStartConsecutiveCount = 0;
+			int consecutiveFound = 1;
+
+			for (int i = 0; i < sampleNum; i++)
+			{
+				if (pData_Watt[i] > pStart) 
+				{
+					pStartConsecutiveCount++;
+
+					if (pStartConsecutiveCount == pStartConsecutiveFound) 
+					{ 
+						iStart = i - pStartConsecutiveCount; 
+						break; 
+					}
+				} 
+				else 
+				{
+					pStartConsecutiveCount = 0;
+				}
+			}
+
+			for (int i = 0; i < sampleNum; i++)
+			{
+				if (pData_Watt[i] > power_at_threshold) 
+				{
+					count++;
+					resultCounter = Math::Max(resultCounter, count);
+
+					if (resultCounter >= consecutiveFound) 
+					{
+						timing = ((i - iStart) - consecutiveFound) * (1.0 / sampleRate) + digitizerTriggerDelay;
+						break;
+					}
+				} 
+				else 
+				{
+					count = 0;
+				}
+			}
+		}
+		else // Falling
+		{
+			int pStartConsecutiveFound = 3;
+			int pStartConsecutiveCount = 0;
+			int consecutiveFound = 3;
+
+			for (int i = sampleNum - 1; i > 1; i--)
+			{
+				if (pData_Watt[i] > pStart) 
+				{
+					pStartConsecutiveCount++;
+
+					if (pStartConsecutiveCount == pStartConsecutiveFound) 
+					{ 
+						iStart = i + pStartConsecutiveCount; 
+						break; 
+					}
+				} 
+				else 
+				{
+					pStartConsecutiveCount = 0;
+				}
+			}
+
+			for (int i = sampleNum - 1; i > 1; i--)
+			{
+				if (pData_Watt[i] > power_at_threshold) 
+				{
+					count++;
+					resultCounter = Math::Max(resultCounter, count);
+
+					if (resultCounter >= consecutiveFound) 
+					{
+						timing = ((i + consecutiveFound) - iStart) * (1.0 / sampleRate) + digitizerTriggerDelay;
+						break;
+					}
+				} 
+				else 
+				{
+					count = 0;
+				}
+			}
+		}
+
+		return timing;
 	}
 
 	int AMB7300TestLibrary::VnaFetch_TrueParallel(int tfSite, int vnaSiteIndex)
@@ -6779,7 +7782,9 @@ namespace Functions
 
 		//	for (int testSite = testSiteStart; testSite < totalSite; testSite++)
 		{
-			//	if (testSite == 0) //0
+			if (!tl->glob->AWV.Offline)
+			{
+				//if (testSite == 0) //0
 			{
 
 				pXIe9852_Info->aitask0 = gcnew JYPXIe69852AITask(pXIe9852_Info->slotNo[0]);
@@ -6839,6 +7844,7 @@ namespace Functions
 				pXIe9852_Info->aitask0->Trigger->ReTriggerFrequency = 0;
 				pXIe9852_Info->aitask0->Trigger->PreTriggerSamples = 100;
 				//	aitask0->Start();
+			}
 			}
 		}
 	EndOfTest:
@@ -8187,6 +9193,7 @@ namespace Functions
 		int countDcTest				= 0;
 		int countPatternTest		= 0;
 		int countVnaDataAnalysis	= 0;
+		int countVnaSwTime	= 0;
 		int countMathTest			= 0;
 
 		array<ConditionCollection^> ^ conditionCollection = gcnew array <ConditionCollection^>(tl->glob->tf.NumberOfTestSites);
@@ -8221,6 +9228,15 @@ namespace Functions
 			{
 				countVnaDataAnalysis++;
 			}
+			if ((condition->Name->Contains(VnaSwTimeConditionName_MeasureType))		||
+				(condition->Name == (VnaSwTimeConditionName_DMModuleAlias))			||
+				(condition->Name->Contains(VnaSwTimeConditionName_DMVectorTrigger))	||
+				(condition->Name->Contains(VnaSwTimeConditionName_AnalysisSetting))	||
+				(condition->Name->Contains(VnaSwTimeConditionName_OutputType))				||
+				(condition->Name->Contains(VnaSwTimeConditionName_OutputFormat)))
+			{
+				countVnaSwTime++;
+			}
 			else if ((condition->Name == (MathConditionName_Function))			||
 					 (condition->Name->Contains(MathConditionName_TP1))			||
 					 (condition->Name->Contains(MathConditionName_TP2)))
@@ -8253,6 +9269,16 @@ namespace Functions
 				(countMathTest == 0))
 		{
 			currentPhase = PHASE_CONST_VNA_DATA_ANALYSIS;
+		}
+		// VnaSwTime
+		else if (((countDcTest == 0)				&&
+			(countPatternTest == 0)			&&
+			(countVnaDataAnalysis == 0)	&&
+			(countVnaSwTime == ConditionCount_VnaSwTime)	&&
+			(countMathTest == 0)) ||
+			(countVnaSwTime == ConditionCount_VnaSwTime + 1)) //debugging
+		{
+			currentPhase = PHASE_CONST_VNA_SWTIME;
 		}
 		//Math
 		else if ((countDcTest == 0)				&&

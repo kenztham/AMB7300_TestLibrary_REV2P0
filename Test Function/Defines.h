@@ -2289,6 +2289,7 @@ Version:		v1.0.0.5
 #define ConditionCount_VnaFetch											5
 #define ConditionCount_VnaDataAnalysis									9
 #define ConditionCount_MathTest											3
+#define ConditionCount_VnaSwTime										5
 /*
 **	----------------------------------------------------------------------------------------------------
 **	Condition Name ---> DcControl
@@ -2408,6 +2409,7 @@ Version:		v1.0.0.5
 #define VnaDataAnalysisConditionName_OutputType							"OutputType"
 #define VnaDataAnalysisConditionName_OutputFormat						"OutputFormat"
 #define VnaDataAnalysisConditionName_Threshold							"Threshold"
+#define VnaDataAnalysisConditionName_ChannelUse							"ChannelUse"
 #define VnaDataAnalysisConditionName_Power								"Power"
 #define VnaDataAnalysisConditionName_Power_								"Power_"
 #define VnaDataAnalysisConditionName_PowerRangeStart						"PowerRangeStart"
@@ -2522,6 +2524,7 @@ Version:		v1.0.0.5
 #define Cond_SweepType_PowerSweep										"PowerSweep"
 #define Cond_SweepType_GetFromStateFile									"GetFromStateFile"
 #define Cond_SweepType_SharedMemoryTransfer								"SharedMemoryTransfer"
+#define Cond_SweepType_CWTime											"CWTime"
 /* special handle StartFreq, StopFreq, Points, Ifbw, Power, Delay */
 /*
 **	----------------------------------------------------------------------------------------------------
@@ -2782,6 +2785,7 @@ Version:		v1.0.0.5
 #define Cond_Function_P1dB												"P1dB"
 #define Cond_Function_P1dBTarget										"P1dBTarget"
 #define Cond_Function_SharedMemoryDataP1dB								"SharedMemoryDataP1dB"
+#define Cond_Function_TraceData_Sds										"TraceData_Sds"
 
 // ms Generic
 #define Cond_AnalysisSetting_GenericMS_Enable_SearchRangeOn				"SearchRangeOn"
@@ -2823,6 +2827,15 @@ Version:		v1.0.0.5
 #define Cond_AnalysisSetting_MMBwSearch_SearchRef_Maximum				"Max"
 #define Cond_AnalysisSetting_MMBwSearch_SearchRef_Minimum				"Min"
 #define Cond_AnalysisSetting_MMBwSearch_SearchRef_Peak					"Peak"	// Keysight VNA
+
+// SdsSearch
+#define Cond_AnalysisSetting_TraceData_Sds_SdsSearch					"SdsSearch"
+#define Cond_AnalysisSetting_TraceData_Sds_Sdd22Search					"Sdd22Search"
+#define Cond_AnalysisSetting_TraceData_Sds_AmpImbalance					"AmpImbalance"
+#define Cond_AnalysisSetting_TraceData_Sds_PhaseImbalance				"PhaseImbalance"
+#define Cond_AnalysisSetting_TraceData_Sds_ComRejectRatio				"ComRejectRatio"
+#define Cond_AnalysisSetting_TraceData_Sds_S21Search					"S21Search"
+#define Cond_AnalysisSetting_TraceData_Sds_S11Search					"S11Search"
 
 // P1dB
 #define Cond_AnalysisSetting_P1dB_Pin									"Pin"

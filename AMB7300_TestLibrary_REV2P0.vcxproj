@@ -66,9 +66,9 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>mkdir "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1"
-copy "$(TargetPath)" "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1\$(TargetFileName)"
-copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1"</Command>
+      <Command>mkdir "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P0"
+copy "$(TargetPath)" "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P0\$(TargetFileName)"
+copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P0"</Command>
     </PostBuildEvent>
     <Xdcmake>
       <OutputFile>..\..\..\..\TestPrograms\SampleProfile\$(TargetName)\$(TargetName).xml</OutputFile>
@@ -143,7 +143,7 @@ copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\XM
       <HintPath>..\..\..\..\..\bin\Aemulus.TestLib.Utility.dll</HintPath>
     </Reference>
     <Reference Include="JYPXIe69852">
-      <HintPath>x64\Debug\JYPXIe69852.dll</HintPath>
+      <HintPath>..\..\..\..\..\bin\JYPXIe69852.dll</HintPath>
     </Reference>
     <Reference Include="libSync">
       <HintPath>..\..\..\..\..\bin\libSync.dll</HintPath>

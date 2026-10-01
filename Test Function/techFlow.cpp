@@ -180,20 +180,30 @@ namespace Functions
 			//OffsetFactor			= GetFixedOffsetValue(tfSite, siteIndex, key);
 			glob->ResultWithDataType[siteIndex].DoubleTypeResult = Convert::ToDouble(CSTestResult);// + OffsetFactor;
 
+			//Cast current results
+			if (glob->TestProperty[siteIndex].TestResults->ContainsKey(Identifier))
+			{
+				glob->TestProperty[siteIndex].TestResults[Identifier] = glob->ResultWithDataType[siteIndex].DoubleTypeResult;
+			}
+			else
+			{
+				glob->TestProperty[siteIndex].TestResults->Add(Identifier, glob->ResultWithDataType[siteIndex].DoubleTypeResult);
+			}
+
+			//Compare for duplicated result
 			if (glob->TestProperty[siteIndex].TestResults[Identifier] ==
 				glob->TestProperty[siteIndex].PreviousTestResults[Identifier])
 			{
 				glob->ResultWithDataType[siteIndex].DoubleTypeResult = ER_CONST_ERROR_HARDWARE_DUPLICATED_RESULT;
 			}
 
-			if (glob->TestProperty[siteIndex].TestResults->ContainsKey(Identifier))
+			//Cast current result as previous result
+			if (glob->TestProperty[siteIndex].PreviousTestResults->ContainsKey(Identifier))
 			{
-				glob->TestProperty[siteIndex].TestResults[Identifier] = glob->ResultWithDataType[siteIndex].DoubleTypeResult;
 				glob->TestProperty[siteIndex].PreviousTestResults[Identifier] = glob->ResultWithDataType[siteIndex].DoubleTypeResult;
 			}
 			else
 			{
-				glob->TestProperty[siteIndex].TestResults->Add(Identifier, glob->ResultWithDataType[siteIndex].DoubleTypeResult);
 				glob->TestProperty[siteIndex].PreviousTestResults->Add(Identifier, glob->ResultWithDataType[siteIndex].DoubleTypeResult);
 			}
 		}
@@ -269,7 +279,16 @@ namespace Functions
 						{
 							glob->ResultWithDataType[siteIndex].DoubleTypeResult = ER_CONST_ERROR_CATCH;
 						}
-						if (glob->TestProperty[siteIndex].IsHardwareInvolved[i] == true) //Hardware result duplicate checking
+						//Store Test Results into global Dictionary
+						if (glob->TestProperty[siteIndex].TestResults->ContainsKey(glob->TestProperty[siteIndex].TestParameterDisplayName[i]))
+						{
+							glob->TestProperty[siteIndex].TestResults[glob->TestProperty[siteIndex].TestParameterDisplayName[i]] = glob->ResultWithDataType[siteIndex].DoubleTypeResult;
+						}
+						else
+						{
+							glob->TestProperty[siteIndex].TestResults->Add(glob->TestProperty[siteIndex].TestParameterDisplayName[i], glob->ResultWithDataType[siteIndex].DoubleTypeResult);
+						}
+						if (glob->TestProperty[siteIndex].IsHardwareInvolved[i] == true && site->CurrentUUT > 1) //Hardware result duplicate checking
 						{
 							if (glob->TestProperty[siteIndex].TestResults[glob->TestProperty[siteIndex].TestParameterDisplayName[i]] ==
 								glob->TestProperty[siteIndex].PreviousTestResults[glob->TestProperty[siteIndex].TestParameterDisplayName[i]])
@@ -278,14 +297,12 @@ namespace Functions
 							}
 						}
 						//Store Test Results into global Dictionary
-						if (glob->TestProperty[siteIndex].TestResults->ContainsKey(glob->TestProperty[siteIndex].TestParameterDisplayName[i]))
+						if (glob->TestProperty[siteIndex].PreviousTestResults->ContainsKey(glob->TestProperty[siteIndex].TestParameterDisplayName[i]))
 						{
-							glob->TestProperty[siteIndex].TestResults[glob->TestProperty[siteIndex].TestParameterDisplayName[i]] = glob->ResultWithDataType[siteIndex].DoubleTypeResult;
 							glob->TestProperty[siteIndex].PreviousTestResults[glob->TestProperty[siteIndex].TestParameterDisplayName[i]] = glob->ResultWithDataType[siteIndex].DoubleTypeResult;
 						}
 						else
 						{
-							glob->TestProperty[siteIndex].TestResults->Add(glob->TestProperty[siteIndex].TestParameterDisplayName[i], glob->ResultWithDataType[siteIndex].DoubleTypeResult);
 							glob->TestProperty[siteIndex].PreviousTestResults->Add(glob->TestProperty[siteIndex].TestParameterDisplayName[i], glob->ResultWithDataType[siteIndex].DoubleTypeResult);
 						}
 

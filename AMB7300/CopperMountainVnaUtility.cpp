@@ -3617,6 +3617,605 @@ namespace Functions
 	EndOfTest:
 		return ret;
 	}
+	
+	int AMB7300TestLibrary::GetTraceFormatData_CMT_Sds(int tfSite, int vnaSiteIndex)
+	{
+		/*****************************************************************************************************
+		**	GetTraceFormatData_CMT_Sds
+		**		tfSite			- This is techFlow site index.
+		**		vnaSiteIndex	- This is vna's object index, normally start from 0.
+		**
+		**	Descriptions:
+		**		This is a function to read formated data from the target trace, and store in TraceFormatData.
+		******************************************************************************************************/
+
+		// Local variable
+		int ret = 0;
+
+		// [Future Enchancement] To eval and handle Marker_ReferenceMarker_Set()
+		try
+		{
+			traceFormatData->totalFreqPoints = segmentSetting[vnaSiteIndex].totalPoint;
+			traceFormatData->XAxis = gcnew array<double>(traceFormatData->totalFreqPoints);
+			traceFormatData->realRaw = gcnew array<double>(traceFormatData->totalFreqPoints);
+			traceFormatData->imaginaryRaw = gcnew array<double>(traceFormatData->totalFreqPoints);
+			traceFormatData->freqPoint = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+			traceFormatData->S11Real = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+			traceFormatData->S11Imaginary = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+			traceFormatData->S21Real = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+			traceFormatData->S21Imaginary = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+			traceFormatData->S12Real = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+			traceFormatData->S12Imaginary = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+			traceFormatData->S22Real = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+			traceFormatData->S22Imaginary = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+
+			if (vnaDataAnalysisTPC.function == Cond_Function_TraceData)
+			{
+				// Get trace format data from the selective channel and trace   
+				tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(vnaSetting[vnaSiteIndex].currentVnaFetchChannel, vnaDataAnalysisTPC.traceIndex,
+					traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //
+
+																										// [CHECK] if total freq points from user does not match with the actual trace data points
+				if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+				{
+					ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					goto EndOfTest;
+				}
+
+				// Store trace data accordingly
+				for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+				{
+					if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+					{
+						if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+						{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S11Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S11Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+						}
+						else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+						{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S21Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S21Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+						}
+						else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+						{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S12Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S12Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+						}
+						else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+						{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S22Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S22Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+						}
+					}
+				}
+			}
+			else if (vnaDataAnalysisTPC.function == Cond_Function_TraceData_Sds)
+			{
+				if (ChannelUseTPC.ChannelUseFristChannel == ChannelUseTPC.ChannelUseSecondChannel)
+				{
+					int l_useVnaFetchChannel = 1;
+					if (ChannelUseTPC.ChannelUseFristChannel == "Ch1" || ChannelUseTPC.ChannelUseFristChannel == "ch1")
+					{
+						l_useVnaFetchChannel = 1;
+					}
+					else if (ChannelUseTPC.ChannelUseFristChannel == "Ch2" || ChannelUseTPC.ChannelUseFristChannel == "ch2")
+					{
+						l_useVnaFetchChannel = 2;
+					}
+					else if (ChannelUseTPC.ChannelUseFristChannel == "Ch3" || ChannelUseTPC.ChannelUseFristChannel == "ch3")
+					{
+						l_useVnaFetchChannel = 3;
+					}
+
+
+					// <<<<<<<<<index 1>>>>>>>>Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel, 1,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //vnaSetting[vnaSiteIndex].currentVnaFetchChannel,vnaDataAnalysisTPC.traceIndex
+
+																											// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					// Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							//	if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S11Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S11Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							/*else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S21Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S21Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S12Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S12Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S22Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S22Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}*/
+						}
+					}
+
+					// <<<<<<<<<index 2>>>>>>>>Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel, 2,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //vnaSetting[vnaSiteIndex].currentVnaFetchChannel,vnaDataAnalysisTPC.traceIndex
+
+																											// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					// Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							/*if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S11Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S11Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)*/
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S21Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S21Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							/*else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S12Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S12Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S22Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S22Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}*/
+						}
+					}
+
+
+					// <<<<<<<<<index 3>>>>>>>>Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel, 3,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //vnaSetting[vnaSiteIndex].currentVnaFetchChannel,vnaDataAnalysisTPC.traceIndex
+																											// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					// Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							/*if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S11Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S11Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S21Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S21Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)*/
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S12Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S12Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							/*else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S22Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S22Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}*/
+						}
+					}
+
+
+					// <<<<<<<<<index 4>>>>>>>>Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel, 4,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //vnaSetting[vnaSiteIndex].currentVnaFetchChannel,vnaDataAnalysisTPC.traceIndex
+
+																											// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					// Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							/*if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S11Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S11Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S21Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S21Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+							{
+							traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+							traceFormatData->S12Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+							traceFormatData->S12Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)*/
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S22Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S22Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+						}
+					}
+
+
+
+				}
+				else if ((ChannelUseTPC.ChannelUseFristChannel != ChannelUseTPC.ChannelUseSecondChannel) && (ChannelUseTPC.ChannelUseSecondChannel != "Ch4"))
+				{
+					traceFormatData->XAxis2 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->realRaw2 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->imaginaryRaw2 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->freqPoint2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S11Real2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S11Imaginary2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S21Real2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S21Imaginary2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S12Real2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S12Imaginary2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S22Real2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S22Imaginary2 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+
+					int l_useVnaFetchChannel_1 = 1;
+					int l_useVnaFetchChannel_2 = 2;
+					//the frist ch
+					if (ChannelUseTPC.ChannelUseFristChannel == "Ch1" || ChannelUseTPC.ChannelUseFristChannel == "ch1")
+					{
+						l_useVnaFetchChannel_1 = 1;
+					}
+					else if (ChannelUseTPC.ChannelUseFristChannel == "Ch2" || ChannelUseTPC.ChannelUseFristChannel == "ch2")
+					{
+						l_useVnaFetchChannel_1 = 2;
+					}
+					else if (ChannelUseTPC.ChannelUseFristChannel == "Ch3" || ChannelUseTPC.ChannelUseFristChannel == "ch3")
+					{
+						l_useVnaFetchChannel_1 = 3;
+					}
+					//the second ch
+					if (ChannelUseTPC.ChannelUseSecondChannel == "Ch1" || ChannelUseTPC.ChannelUseSecondChannel == "ch1")
+					{
+						l_useVnaFetchChannel_2 = 1;
+					}
+					else if (ChannelUseTPC.ChannelUseSecondChannel == "Ch2" || ChannelUseTPC.ChannelUseSecondChannel == "ch2")
+					{
+						l_useVnaFetchChannel_2 = 2;
+					}
+					else if (ChannelUseTPC.ChannelUseSecondChannel == "Ch3" || ChannelUseTPC.ChannelUseSecondChannel == "ch3")
+					{
+						l_useVnaFetchChannel_2 = 3;
+					}
+
+					//  The Frist CH  >>>>>>> Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel_1, vnaDataAnalysisTPC.traceIndex,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //vnaSetting[vnaSiteIndex].currentVnaFetchChannel
+
+																											// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					//Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S11Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S11Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S21Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S21Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S12Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S12Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S22Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S22Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+						}
+					}
+
+					//  The Second CH  >>>>>>> Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel_2, vnaDataAnalysisTPC.traceIndex,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //vnaSetting[vnaSiteIndex].currentVnaFetchChannel
+
+																											// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					//Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+								traceFormatData->freqPoint2[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S11Real2[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S11Imaginary2[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+							{
+								traceFormatData->freqPoint2[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S21Real2[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S21Imaginary2[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+							{
+								traceFormatData->freqPoint2[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S12Real2[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S12Imaginary2[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+							{
+								traceFormatData->freqPoint2[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S22Real2[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S22Imaginary2[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+						}
+					}
+				}
+				//which ch1/ch4
+				else if ((ChannelUseTPC.ChannelUseFristChannel != ChannelUseTPC.ChannelUseSecondChannel) && (ChannelUseTPC.ChannelUseSecondChannel == "Ch4"))
+
+				{
+					traceFormatData->XAxis3 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->realRaw3 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->imaginaryRaw3 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->freqPoint3 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S11Rea13 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S11Imaginary3 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S21Rea13 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S21Imaginary3 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S12Rea13 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S12Imaginary3 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S22Rea13 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S22Imaginary3 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+
+					traceFormatData->XAxis4 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->realRaw4 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->imaginaryRaw4 = gcnew array<double>(traceFormatData->totalFreqPoints);
+					traceFormatData->freqPoint4 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S11Rea23 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S11Imaginary4 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S21Rea23 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S21Imaginary4 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S12Rea23 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S12Imaginary4 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S22Rea23 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+					traceFormatData->S22Imaginary4 = gcnew array<double, 2>(tl->glob->tf.NumberOfTestSites, traceFormatData->totalFreqPoints);
+
+					int l_useVnaFetchChannel_1 = 1;
+					int l_useVnaFetchChannel_2 = 2;
+					int l_useVnaFetchChannel_3 = 3;
+
+					//  The Frist CH  >>>>>>> Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel_1, vnaDataAnalysisTPC.traceIndex,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //vnaSetting[vnaSiteIndex].currentVnaFetchChannel
+
+																											// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					//Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S11Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S11Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S21Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S21Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S12Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S12Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+							{
+								traceFormatData->freqPoint[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S22Real[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S22Imaginary[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+						}
+					}
+
+					//  The Second CH  >>>>>>> Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel_2, vnaDataAnalysisTPC.traceIndex,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));  //vnaSetting[vnaSiteIndex].currentVnaFetchChannel
+
+																											// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					//Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+								traceFormatData->freqPoint3[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S11Rea13[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S11Imaginary3[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+							{
+								traceFormatData->freqPoint3[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S21Rea13[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S21Imaginary3[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+							{
+								traceFormatData->freqPoint3[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S12Rea13[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S12Imaginary3[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+							{
+								traceFormatData->freqPoint3[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S22Rea13[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S22Imaginary3[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+						}
+					}
+					//  The Third CH  >>>>>>> Get trace format data from the selective channel and trace   
+					tl->CheckError(tfSite, amb7300_NA[vnaSiteIndex]->ReadFormatedData(l_useVnaFetchChannel_3, vnaDataAnalysisTPC.traceIndex,
+						traceFormatData->XAxis, traceFormatData->realRaw, traceFormatData->imaginaryRaw));
+
+					// [CHECK] if total freq points from user does not match with the actual trace data points
+					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
+					{
+						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						goto EndOfTest;
+					}
+
+					//Store trace data accordingly
+					for (int i = 0; i < traceFormatData->totalFreqPoints; i++)
+					{
+						if (vnaSetting[vnaSiteIndex].vna_traceFormat[vnaDataAnalysisTPC.traceIndex - 1] != Vna_Format_Reset)
+						{
+							if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S11)
+							{
+								traceFormatData->freqPoint4[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S11Rea23[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S11Imaginary4[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S21)
+							{
+								traceFormatData->freqPoint4[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S21Rea23[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S21Imaginary4[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S12)
+							{
+								traceFormatData->freqPoint4[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S12Rea23[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S12Imaginary4[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+							else if (vnaSetting[vnaSiteIndex].measType[vnaDataAnalysisTPC.traceIndex - 1] == Vna_Measurement_Type_S22)
+							{
+								traceFormatData->freqPoint4[vnaSiteIndex, i] = traceFormatData->XAxis[i];
+								traceFormatData->S22Rea23[vnaSiteIndex, i] = traceFormatData->realRaw[i];
+								traceFormatData->S22Imaginary4[vnaSiteIndex, i] = traceFormatData->imaginaryRaw[i];
+							}
+						}
+					}
+				}
+			}
+
+
+		}
+		catch (Exception^ ex)
+		{
+			ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
+			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Fail to get trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Fail to get trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			goto EndOfTest;
+		}
+
+	EndOfTest:
+		return ret;
+	}
 
 }
 

@@ -3890,6 +3890,37 @@ namespace AMB7300_TestLibrary_REV2P0
 					return ret;
 				}
 			}
+			//TraceData_Sds
+			else if (amb7300tl->vnaDataAnalysisTPC.function == Cond_Function_TraceData_Sds)
+			{
+				arrStr2 = gcnew array<String^>(0);
+				arrStr2 = arrStr[i]->Split(separator2, StringSplitOptions::None);
+
+				// Validate condition value input --> 'AnalysisSetting -> msMinMax'
+				//	ret = ValidateConditionValueInput_VnaDataAnalysis(tfSite, siteIndex, VnaDataAnalysisConditionName_AnalysisSetting, arrStr2);
+				if (ret != 0) goto EndOfTest;
+
+				amb7300tl->analysisSetting.TraceData_Sds_SearchRangeEnable = gcnew array<String^>(amb7300tl->vnaDataAnalysisTPC.overallTestFreqCount);
+				amb7300tl->analysisSetting.TraceData_Sds_SearchType = gcnew array<String^>(amb7300tl->vnaDataAnalysisTPC.overallTestFreqCount);
+				// msMinMax parameter: SearchRangeEnable (SearchRangeOn | SearchRangeOff), SearchType (Max | Min)
+				if (arrStr2->Length == 2)
+				{
+					amb7300tl->analysisSetting.TraceData_Sds_SearchRangeEnable[index] = arrStr2[0];
+					amb7300tl->analysisSetting.TraceData_Sds_SearchType[index] = arrStr2[1];
+				}
+				else
+				{
+					ret = ER_CONST_VNADATAANALYSIS_CONDITION_VALUE_INPUT_INVALID;
+					String ^ additionalMessage = "'AnalysisSetting' for 'msMinMax' function contain 2x parameter which is differentiate by '/'." + "\n" +
+						"1st parameter: Enable marker search range." + "\n" +
+						"2nd parameter: Select marker search type." + "\n" +
+						"Example: SearchRangeOn/Max --> meaning enable marker search range, searching for maximum value.";
+					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaDataAnalysisConditionName_AnalysisSetting, additionalMessage);
+					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaDataAnalysis' condition value verification] 'AnalysisSetting' condition value for 'msMinMax' mode is invalid. It should contain 2x value parameter, which is differentiate by a '/' symbol." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaDataAnalysis' condition value verification] 'AnalysisSetting' condition value for 'msMinMax' mode is invalid. It should contain 2x value parameter, which is differentiate by a '/' symbol." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					return ret;
+				}
+			}
 
 			index++;
 		}
@@ -3990,6 +4021,51 @@ namespace AMB7300_TestLibrary_REV2P0
 
 #pragma endregion
 
+#pragma region "ChannelUse"
+
+		/*
+		**	The index usage and variable in array format are reserved for the multiple set of analysis settings in future.
+		*/
+
+		//-------------------- ChannelUse --------------------
+		String ^ ChannelUse = String::Empty;
+		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaDataAnalysisConditionName_ChannelUse))
+		{
+			ChannelUse = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaDataAnalysisConditionName_ChannelUse);
+
+			//-------------------- Handle Analysis Settings For Each DataAnalysis's Type --------------------
+			arrStr = gcnew array<String^>(0);
+			separator = gcnew array<String^>(1);
+			separator[0] = ",";
+			arrStr = ChannelUse->Split(separator, StringSplitOptions::None);
+			arrStr2 = gcnew array<String^>(0);
+			separator2 = gcnew array<String^>(1);
+			separator2[0] = "/";
+
+
+			for (int i = 0; i < arrStr->Length; i++)
+			{
+				// TraceData
+				if (amb7300tl->vnaDataAnalysisTPC.function == Cond_Function_TraceData_Sds)
+				{
+					arrStr2 = gcnew array<String^>(0);
+					arrStr2 = arrStr[i]->Split(separator2, StringSplitOptions::None);
+
+					amb7300tl->ChannelUseTPC.ChannelUseFristChannel = arrStr2[0];
+					amb7300tl->ChannelUseTPC.ChannelUseSecondChannel = arrStr2[1];
+				}
+
+				index++;
+			}
+
+		}
+
+
+
+		index = 0;
+
+#pragma endregion
+
 //#pragma region "Threshold"
 //
 //		//-------------------- Threshold --------------------
@@ -4029,72 +4105,48 @@ namespace AMB7300_TestLibrary_REV2P0
 	/// <item attribute="displayas">VnaSwTime_TestItemName</item>
 	/// <item attribute="description">This is 'VnaSwTime' item with the combination of test item and test parameter, which is to execute test function and return result to test parameter.</item>
 	/// <list type="TestParameter" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items">
-	/// <item attribute="name">VnaSwTime_TestParameterName_S11</item>
-	/// <item attribute="displayas">VnaSwTime_TestParameterName_S11</item>
+	/// <item attribute="name">VnaSwTime_TestParameterName</item>
+	/// <item attribute="displayas">VnaSwTime_TestParameterName</item>
 	/// <item attribute="description">VnaSwTime</item>
 	/// <item attribute="datatype">Double</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit">dB</item>
+	/// <item attribute="prefix">Milli</item>
+	/// <item attribute="unit">S</item>
 	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
 	/// <item attribute="lolimit">-999</item>
 	/// <item attribute="lolimitprefix">None</item>
 	/// <item attribute="hilimit">999</item>        
 	/// <item attribute="hilimitprefix">None</item>
 	/// <list type="TestParameterCondition">
-	/// <item attribute="name">TraceIndex</item>
-	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
-	/// <item attribute="value">1</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">Int32</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">Function</item>
-	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
-	/// <item attribute="value">TraceData</item>
+	/// <item attribute="name">MeasureType</item>
+	/// <item attribute="description">Specifies the test MeasureType to perform the switch time test.</item>
+	/// <item attribute="value">DM+PXIE9852</item>
 	/// <item attribute="prefix">None</item>
 	/// <item attribute="unit"></item>
 	/// <item attribute="datatype">String</item>
 	/// </list>
 	/// <list type="TestParameterCondition">
 	/// <item attribute="name">AnalysisSetting</item>
-	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
-	/// <item attribute="value"></item>
+	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.</item>
+	/// <item attribute="value">Rising/MovingAverageOn/SearchLimitOn/-2</item>
 	/// <item attribute="prefix">None</item>
 	/// <item attribute="unit"></item>
 	/// <item attribute="datatype">String</item>
 	/// </list>
 	/// <list type="TestParameterCondition">
-	/// <item attribute="name">SmoothingSetting</item>
-	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
-	/// <item attribute="value">SmoOff/1</item>
+	/// <item attribute="name">DMModuleAlias</item>
+	/// <item attribute="description">(Optional, compulsory for DM+PXIE9852 type) Specify the the DM module alias to run vector.</item>
+	/// <item attribute="value">DM482E</item>
 	/// <item attribute="prefix">None</item>
 	/// <item attribute="unit"></item>
 	/// <item attribute="datatype">String</item>
 	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">Freq</item>
-	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
-	/// <item attribute="value">1000</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">FreqRangeStart</item>
-	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
-	/// <item attribute="value">0</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">FreqRangeStop</item>
-	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
-	/// <item attribute="value">0</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
+	/// <list type="TestParameterCondition">
+	/// <item attribute="name">DMVectorTrigger</item>
+	/// <item attribute="description">(Optional, compulsory for DM+PXIE9852 type) Specify the vector to launch trigger (from Vector directory).</item>
+	/// <item attribute="value">RFC_RF1_Trigg</item>
+	/// <item attribute="prefix">None</item>
+	/// <item attribute="unit"></item>
+	/// <item attribute="datatype">String</item>
 	/// </list>
 	/// <list type="TestParameterCondition">
 	/// <item attribute="name">OutputType</item>
@@ -4107,266 +4159,10 @@ namespace AMB7300_TestLibrary_REV2P0
 	/// <list type="TestParameterCondition">
 	/// <item attribute="name">OutputFormat</item>
 	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
-	/// <item attribute="value">Real</item>
+	/// <item attribute="value">Time</item>
 	/// <item attribute="prefix">None</item>
 	/// <item attribute="unit"></item>
 	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// </list>
-	/// <list type="TestParameter" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items">
-	/// <item attribute="name">VnaSwTime_TestParameterName_S21</item>
-	/// <item attribute="displayas">VnaSwTime_TestParameterName_S21</item>
-	/// <item attribute="description">VnaSwTime</item>
-	/// <item attribute="datatype">Double</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit">dB</item>
-	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
-	/// <item attribute="lolimit">-999</item>
-	/// <item attribute="lolimitprefix">None</item>
-	/// <item attribute="hilimit">999</item>        
-	/// <item attribute="hilimitprefix">None</item>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">TraceIndex</item>
-	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
-	/// <item attribute="value">2</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">Int32</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">Function</item>
-	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
-	/// <item attribute="value">TraceData</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">AnalysisSetting</item>
-	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
-	/// <item attribute="value"></item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">SmoothingSetting</item>
-	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
-	/// <item attribute="value">SmoOff/1</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">Freq</item>
-	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
-	/// <item attribute="value">1000</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">FreqRangeStart</item>
-	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
-	/// <item attribute="value">0</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">FreqRangeStop</item>
-	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
-	/// <item attribute="value">0</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">OutputType</item>
-	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
-	/// <item attribute="value">Data</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">OutputFormat</item>
-	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
-	/// <item attribute="value">Real</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// </list>
-	/// <list type="TestParameter" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items">
-	/// <item attribute="name">VnaSwTime_TestParameterName_S12</item>
-	/// <item attribute="displayas">VnaSwTime_TestParameterName_S12</item>
-	/// <item attribute="description">VnaSwTime</item>
-	/// <item attribute="datatype">Double</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit">dB</item>
-	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
-	/// <item attribute="lolimit">-999</item>
-	/// <item attribute="lolimitprefix">None</item>
-	/// <item attribute="hilimit">999</item>        
-	/// <item attribute="hilimitprefix">None</item>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">TraceIndex</item>
-	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
-	/// <item attribute="value">3</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">Int32</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">Function</item>
-	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
-	/// <item attribute="value">TraceData</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">AnalysisSetting</item>
-	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
-	/// <item attribute="value"></item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">SmoothingSetting</item>
-	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
-	/// <item attribute="value">SmoOff/1</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">Freq</item>
-	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
-	/// <item attribute="value">1000</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">FreqRangeStart</item>
-	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
-	/// <item attribute="value">0</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">FreqRangeStop</item>
-	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
-	/// <item attribute="value">0</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">OutputType</item>
-	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
-	/// <item attribute="value">Data</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">OutputFormat</item>
-	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
-	/// <item attribute="value">Real</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// </list>
-	/// <list type="TestParameter" name="TestLib_TestParameter_VnaSwTime" category="VnaSwTime" group="Items">
-	/// <item attribute="name">VnaSwTime_TestParameterName_S22</item>
-	/// <item attribute="displayas">VnaSwTime_TestParameterName_S22</item>
-	/// <item attribute="description">VnaSwTime</item>
-	/// <item attribute="datatype">Double</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit">dB</item>
-	/// <item attribute="evalmode">Between_IncludeMinAndMax</item>
-	/// <item attribute="lolimit">-999</item>
-	/// <item attribute="lolimitprefix">None</item>
-	/// <item attribute="hilimit">999</item>        
-	/// <item attribute="hilimitprefix">None</item>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">TraceIndex</item>
-	/// <item attribute="description">Specifies the target trace for this particular measurement.</item>
-	/// <item attribute="value">4</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">Int32</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">Function</item>
-	/// <item attribute="description">Specifies the test function to perform the data analysis.</item>
-	/// <item attribute="value">TraceData</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">AnalysisSetting</item>
-	/// <item attribute="description">Specifies the settings for the specific data analysis function. Refer to the user manual for more information.| Remain empty if it is using default setting or not applicable.</item>
-	/// <item attribute="value"></item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">SmoothingSetting</item>
-	/// <item attribute="description">To enable the smoothing on the target trace. | Specifies the smoothing aperture.</item>
-	/// <item attribute="value">SmoOff/1</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">Freq</item>
-	/// <item attribute="description">Specifies the single test frequency or single marker frequency. | Remain 0 if not applicable.</item>
-	/// <item attribute="value">1000</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">FreqRangeStart</item>
-	/// <item attribute="description">Specifies the start frequency (freq range start). | Remain 0 if not applicable.</item>
-	/// <item attribute="value">0</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition" excelname="">
-	/// <item attribute="name">FreqRangeStop</item>
-	/// <item attribute="description">Specifies the stop frequency (freq range stop). | Remain 0 if not applicable.</item>
-	/// <item attribute="value">0</item>
-	/// <item attribute="prefix">Mega</item>
-	/// <item attribute="unit">Hz</item>
-	/// <item attribute="datatype">Double</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">OutputType</item>
-	/// <item attribute="description">Specifies the result output type. Refer to user manual for more information. | Remain empty if not applicable.</item>
-	/// <item attribute="value">Data</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
-	/// <list type="TestParameterCondition">
-	/// <item attribute="name">OutputFormat</item>
-	/// <item attribute="description">Specifies the result output format. Refer to user manual for more information. | Remain empty if not applicable.</item>
-	/// <item attribute="value">Real</item>
-	/// <item attribute="prefix">None</item>
-	/// <item attribute="unit"></item>
-	/// <item attribute="datatype">String</item>
-	/// </list>
 	/// </list>
 	/// </list>
 	/// </summary>
@@ -4449,7 +4245,7 @@ namespace AMB7300_TestLibrary_REV2P0
 			return ret;
 		}
 
-		// Validate condition value input --> 'DMVectorTrigger'
+		// Validate condition value input --> 'DMModuleAlias'
 		ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_DMModuleAlias, reservedForNA);
 		if (ret != 0) goto EndOfTest;
 
@@ -4514,34 +4310,17 @@ namespace AMB7300_TestLibrary_REV2P0
 				arrStr2 = gcnew array<String^>(0);
 				arrStr2 = arrStr[i]->Split(separator2, StringSplitOptions::None);
 
-				// Validate condition value input --> 'AnalysisSetting -> msMinMax'
+				// Validate condition value input --> 'AnalysisSetting'
 				ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_AnalysisSetting, arrStr2);
 				if (ret != 0) goto EndOfTest;
+
+				amb7300tl->vnaSwTimeTPC.vnaSwTime_TriggerEdge = arrStr2[0];
+				amb7300tl->vnaSwTimeTPC.vnaSwTime_MovingAvgState = arrStr2[1];
+				amb7300tl->vnaSwTimeTPC.vnaSwTime_SearchLimitState = arrStr2[2];
+				amb7300tl->vnaSwTimeTPC.vnaSwTime_SearchLimitLevel = Double::Parse(arrStr2[3]);
+				
 			}
 		}
-
-#pragma endregion
-
-#pragma region "DMVectorTrigger"
-
-		//-------------------- SmoothingSetting --------------------
-		String ^ dmVectorTrigg = String::Empty;
-		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_DMVectorTrigger))
-		{
-			dmVectorTrigg = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], VnaSwTimeConditionName_DMVectorTrigger);
-		}
-		else
-		{
-			ret = ER_CONST_VNASWTIME_CONDITION_NAME_NOT_FOUND;
-			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, VnaSwTimeConditionName_DMVectorTrigger);
-			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'DMVectorTrigger' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaSwTime' condition name verification] 'DMVectorTrigger' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-			return ret;
-		}
-
-		// Validate condition value input --> 'SmoothingSetting'
-		ret = ValidateConditionValueInput_VnaSwTime(tfSite, siteIndex, VnaSwTimeConditionName_DMVectorTrigger, reservedForNA);
-		if (ret != 0) goto EndOfTest;
 
 #pragma endregion
 
@@ -6397,7 +6176,8 @@ namespace AMB7300_TestLibrary_REV2P0
 				(conditionValueRaw[0] != Cond_SweepType_Segment) &&
 				(conditionValueRaw[0] != Cond_SweepType_PowerSweep) &&
 				(conditionValueRaw[0] != Cond_SweepType_GetFromStateFile) &&
-				(conditionValueRaw[0] != Cond_SweepType_SharedMemoryTransfer))
+				(conditionValueRaw[0] != Cond_SweepType_SharedMemoryTransfer) &&
+				(conditionValueRaw[0] != Cond_SweepType_CWTime))
 			{
 				ret = ER_CONST_VNACONFIG_CONDITION_VALUE_INPUT_INVALID;
 				String ^ additionalMessage = "'SweepType' available settings: " + "\n" +
@@ -6406,7 +6186,8 @@ namespace AMB7300_TestLibrary_REV2P0
 					"-> Segment" + "\n" +
 					"-> PowerSweep" + "\n" +
 					"-> GetFromStateFile" + "\n" +
-					"-> SharedMemoryTransfer";
+					"-> SharedMemoryTransfer"+ "\n" +
+				"-> CWTime";
 				amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaConfigConditionName_SweepType, additionalMessage);
 				tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaConfig' condition value verification] 'SweepType' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 				tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['VnaConfig' condition value verification] 'SweepType' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
@@ -9155,11 +8936,12 @@ namespace AMB7300_TestLibrary_REV2P0
 					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_mmBwSearchAbs)	&&
 					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_mmFlatness)	&&
 					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_msMinMaxRipple) &&
-					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryDataBWSearch)		&&
-					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryDataBWSearchAbs)	&&
-					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryDataMinMax)		&&
-					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryDataTarget)		&&
-					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryMinMaxRipple)		&&
+					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_TraceData_Sds)	&&
+					//(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryDataBWSearch)		&&
+					//(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryDataBWSearchAbs)	&&
+					//(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryDataMinMax)		&&
+					//(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryDataTarget)		&&
+					//(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_SharedMemoryMinMaxRipple)		&&
 					(amb7300tl->vnaDataAnalysisTPC.function != Cond_Function_P1dB))
 				{
 					ret = ER_CONST_VNADATAANALYSIS_CONDITION_VALUE_INPUT_INVALID;
@@ -9173,7 +8955,12 @@ namespace AMB7300_TestLibrary_REV2P0
 													"-> mmBwSearchAbs"					+ "\n" +
 													"-> mmFlatness"						+ "\n" +
 													"-> msMinMaxRipple"					+ "\n" + 
-													"-> Mean"							+ "\n" +
+													"-> TraceData_Sds"					+ "\n" + 
+													//"-> SharedMemoryDataBWSearch"		+ "\n" +
+													//"-> SharedMemoryDataBWSearchAbs"	+ "\n" +
+													//"-> SharedMemoryDataMinMax"			+ "\n" +
+													//"-> SharedMemoryDataTarget"			+ "\n" +
+													//"-> SharedMemoryMinMaxRipple"		+ "\n" +
 													"-> P1dB";
 					amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_INVALID_CONDITION_INPUT_VALUE, VnaDataAnalysisConditionName_Function, additionalMessage);
 					tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['VnaDataAnalysis' condition value verification] 'Function' condition value invalid." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
@@ -10322,9 +10109,9 @@ namespace AMB7300_TestLibrary_REV2P0
 
 		if (conditionName == VnaSwTimeConditionName_OutputFormat)
 		{
-			if ((amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_Time)				||
-				(amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_MaxPower)				||
-				(amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_MinPower)				||
+			if ((amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_Time) &&
+				(amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_MaxPower) &&
+				(amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_MinPower) &&
 				(amb7300tl->vnaSwTimeTPC.outputFormat != Cond_OutputFormat_VnaSwTime_AvgPower))
 			{
 				ret = ER_CONST_VNASWTIME_CONDITION_VALUE_INPUT_INVALID;

@@ -983,8 +983,8 @@ namespace Functions
 
 			String ^ analysisSetting;
 			String ^ vnaSwTime_TriggerEdge;
-			bool vnaSwTime_MovingAvgOn;
-			bool vnaSwTime_SearchLimitOn;
+			String ^ vnaSwTime_MovingAvgState;
+			String ^ vnaSwTime_SearchLimitState;
 			double vnaSwTime_SearchLimitLevel;
 
 			String ^ outputType;
@@ -1045,6 +1045,10 @@ namespace Functions
 			array<String^> ^ SharedMemoryDataBWSearch_Condition;
 
 			//--  NA for mmFlatness
+
+			//  TraceData_Sds
+			array<String^> ^ TraceData_Sds_SearchRangeEnable;
+			array<String^> ^ TraceData_Sds_SearchType;
 		};
 		VnaDataAnalysisTestParameterConditionAnalysisSetting analysisSetting;
 
@@ -1059,6 +1063,13 @@ namespace Functions
 			double smoothingAperture;
 		};
 		VnaDataAnalysisTestParameterConditionSmoothingSettings smoothingSettings;
+
+		value struct VnaDataAnalysisTestParameterConditionChannelUse
+		{
+			String ^ ChannelUseFristChannel;
+			String^ ChannelUseSecondChannel;
+		};
+		VnaDataAnalysisTestParameterConditionChannelUse ChannelUseTPC;
 
 		/*
 		**	----------------------------------------------------------------------------------------------------
@@ -1297,6 +1308,51 @@ namespace Functions
 			array<double, 2> ^ S21Imaginary_Temp;
 			array<double, 2> ^ S22Real_Temp;
 			array<double, 2> ^ S22Imaginary_Temp;
+			
+			// The Second Channel <<< Total number of frequency points of the SegmentSetting. For array size usage. 
+			// Returned
+			array<double> ^ XAxis2;						// Generic API returned
+			array<double> ^ realRaw2;					// Generic API returned
+			array<double> ^ imaginaryRaw2;				// Generic API returned
+			array<double, 2> ^ freqPoint2;				// Data storage
+
+			array<double> ^ XAxis3;						// Generic API returned
+			array<double> ^ realRaw3;					// Generic API returned
+			array<double> ^ imaginaryRaw3;				// Generic API returned
+			array<double, 2> ^ freqPoint3;				// Data storage
+
+			array<double> ^ XAxis4;						// Generic API returned
+			array<double> ^ realRaw4;					// Generic API returned
+			array<double> ^ imaginaryRaw4;				// Generic API returned
+			array<double, 2> ^ freqPoint4;				// Data storage
+
+/////////// To store temporary results when doing S3P or S4P
+			array<double, 2> ^ S11Real2;
+			array<double, 2> ^ S11Imaginary2;
+			array<double, 2> ^ S21Real2;
+			array<double, 2> ^ S21Imaginary2;
+			array<double, 2> ^ S12Real2;
+			array<double, 2> ^ S12Imaginary2;
+			array<double, 2> ^ S22Real2;
+			array<double, 2> ^ S22Imaginary2;
+
+			array<double, 2> ^ S11Rea13;
+			array<double, 2> ^ S11Imaginary3;
+			array<double, 2> ^ S21Rea13;
+			array<double, 2> ^ S21Imaginary3;
+			array<double, 2> ^ S12Rea13;
+			array<double, 2> ^ S12Imaginary3;
+			array<double, 2> ^ S22Rea13;
+			array<double, 2> ^ S22Imaginary3;
+
+			array<double, 2> ^ S11Rea23;
+			array<double, 2> ^ S11Imaginary4;
+			array<double, 2> ^ S21Rea23;
+			array<double, 2> ^ S21Imaginary4;
+			array<double, 2> ^ S12Rea23;
+			array<double, 2> ^ S12Imaginary4;
+			array<double, 2> ^ S22Rea23;
+			array<double, 2> ^ S22Imaginary4;
 
 			// True when using Single Measurement Different Traces, else No Duplicate Measurement at different trace. 
 			bool isSMDT;
@@ -1622,6 +1678,8 @@ namespace Functions
 		int VnaDataAnalysis_TrueParallel(int tfSite, int vnaSiteIndex, double % result);
 
 		int VnaSwTime(int tfSite, int vnaSiteIndex, double % result);
+		double CalculateSwTime_WithMA(array<double>^ dbmArray, int rise_h_fall_l, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle);
+		double CalculateSwTime_NoMA(array<double>^ dbmArray, int rise_h_fall_l, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle);
 
 		// Log Detector & Digitizer (for switching time)
 		int InitializeExtModule(int tfSite, int siteIndex);
@@ -1807,6 +1865,8 @@ namespace Functions
 		**	----------------------------------------------------------------------------------------------------
 		*/
 		int SaveTraceDataToTouchstoneFile_CMT(int tfSite, int vnaSiteIndex);
+
+		int GetTraceFormatData_CMT_Sds(int tfSite, int vnaSiteIndex);
 
 #pragma endregion
 
