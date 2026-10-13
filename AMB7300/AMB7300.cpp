@@ -5121,11 +5121,25 @@ namespace Functions
 									
 									if (vnaSwTimeTPC.vnaSwTime_MovingAvgState == Cond_AnalysisSetting_VnaSwTime_MovingAvgOn)
 									{
-										result = CalculateSwTime_WithMA(dbmArray, edge, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										if (vnaSwTimeTPC.vnaSwTime_SearchLimitState == Cond_AnalysisSetting_VnaSwTime_SearchLimitOn)
+										{
+											result = CalculateSwTime_WithMA(dbmArray, edge, true, vnaSwTimeTPC.vnaSwTime_SearchLimitLevel, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										}
+										else if (vnaSwTimeTPC.vnaSwTime_SearchLimitState == Cond_AnalysisSetting_VnaSwTime_SearchLimitOff)
+										{
+											result = CalculateSwTime_WithMA(dbmArray, edge, false, vnaSwTimeTPC.vnaSwTime_SearchLimitLevel, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										}
 									}
 									else if (vnaSwTimeTPC.vnaSwTime_MovingAvgState == Cond_AnalysisSetting_VnaSwTime_MovingAvgOff)
 									{
-										result = CalculateSwTime_NoMA(dbmArray, edge, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										if (vnaSwTimeTPC.vnaSwTime_SearchLimitState == Cond_AnalysisSetting_VnaSwTime_SearchLimitOn)
+										{
+											result = CalculateSwTime_NoMA(dbmArray, edge, true, vnaSwTimeTPC.vnaSwTime_SearchLimitLevel, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										}
+										else if (vnaSwTimeTPC.vnaSwTime_SearchLimitState == Cond_AnalysisSetting_VnaSwTime_SearchLimitOff)
+										{
+											result = CalculateSwTime_NoMA(dbmArray, edge, false, vnaSwTimeTPC.vnaSwTime_SearchLimitLevel, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										}
 									}
 								}
 								else if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_MaxPower) result = max_dBm;
@@ -5223,11 +5237,25 @@ namespace Functions
 									double dummy_sampleRate = 1 MHz;
 									if (vnaSwTimeTPC.vnaSwTime_MovingAvgState == Cond_AnalysisSetting_VnaSwTime_MovingAvgOn)
 									{
-										result = CalculateSwTime_WithMA(dbmArray, edge, dummy_sampleRate, triggerDelay, dummyInit, dummySettle);
+										if (vnaSwTimeTPC.vnaSwTime_SearchLimitState == Cond_AnalysisSetting_VnaSwTime_SearchLimitOn)
+										{
+											result = CalculateSwTime_WithMA(dbmArray, edge, true, vnaSwTimeTPC.vnaSwTime_SearchLimitLevel, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										}
+										else if (vnaSwTimeTPC.vnaSwTime_SearchLimitState == Cond_AnalysisSetting_VnaSwTime_SearchLimitOff)
+										{
+											result = CalculateSwTime_WithMA(dbmArray, edge, false, vnaSwTimeTPC.vnaSwTime_SearchLimitLevel, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										}
 									}
 									else if (vnaSwTimeTPC.vnaSwTime_MovingAvgState == Cond_AnalysisSetting_VnaSwTime_MovingAvgOff)
 									{
-										result = CalculateSwTime_NoMA(dbmArray, edge, dummy_sampleRate, triggerDelay, dummyInit, dummySettle);
+										if (vnaSwTimeTPC.vnaSwTime_SearchLimitState == Cond_AnalysisSetting_VnaSwTime_SearchLimitOn)
+										{
+											result = CalculateSwTime_NoMA(dbmArray, edge, true, vnaSwTimeTPC.vnaSwTime_SearchLimitLevel, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										}
+										else if (vnaSwTimeTPC.vnaSwTime_SearchLimitState == Cond_AnalysisSetting_VnaSwTime_SearchLimitOff)
+										{
+											result = CalculateSwTime_NoMA(dbmArray, edge, false, vnaSwTimeTPC.vnaSwTime_SearchLimitLevel, pXIe9852_Info->sampleRate, triggerDelay, dummyInit, dummySettle);
+										}
 									}
 								}
 								else if (vnaSwTimeTPC.outputFormat == Cond_OutputFormat_VnaSwTime_MaxPower) result = max_dBm;
@@ -5264,7 +5292,7 @@ namespace Functions
 	EndOfTest:
 		return ret;
 	}
-	double AMB7300TestLibrary::CalculateSwTime_WithMA(cli::array<double>^ dbmArray, int rise_h_fall_l, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle)
+	double AMB7300TestLibrary::CalculateSwTime_WithMA(cli::array<double>^ dbmArray, int rise_h_fall_l, bool limitEnabled, double limitLevel, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle)
 	{
 		double timing = CONST_INVALID_RESULT;
 		int sampleNum = dbmArray->Length;
@@ -5277,6 +5305,7 @@ namespace Functions
 		{
 			pData_Watt[i] = 1e-3 * Math::Pow(10, dbmArray[i] / 10.0);
 		}
+		double limitLevel_watt = 1e-3 * Math::Pow(10, limitLevel / 10.0);
 
 		// Moving Average logic
 		int factor = 20; 
@@ -5339,6 +5368,7 @@ namespace Functions
 		}
 
 		// Get initiate power and settled power
+		//HARDCODED to get first 10 and last 10 samples averaage for init and settled power
 		int pCount = 0;
 		double pInit = 0.0;
 		double pSettle = 0.0;
@@ -5348,7 +5378,7 @@ namespace Functions
 
 		if (rise_h_fall_l == 0) // Falling edge
 		{
-			for (int i = 0; i < 100 && i < sampleNum; i++) 
+			for (int i = 0; i < 10 && i < sampleNum; i++) 
 			{ 
 				pInit += pData_MA[i]; 
 				pCount++; 
@@ -5357,7 +5387,7 @@ namespace Functions
 			pInit /= pCount; 
 			pCount = 0;
 
-			for (int i = sampleNum - 1; i > sampleNum - 101 && i >= 0; i--) 
+			for (int i = sampleNum - 1; i > sampleNum - 10 && i >= 0; i--) 
 			{ 
 				pSettle += pData_MA[i]; 
 				pCount++; 
@@ -5371,7 +5401,7 @@ namespace Functions
 		}
 		else // Rising edge
 		{
-			for (int i = 0; i < 30 && i < sampleNum; i++) 
+			for (int i = 0; i < 10 && i < sampleNum; i++) 
 			{ 
 				pInit += pData_MA[i]; 
 				pCount++; 
@@ -5380,7 +5410,7 @@ namespace Functions
 			pInit /= pCount; 
 			pCount = 0;
 
-			for (int i = sampleNum - 1; i > sampleNum - 601 && i >= 0; i--) 
+			for (int i = sampleNum - 1; i > sampleNum - 10 && i >= 0; i--) 
 			{ 
 				pSettle += pData_MA[i]; 
 				pCount++; 
@@ -5406,6 +5436,21 @@ namespace Functions
 			int pStartConsecutiveFound = 3;
 			int pStartConsecutiveCount = 0;
 			int consecutiveFound = 1;
+
+			if (limitEnabled)
+			{
+				for (int i = 0; i < sampleNum; i++)
+				{
+					if (pData_Watt[i] > limitLevel_watt)
+					{ 
+						break;
+					}
+					else 
+					{
+						return -999;
+					}
+				}
+			}
 
 			for (int i = 0; i < sampleNum; i++)
 			{
@@ -5450,6 +5495,21 @@ namespace Functions
 			int pStartConsecutiveCount = 0;
 			int consecutiveFound = 3;
 
+			if (limitEnabled)
+			{
+				for (int i = 0; i < sampleNum; i++)
+				{
+					if (pData_Watt[i] < limitLevel_watt)
+					{ 
+						break;
+					}
+					else 
+					{
+						return -999;
+					}
+				}
+			}
+
 			for (int i = sampleNum - 1; i > 1; i--)
 			{
 				if (pData_MA[i] > pStart) 
@@ -5490,7 +5550,7 @@ namespace Functions
 
 		return timing;
 	}
-	double AMB7300TestLibrary::CalculateSwTime_NoMA(cli::array<double>^ dbmArray, int rise_h_fall_l, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle)
+	double AMB7300TestLibrary::CalculateSwTime_NoMA(cli::array<double>^ dbmArray, int rise_h_fall_l, bool limitEnabled, double limitLevel, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle)
 	{
 		double timing = CONST_INVALID_RESULT;
 		int sampleNum = dbmArray->Length;
@@ -5501,8 +5561,10 @@ namespace Functions
 		{
 			pData_Watt[i] = 1e-3 * Math::Pow(10, dbmArray[i] / 10.0);
 		}
+		double limitLevel_watt = 1e-3 * Math::Pow(10, limitLevel / 10.0);
 
 		// Get initiate power and settled power straight from raw Watts
+		//HARDCODED to get first 10 and last 10 samples averaage for init and settled power
 		int pCount = 0;
 		double pInit = 0.0;
 		double pSettle = 0.0;
@@ -5512,7 +5574,7 @@ namespace Functions
 
 		if (rise_h_fall_l == 0) // Falling edge
 		{
-			for (int i = 0; i < 100 && i < sampleNum; i++) 
+			for (int i = 0; i < 10 && i < sampleNum; i++) 
 			{ 
 				pInit += pData_Watt[i]; 
 				pCount++; 
@@ -5521,7 +5583,7 @@ namespace Functions
 			pInit /= pCount; 
 			pCount = 0;
 
-			for (int i = sampleNum - 1; i > sampleNum - 101 && i >= 0; i--) 
+			for (int i = sampleNum - 1; i > sampleNum - 10 && i >= 0; i--) 
 			{ 
 				pSettle += pData_Watt[i]; 
 				pCount++; 
@@ -5535,7 +5597,7 @@ namespace Functions
 		}
 		else // Rising edge
 		{
-			for (int i = 0; i < 30 && i < sampleNum; i++) 
+			for (int i = 0; i < 10 && i < sampleNum; i++) 
 			{ 
 				pInit += pData_Watt[i]; 
 				pCount++; 
@@ -5544,7 +5606,7 @@ namespace Functions
 			pInit /= pCount; 
 			pCount = 0;
 
-			for (int i = sampleNum - 1; i > sampleNum - 601 && i >= 0; i--) 
+			for (int i = sampleNum - 1; i > sampleNum - 10 && i >= 0; i--) 
 			{ 
 				pSettle += pData_Watt[i]; 
 				pCount++; 
@@ -5570,6 +5632,21 @@ namespace Functions
 			int pStartConsecutiveFound = 3;
 			int pStartConsecutiveCount = 0;
 			int consecutiveFound = 1;
+
+			if (limitEnabled)
+			{
+				for (int i = 0; i < sampleNum; i++)
+				{
+					if (pData_Watt[i] > limitLevel_watt)
+					{ 
+						break;
+					}
+					else 
+					{
+						return -999;
+					}
+				}
+			}
 
 			for (int i = 0; i < sampleNum; i++)
 			{
@@ -5613,6 +5690,21 @@ namespace Functions
 			int pStartConsecutiveFound = 3;
 			int pStartConsecutiveCount = 0;
 			int consecutiveFound = 3;
+
+			if (limitEnabled)
+			{
+				for (int i = 0; i < sampleNum; i++)
+				{
+					if (pData_Watt[i] < limitLevel_watt)
+					{ 
+						break;
+					}
+					else 
+					{
+						return -999;
+					}
+				}
+			}
 
 			for (int i = sampleNum - 1; i > 1; i--)
 			{

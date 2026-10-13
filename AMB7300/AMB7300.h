@@ -1678,8 +1678,8 @@ namespace Functions
 		int VnaDataAnalysis_TrueParallel(int tfSite, int vnaSiteIndex, double % result);
 
 		int VnaSwTime(int tfSite, int vnaSiteIndex, double % result);
-		double CalculateSwTime_WithMA(array<double>^ dbmArray, int rise_h_fall_l, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle);
-		double CalculateSwTime_NoMA(array<double>^ dbmArray, int rise_h_fall_l, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle);
+		double CalculateSwTime_WithMA(array<double>^ dbmArray, int rise_h_fall_l, bool limitEnabled, double limitLevel, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle);
+		double CalculateSwTime_NoMA(array<double>^ dbmArray, int rise_h_fall_l, bool limitEnabled, double limitLevel, double sampleRate, double digitizerTriggerDelay, double %powerInit, double %powerSettle);
 
 		// Log Detector & Digitizer (for switching time)
 		int InitializeExtModule(int tfSite, int siteIndex);
