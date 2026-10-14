@@ -4398,24 +4398,24 @@ namespace AMB7300_TestLibrary_REV2P0
 	/// <item attribute="hilimitprefix">None</item>
 	/// <list type="TestParameterCondition">
 	/// <item attribute="name">MathFunction</item>
-	/// <item attribute="description">Specifies the calculation type. TP1 Operates TP2. For example, using Add will yield the results of TP1 + TP2, Subtract the will yield the result of TP1 - TP2.</item>
-	/// <item attribute="value">Add</item>
+	/// <item attribute="description">Specifies the calculation equation with provided ResultKey variable. For example, abs(((A+B)/sqrt(2))-((A-B)/sqrt(2)).</item>
+	/// <item attribute="value">abs(((A+B)/sqrt(2))-((A-B)/sqrt(2))</item>
 	/// <item attribute="prefix">None</item>
 	/// <item attribute="unit"></item>
 	/// <item attribute="datatype">String</item>
 	/// </list>
 	/// <list type="TestParameterCondition">
-	/// <item attribute="name">MathTP1</item>
-	/// <item attribute="description">Specifies the TP1 used for calculation.</item>
-	/// <item attribute="value">TP1</item>
+	/// <item attribute="name">ResultKey_A</item>
+	/// <item attribute="description">Specifies the ResultKey used for calculation.</item>
+	/// <item attribute="value">IL_2600_ANT_RF1</item>
 	/// <item attribute="prefix">None</item>
 	/// <item attribute="unit"></item>
 	/// <item attribute="datatype">String</item>
 	/// </list>
 	/// <list type="TestParameterCondition">
-	/// <item attribute="name">MathTP2</item>
-	/// <item attribute="description">Specifies the TP2 used for calculation.</item>
-	/// <item attribute="value">TP2</item>
+	/// <item attribute="name">ResultKey_B</item>
+	/// <item attribute="description">Specifies the ResultKey used for calculation.</item>
+	/// <item attribute="value">IL_2600_ANT_RF2</item>
 	/// <item attribute="prefix">None</item>
 	/// <item attribute="unit"></item>
 	/// <item attribute="datatype">String</item>
@@ -4450,8 +4450,11 @@ namespace AMB7300_TestLibrary_REV2P0
 
 		// Local variable
 		int ret = 0;
-		array<String^> ^ reservedForNA = nullptr;
-
+		
+		String ^ NewString = nullptr;
+		array<Char>^ Separators = { '_' };
+		array<String^>^ SplitString;
+		int Count = 0;
 #pragma region "MathFunction"
 
 		//-------------------- MathFunction --------------------
@@ -4469,52 +4472,106 @@ namespace AMB7300_TestLibrary_REV2P0
 		}
 
 		// Validate condition value input --> 'MathFunction'
-		ret = ValidateConditionValueInput_Math(tfSite, siteIndex, MathConditionName_Function, reservedForNA);
-		if (ret != 0) goto EndOfTest;
+		//ret = ValidateConditionValueInput_Math(tfSite, siteIndex, MathConditionName_Function, reservedForNA);
+		//if (ret != 0) goto EndOfTest;
 
 #pragma endregion
 
-#pragma region "MathTP1"
+#pragma region "MathTP1 (Obsolete)"
 
-		//-------------------- MathFunction --------------------
-		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], MathConditionName_TP1))
-		{
-			amb7300tl->MathTPC.mathTP1 = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], MathConditionName_TP1);
-		}
-		else
-		{
-			ret = ER_CONST_MATH_CONDITION_NAME_NOT_FOUND;
-			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, MathConditionName_TP1);
-			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathConditionName_TP1' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathConditionName_TP1' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-			return ret;
-		}
+		////-------------------- MathFunction --------------------
+		//if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], MathConditionName_TP1))
+		//{
+		//	amb7300tl->MathTPC.mathTP1 = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], MathConditionName_TP1);
+		//}
+		//else
+		//{
+		//	ret = ER_CONST_MATH_CONDITION_NAME_NOT_FOUND;
+		//	amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, MathConditionName_TP1);
+		//	tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathConditionName_TP1' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+		//	tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathConditionName_TP1' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+		//	return ret;
+		//}
 
-		// Validate condition value input --> 'MathFunction'
-		ret = ValidateConditionValueInput_Math(tfSite, siteIndex, MathConditionName_TP1, reservedForNA);
-		if (ret != 0) goto EndOfTest;
+		//// Validate condition value input --> 'MathFunction'
+		//ret = ValidateConditionValueInput_Math(tfSite, siteIndex, MathConditionName_TP1, reservedForNA);
+		//if (ret != 0) goto EndOfTest;
 
 #pragma endregion
 
-#pragma region "MathTP2"
+#pragma region "MathTP2 (Obsolete)"
 
-		//-------------------- MathFunction --------------------
-		if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], MathConditionName_TP2))
+		////-------------------- MathFunction --------------------
+		//if (tf_TestParameter_ConditionExist(tl->glob->currentSubItemName[siteIndex], MathConditionName_TP2))
+		//{
+		//	amb7300tl->MathTPC.mathTP2 = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], MathConditionName_TP2);
+		//}
+		//else
+		//{
+		//	ret = ER_CONST_MATH_CONDITION_NAME_NOT_FOUND;
+		//	amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, MathConditionName_TP2);
+		//	tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathConditionName_TP2' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+		//	tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathConditionName_TP2' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+		//	return ret;
+		//}
+
+		//// Validate condition value input --> 'MathFunction'
+		//ret = ValidateConditionValueInput_Math(tfSite, siteIndex, MathConditionName_TP2, reservedForNA);
+		//if (ret != 0) goto EndOfTest;
+
+#pragma endregion
+
+#pragma region "ResultKey"
+
+		//>>>>>>>>>>>>>>>>>>>> Compulsory <<<<<<<<<<<<<<<<<<<<
+		ConditionCollection ^ testConditionCollection = gcnew ConditionCollection();
+		testConditionCollection = tf_TestParameter_ConditionList(tl->glob->currentSubItemName[siteIndex]);
+
+		//Finding the number of Variable used for the expression
+		for each(Condition ^ testcond in testConditionCollection)
 		{
-			amb7300tl->MathTPC.mathTP2 = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], MathConditionName_TP2);
-		}
-		else
-		{
-			ret = ER_CONST_MATH_CONDITION_NAME_NOT_FOUND;
-			amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, MathConditionName_TP2);
-			tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathConditionName_TP2' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-			tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathConditionName_TP2' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-			return ret;
+			if (testcond->Name->StartsWith("ResultKey_"))
+			{
+				amb7300tl->MathTPC.VariableCount++;
+			}
 		}
 
-		// Validate condition value input --> 'MathFunction'
-		ret = ValidateConditionValueInput_Math(tfSite, siteIndex, MathConditionName_TP2, reservedForNA);
-		if (ret != 0) goto EndOfTest;
+		amb7300tl->MathTPC.Variable = gcnew array <String^>(amb7300tl->MathTPC.VariableCount);
+		amb7300tl->MathTPC.globalResultKey = gcnew array <String^>(amb7300tl->MathTPC.VariableCount);
+		amb7300tl->MathTPC.GlobalResultValue_Int32 = gcnew array <int>(amb7300tl->MathTPC.VariableCount);
+		amb7300tl->MathTPC.GlobalResultValue_Double = gcnew array <double>(amb7300tl->MathTPC.VariableCount);
+
+		//Casting the Variable and Store in Array
+		for each(Condition ^ testcond in testConditionCollection)
+		{
+			if (testcond->Name->StartsWith("ResultKey_"))
+			{
+				SplitString = testcond->Name->Split(Separators, System::StringSplitOptions::None);
+				amb7300tl->MathTPC.Variable[Count] = SplitString[2];
+				Count++;
+			}
+		}
+
+		//Casting the GlobalResultKey
+		for (int i = 0; i < amb7300tl->MathTPC.VariableCount; i++)
+		{
+			if ((bool)testConditionCollection->ContainsKey("ResultKey_" + amb7300tl->MathTPC.Variable[i]))
+			{
+				amb7300tl->MathTPC.globalResultKey[i] = (String^)tf_TestParameter_ConditionCast(tl->glob->currentSubItemName[siteIndex], "ResultKey_" + amb7300tl->MathTPC.Variable[i]);
+			}
+			else
+			{
+				ret = ER_CONST_MATH_CONDITION_NAME_NOT_FOUND;
+				amb7300tl->ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, MathConditionName_Function);
+				tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathFunction' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "['Math' condition name verification] 'MathFunction' condition name not found." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				return ret;
+			}
+		}
+
+		//// Validate condition value input --> 'ResultKey'
+		//ret = ValidateConditionValueInput_Math(tfSite, siteIndex, ResultKey, reservedForNA);
+		//if (ret != 0) goto EndOfTest;
 
 #pragma endregion
 

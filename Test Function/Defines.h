@@ -2440,6 +2440,7 @@ Version:		v1.0.0.5
 #define MathConditionName_Function										"MathFunction"
 #define MathConditionName_TP1											"MathTP1"
 #define MathConditionName_TP2											"MathTP2"
+#define ResultKey_														"ResultKey_"
 #pragma endregion
 
 

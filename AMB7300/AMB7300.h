@@ -31,6 +31,7 @@ Version:		v1.0.0.5
 using namespace System;
 using namespace System::Reflection;
 using namespace System::Xml;
+using namespace System::Data;
 using namespace Aemulus::Hardware;
 using namespace Aemulus::Configuration;
 using namespace Microsoft::VisualBasic;
@@ -1081,6 +1082,14 @@ namespace Functions
 			String ^ mathFunction;
 			String ^ mathTP1;
 			String ^ mathTP2;
+
+			int VariableCount = 0;
+
+			array<String^>^ Variable = nullptr;
+			array<String^>^ globalResultKey = nullptr;
+			array<int>^ GlobalResultValue_Int32 = nullptr;
+			array<double>^ GlobalResultValue_Double = nullptr;
+
 		};
 		TestParameterCondition_Math MathTPC;
 

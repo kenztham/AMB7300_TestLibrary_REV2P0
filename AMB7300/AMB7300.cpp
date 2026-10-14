@@ -8180,37 +8180,153 @@ namespace Functions
 	{
 		// Local variable
 		int ret = 0;
+
+		Object^Answer;
+		DataTable ^ dt = gcnew DataTable();
+		Regex ^ rgx = gcnew Regex("[a-zA-Z]");
+		//DataType dataType = ((TestItem^)site->FlowItems[site->CurrentFlowItem->Name])->TestParameters[testParameterName]->DataType;
+		String ^ NewString = nullptr;
+
 		result = (double)CONST_INVALID_RESULT;
 
 		tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[Math] Executing 'Math' phase.");
 		tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[Math] Executing 'Math' phase.");
 
-		double resTP1 = (double)tl->glob->TestProperty[siteIndex].TestResults[MathTPC.mathTP1];
-		double resTP2 = (double)tl->glob->TestProperty[siteIndex].TestResults[MathTPC.mathTP2];
-		
-		if (MathTPC.mathFunction == Cond_TestFunction_Add)
+#pragma region "Old Method (Obsolete)"
+		//double resTP1 = (double)tl->glob->TestProperty[siteIndex].TestResults[MathTPC.mathTP1];
+		//double resTP2 = (double)tl->glob->TestProperty[siteIndex].TestResults[MathTPC.mathTP2];
+		//
+		//if (MathTPC.mathFunction == Cond_TestFunction_Add)
+		//{
+		//	result = resTP1 + resTP2;
+		//}
+		//else if (MathTPC.mathFunction == Cond_TestFunction_Subtract)
+		//{
+		//	result = resTP1 - resTP2;
+		//}
+		//else if (MathTPC.mathFunction == Cond_TestFunction_AbsAdd)
+		//{
+		//	result = System::Math::Abs(resTP1 + resTP2);
+		//}
+		//else if (MathTPC.mathFunction == Cond_TestFunction_AbsSubtract)
+		//{
+		//	result = System::Math::Abs(resTP1 - resTP2);
+		//}
+#pragma endregion
+
+
+		//Checking and Casting
+		for (int i = 0; i < MathTPC.VariableCount; i++)
 		{
-			result = resTP1 + resTP2;
-		}
-		else if (MathTPC.mathFunction == Cond_TestFunction_Subtract)
-		{
-			result = resTP1 - resTP2;
-		}
-		else if (MathTPC.mathFunction == Cond_TestFunction_AbsAdd)
-		{
-			result = System::Math::Abs(resTP1 + resTP2);
-		}
-		else if (MathTPC.mathFunction == Cond_TestFunction_AbsSubtract)
-		{
-			result = System::Math::Abs(resTP1 - resTP2);
+			//Checking the availablity of the key inside the Dictionary
+			if (!tl->glob->TestProperty[siteIndex].TestResults->ContainsKey(MathTPC.globalResultKey[i]))
+			{
+				tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + MathTPC.Variable[i] + " = " + MathTPC.globalResultKey[i] + "] is not found.");
+				tl->WriteToFileLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + MathTPC.Variable[i] + " = " + MathTPC.globalResultKey[i] + "] is not found.");
+				goto EndOfTest;
+			}
+
+			//Cast the Value according to the Key
+			//switch (dataType)
+			//{
+			//case DataType::Double:
+				MathTPC.GlobalResultValue_Double[i] = (double)tl->glob->TestProperty[siteIndex].TestResults[MathTPC.globalResultKey[i]];
+			//	break;
+			//case DataType::Int32:
+			//	MathTPC.GlobalResultValue_Int32[i] = (int)tltl->glob->TestProperty[siteIndex].TestResults[MathTPC.globalResultKey[i]];
+			//	break;
+			//default:
+			//	break;
+			//}
 		}
 
+		//Replace the variable of the Expression to value(int or double)
+		for (int i = 0; i < MathTPC.VariableCount; i++)
+		{
+			if (MathTPC.mathFunction->Contains(MathTPC.Variable[i]))
+			{
+				//switch (dataType)
+				//{
+				//case DataType::Double:
+					NewString = MathTPC.GlobalResultValue_Double[i].ToString("f20");
+				//	break;
+				//case DataType::Int32:
+				//	NewString = MathTPC.GlobalResultValue_Int32[i].ToString("f20");
+				//	break;
+				//default:
+				//	break;
+				//}
+				
+				// This ensures "a" gets replaced, but the "a" in "abs" is ignored
+				String^ pattern = "\\b" + Regex::Escape(MathTPC.Variable[i]) + "\\b";
+
+				MathTPC.mathFunction = MathTPC.mathFunction->Replace(MathTPC.Variable[i], NewString);
+			}
+		}
+
+		//Checking any Variable that are not assigned by value on the expression
+		String^ tempCheck = Regex::Replace(MathTPC.mathFunction, "\\b(abs|sqrt|pow|sin|cos|tan)\\b", "", RegexOptions::IgnoreCase);
+		Match^ strayVarMatch = Regex::Match(tempCheck, "\\b[a-zA-Z]+\\b");
+		if (strayVarMatch->Success)
+		{
+			String ^ Value = strayVarMatch->Value;
+			tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + Value + "] is not found or invalid.");
+			tl->WriteToFileLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + Value + "] is not found or invalid.");
+			ret = -1;
+			goto EndOfTest;
+		}
+
+		// Evaluate Math functions inside-out before DataTable Compute
+		Regex^ mathRegex = gcnew Regex("\\b(abs|sqrt|pow|sin|cos|tan)\\(([^()]+)\\)", RegexOptions::IgnoreCase);
+		Match^ match = mathRegex->Match(MathTPC.mathFunction);
+
+		while (match->Success)
+		{
+			String^ funcName = match->Groups[1]->Value->ToLower();
+			String^ innerExpression = match->Groups[2]->Value;
+			double computedValue = 0.0;
+
+			if (funcName == "pow")
+			{
+				array<String^>^ powArgs = innerExpression->Split(',');
+				if (powArgs->Length != 2)
+				{
+					tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "pow() requires two arguments separated by a comma.");
+					ret = -1;
+					goto EndOfTest;
+				}
+
+				double baseVal = Convert::ToDouble(dt->Compute(powArgs[0]->Trim(), ""));
+				double expVal = Convert::ToDouble(dt->Compute(powArgs[1]->Trim(), ""));
+				computedValue = Math::Pow(baseVal, expVal);
+			}
+			else
+			{
+				double innerResult = Convert::ToDouble(dt->Compute(innerExpression, ""));
+
+				if (funcName == "abs") computedValue = Math::Abs(innerResult);
+				else if (funcName == "sqrt") computedValue = Math::Sqrt(innerResult);
+				else if (funcName == "sin") computedValue = Math::Sin(innerResult);
+				else if (funcName == "cos") computedValue = Math::Cos(innerResult);
+				else if (funcName == "tan") computedValue = Math::Tan(innerResult);
+			}
+
+			// Replace evaluated function with its numerical result
+			MathTPC.mathFunction = MathTPC.mathFunction->Replace(match->Value, computedValue.ToString("f20"));
+
+			// Check for remaining nested functions
+			match = mathRegex->Match(MathTPC.mathFunction);
+		}
+
+		// Final Computation of the Expression
+		Answer = dt->Compute(MathTPC.mathFunction, "");
+		result = Convert::ToDouble(Answer);
 
 	EndOfTest:
 		if (ret != 0) result = (double)CONST_INVALID_RESULT;
 		return ret;
 	}
-	
+
 	/*
 	**	----------------------------------------------------------------------------------------------------
 	**	CM400 Series Operation
