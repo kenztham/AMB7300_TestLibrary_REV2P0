@@ -200,7 +200,7 @@ namespace Functions
 		
 		for (int siteIndex = 0; siteIndex < tl->glob->tf.NumberOfTestSites; siteIndex++)
 		{
-			//ret = InitializeVna(tfSite, siteIndex);
+			ret = InitializeVna(tfSite, siteIndex);
 			if (ret != 0) goto EndOfTest;
 
 			ret =  InitializeExtModule(tfSite, siteIndex);
@@ -234,7 +234,7 @@ namespace Functions
 			
 			for (int siteIndex = 0; siteIndex < tl->glob->tf.NumberOfTestSites; siteIndex++)
 			{
-				//ret = InitializeAmSeriesResource(tfSite, siteIndex);
+				ret = InitializeAmSeriesResource(tfSite, siteIndex);
 				if (ret != 0) goto EndOfTest;
 			}
 		}
@@ -249,7 +249,7 @@ namespace Functions
 		
 			for (int siteIndex = 0; siteIndex < tl->glob->tf.NumberOfTestSites; siteIndex++)
 			{
-				//ret = InitializeDmSeriesResource(tfSite, siteIndex);
+				ret = InitializeDmSeriesResource(tfSite, siteIndex);
 				if (ret != 0) goto EndOfTest;
 			}
 		}
@@ -8219,10 +8219,10 @@ namespace Functions
 		for (int i = 0; i < MathTPC.VariableCount; i++)
 		{
 			//Checking the availablity of the key inside the Dictionary
-			if (!tl->glob->TestProperty[siteIndex].TestResults->ContainsKey(MathTPC.globalResultKey[i]))
+			if (!tl->glob->TestProperty[siteIndex].TestResults->ContainsKey(MathTPC.globalResultKey[i] + "_S" + siteIndex))
 			{
-				tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + MathTPC.Variable[i] + " = " + MathTPC.globalResultKey[i] + "] is not found.");
-				tl->WriteToFileLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + MathTPC.Variable[i] + " = " + MathTPC.globalResultKey[i] + "] is not found.");
+				tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + MathTPC.Variable[i] + " = " + MathTPC.globalResultKey[i] + "] is not found. Make sure the provided value is in the {TestItem}_{TestParameter} format.");
+				tl->WriteToFileLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + MathTPC.Variable[i] + " = " + MathTPC.globalResultKey[i] + "] is not found. Make sure the provided value is in the {TestItem}_{TestParameter} format.");
 				goto EndOfTest;
 			}
 
@@ -8230,7 +8230,7 @@ namespace Functions
 			//switch (dataType)
 			//{
 			//case DataType::Double:
-				MathTPC.GlobalResultValue_Double[i] = (double)tl->glob->TestProperty[siteIndex].TestResults[MathTPC.globalResultKey[i]];
+				MathTPC.GlobalResultValue_Double[i] = (double)tl->glob->TestProperty[siteIndex].TestResults[MathTPC.globalResultKey[i]+ "_S" + siteIndex];
 			//	break;
 			//case DataType::Int32:
 			//	MathTPC.GlobalResultValue_Int32[i] = (int)tltl->glob->TestProperty[siteIndex].TestResults[MathTPC.globalResultKey[i]];
@@ -8270,38 +8270,47 @@ namespace Functions
 		if (strayVarMatch->Success)
 		{
 			String ^ Value = strayVarMatch->Value;
+			ShowMessageBox(tfSite, siteIndex, TITLE_CONST_CONDITION_NAME_NOT_FOUND, "ResultKey_" + Value );
 			tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + Value + "] is not found or invalid.");
 			tl->WriteToFileLogger(tfSite, siteIndex, INFO, "Test Condition [ ResultKey_" + Value + "] is not found or invalid.");
 			ret = -1;
 			goto EndOfTest;
 		}
 
-		// Evaluate Math functions inside-out before DataTable Compute
-		Regex^ mathRegex = gcnew Regex("\\b(abs|sqrt|pow|sin|cos|tan)\\(([^()]+)\\)", RegexOptions::IgnoreCase);
-		Match^ match = mathRegex->Match(MathTPC.mathFunction);
-
-		while (match->Success)
+		// Evaluate Math functions, powers, and inner parentheses inside-out
+		bool expressionChanged = true;
+		while (expressionChanged)
 		{
-			String^ funcName = match->Groups[1]->Value->ToLower();
-			String^ innerExpression = match->Groups[2]->Value;
-			double computedValue = 0.0;
+			expressionChanged = false;
 
-			if (funcName == "pow")
+			// STEP 1: Handle Power Operator '^' (e.g., "5.0^2.0")
+			// This safely finds a number (base), a caret, and a number (exponent).
+			// The negative lookbehind (?<!\d\s*) ensures we don't mistakenly steal a subtraction sign.
+			Regex^ powerRegex = gcnew Regex("(?<!\\d\\s*)([+-]?\\d+(?:\\.\\d+)?)\\s*\\^\\s*([+-]?\\d+(?:\\.\\d+)?)");
+			Match^ powerMatch = powerRegex->Match(MathTPC.mathFunction);
+
+			if (powerMatch->Success)
 			{
-				array<String^>^ powArgs = innerExpression->Split(',');
-				if (powArgs->Length != 2)
-				{
-					tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "pow() requires two arguments separated by a comma.");
-					ret = -1;
-					goto EndOfTest;
-				}
+				double baseVal = Convert::ToDouble(powerMatch->Groups[1]->Value);
+				double expVal = Convert::ToDouble(powerMatch->Groups[2]->Value);
+				double computedValue = Math::Pow(baseVal, expVal);
 
-				double baseVal = Convert::ToDouble(dt->Compute(powArgs[0]->Trim(), ""));
-				double expVal = Convert::ToDouble(dt->Compute(powArgs[1]->Trim(), ""));
-				computedValue = Math::Pow(baseVal, expVal);
+				MathTPC.mathFunction = MathTPC.mathFunction->Replace(powerMatch->Value, computedValue.ToString("f20"));
+				expressionChanged = true;
+				continue; // Restart loop to handle chained powers or precedence
 			}
-			else
+
+			// STEP 2: Look for innermost Math functions (pow is removed, handled by Step 1)
+			Regex^ mathRegex = gcnew Regex("\\b(abs|sqrt|sin|cos|tan)\\(([^()]+)\\)", RegexOptions::IgnoreCase);
+			Match^ match = mathRegex->Match(MathTPC.mathFunction);
+
+			if (match->Success)
 			{
+				String^ funcName = match->Groups[1]->Value->ToLower();
+				String^ innerExpression = match->Groups[2]->Value;
+				double computedValue = 0.0;
+
+				// Compute the basic math inside the function argument first
 				double innerResult = Convert::ToDouble(dt->Compute(innerExpression, ""));
 
 				if (funcName == "abs") computedValue = Math::Abs(innerResult);
@@ -8309,13 +8318,22 @@ namespace Functions
 				else if (funcName == "sin") computedValue = Math::Sin(innerResult);
 				else if (funcName == "cos") computedValue = Math::Cos(innerResult);
 				else if (funcName == "tan") computedValue = Math::Tan(innerResult);
+
+				MathTPC.mathFunction = MathTPC.mathFunction->Replace(match->Value, computedValue.ToString("f20"));
+				expressionChanged = true;
+				continue;
 			}
 
-			// Replace evaluated function with its numerical result
-			MathTPC.mathFunction = MathTPC.mathFunction->Replace(match->Value, computedValue.ToString("f20"));
+			// STEP 3: Resolve innermost basic arithmetic parentheses
+			Regex^ parenRegex = gcnew Regex("\\(([^()]+)\\)");
+			Match^ parenMatch = parenRegex->Match(MathTPC.mathFunction);
 
-			// Check for remaining nested functions
-			match = mathRegex->Match(MathTPC.mathFunction);
+			if (parenMatch->Success)
+			{
+				double innerResult = Convert::ToDouble(dt->Compute(parenMatch->Groups[1]->Value, ""));
+				MathTPC.mathFunction = MathTPC.mathFunction->Replace(parenMatch->Value, innerResult.ToString("f20"));
+				expressionChanged = true;
+			}
 		}
 
 		// Final Computation of the Expression
@@ -9403,6 +9421,7 @@ namespace Functions
 		int countVnaDataAnalysis	= 0;
 		int countVnaSwTime	= 0;
 		int countMathTest			= 0;
+		int Debug			= 0;
 
 		array<ConditionCollection^> ^ conditionCollection = gcnew array <ConditionCollection^>(tl->glob->tf.NumberOfTestSites);
 		Condition ^ condition;
@@ -9445,11 +9464,15 @@ namespace Functions
 			{
 				countVnaSwTime++;
 			}
-			else if ((condition->Name == (MathConditionName_Function))			||
-					 (condition->Name->Contains(MathConditionName_TP1))			||
-					 (condition->Name->Contains(MathConditionName_TP2)))
+			else if ((condition->Name == (MathConditionName_Function)))//			||
+					 //(condition->Name->Contains(MathConditionName_TP1))			||
+					 //(condition->Name->Contains(MathConditionName_TP2)))
 			{
 				countMathTest++;
+			}
+			else if ((condition->Name == "Debug"))
+			{
+				Debug++;
 			}
 
 		}
@@ -9473,6 +9496,7 @@ namespace Functions
 		// VnaDataAnalysis
 		else if ((countDcTest == 0)				&&
 				(countPatternTest == 0)			&&
+				(countVnaDataAnalysis != 0)		&&
 				(countVnaDataAnalysis % 3 == 0)	&&
 				(countMathTest == 0))
 		{
@@ -9495,6 +9519,10 @@ namespace Functions
 				(countMathTest == ConditionCount_MathTest))
 		{
 			currentPhase = PHASE_CONST_MATH;
+		}
+		else if (Debug == 1)
+		{
+			currentPhase = "Debug";
 		}
 		else
 		{

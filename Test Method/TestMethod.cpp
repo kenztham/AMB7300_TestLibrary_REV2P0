@@ -745,6 +745,21 @@ namespace AMB7300_TestLibrary_REV2P0
 									resultIndex[siteIndex]++;
 
 								}
+								else if (currentPhase == "Debug")
+								{
+									if (tf_TestParameter_ConditionExist(tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]], "Debug"))
+									{
+										result[siteIndex] = (double)tf_TestParameter_ConditionCast(tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]], "Debug");
+									}
+									// Save to result object
+									TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];
+									resultIndex[siteIndex]++;
+
+									String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+									// Save to Dictionary
+									ret = tl->UpdateControlStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
+								}
 							}
 							else
 							{

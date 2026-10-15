@@ -2288,7 +2288,7 @@ Version:		v1.0.0.5
 #define ConditionCount_VnaConfig										7
 #define ConditionCount_VnaFetch											5
 #define ConditionCount_VnaDataAnalysis									9
-#define ConditionCount_MathTest											3
+#define ConditionCount_MathTest											1
 #define ConditionCount_VnaSwTime										5
 /*
 **	----------------------------------------------------------------------------------------------------

@@ -4526,6 +4526,7 @@ namespace AMB7300_TestLibrary_REV2P0
 		//>>>>>>>>>>>>>>>>>>>> Compulsory <<<<<<<<<<<<<<<<<<<<
 		ConditionCollection ^ testConditionCollection = gcnew ConditionCollection();
 		testConditionCollection = tf_TestParameter_ConditionList(tl->glob->currentSubItemName[siteIndex]);
+		amb7300tl->MathTPC.VariableCount = 0; //Reset counter
 
 		//Finding the number of Variable used for the expression
 		for each(Condition ^ testcond in testConditionCollection)
@@ -4547,7 +4548,7 @@ namespace AMB7300_TestLibrary_REV2P0
 			if (testcond->Name->StartsWith("ResultKey_"))
 			{
 				SplitString = testcond->Name->Split(Separators, System::StringSplitOptions::None);
-				amb7300tl->MathTPC.Variable[Count] = SplitString[2];
+				amb7300tl->MathTPC.Variable[Count] = SplitString[1];
 				Count++;
 			}
 		}
