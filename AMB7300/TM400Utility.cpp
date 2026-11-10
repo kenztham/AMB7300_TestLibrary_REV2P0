@@ -43,8 +43,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_INIT_TM_HARDWARE_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> TM400Utility -> InitializeTm] Fail to initialize TM series hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> TM400Utility -> InitializeTm] Fail to initialize TM series hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> TM400Utility -> InitializeTm] Fail to initialize TM series hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -75,8 +74,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_UNINIT_TM_HARDWARE_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> TM400Utility -> UninitializeTm] Fail to uninitialize TM series hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> TM400Utility -> UninitializeTm] Fail to uninitialize TM series hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> TM400Utility -> UninitializeTm] Fail to uninitialize TM series hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 

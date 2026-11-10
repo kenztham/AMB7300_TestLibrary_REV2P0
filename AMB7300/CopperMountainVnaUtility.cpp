@@ -198,8 +198,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_INIT_COPPER_MOUNTAIN_VNA_HARDWARE_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> CopperMountainVnaUtility -> InitializeVna_CMT] Fail to initialize Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> CopperMountainVnaUtility -> InitializeVna_CMT] Fail to initialize Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> CopperMountainVnaUtility -> InitializeVna_CMT] Fail to initialize Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -242,8 +241,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_UNINIT_COPPER_MOUNTAIN_VNA_HARDWARE_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> CopperMountainVnaUtility -> UninitializeVna_CMT] Fail to uninitialize Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> CopperMountainVnaUtility -> UninitializeVna_CMT] Fail to uninitialize Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> CopperMountainVnaUtility -> UninitializeVna_CMT] Fail to uninitialize Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -281,8 +279,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_MPEX_PORT_PAIR_SWITCHING_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureMpexPortPairSwitching_CMT] Fail to configure MPEX port pair switching." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureMpexPortPairSwitching_CMT] Fail to configure MPEX port pair switching." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureMpexPortPairSwitching_CMT] Fail to configure MPEX port pair switching." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			return ret;
 		}
 
@@ -375,10 +372,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_SET_PORT_MATCHING_CIRCUIT_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[KeysightVnaUtility -> SetPortMatchingCircuit_CMT] Fail to set Port Matching circuit." + "\n" +
-				"Please check the provided App-Wide Variable." + "\n" +
-				" | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[KeysightVnaUtility -> SetPortMatchingCircuit_CMT] Fail to set Port Matching circuit." + "\n" +
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[KeysightVnaUtility -> SetPortMatchingCircuit_CMT] Fail to set Port Matching circuit." + "\n" +
 				"Please check the provided App-Wide Variable." + "\n" +
 				" | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			return ret;
@@ -497,8 +491,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_SEGMENT_SETTING_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSegmentSetting_CMT] Fail to configure segment setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSegmentSetting_CMT] Fail to configure segment setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSegmentSetting_CMT] Fail to configure segment setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -581,8 +574,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_GET_TOTAL_ACTIVE_CHANNEL_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetChannelandTraceSetting_CMT] Fail to get total active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetChannelandTraceSetting_CMT] Fail to get total active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetChannelandTraceSetting_CMT] Fail to get total active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -650,9 +642,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_SHARE_MEMORY_GET_CHANNEL_FREQ_POINT_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetChannelandTraceSetting_CMT] Fail to get frequency point from channel." + "\n" +
-				" | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetChannelandTraceSetting_CMT] Fail to get frequency point from channel." + "\n" +
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetChannelandTraceSetting_CMT] Fail to get frequency point from channel." + "\n" +
 				" | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			return ret;
 		}
@@ -854,8 +844,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_TRIGGER_SOURCE_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerSource_CMT] Fail to configure trigger source." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerSource_CMT] Fail to configure trigger source." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerSource_CMT] Fail to configure trigger source." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -883,8 +872,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_TRIGGER_EXTERNAL_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerExternal_CMT] Fail to configure trigger external." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerExternal_CMT] Fail to configure trigger external." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerExternal_CMT] Fail to configure trigger external." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -912,8 +900,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_TRIGGER_OUTPUT_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerOutput_CMT] Fail to configure trigger output." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerOutput_CMT] Fail to configure trigger output." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerOutput_CMT] Fail to configure trigger output." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -941,8 +928,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_TRIGGER_SCOPE_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerScope_CMT] Fail to configure trigger scope." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerScope_CMT] Fail to configure trigger scope." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTriggerScope_CMT] Fail to configure trigger scope." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -992,8 +978,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_GETFROMSTATEFILE_CONFIGURE_SINGLE_TRIGGER_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSingleTriggerForGetFromStateFileType_CMT] Fail to configure single trigger for GetFromStateFile type." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSingleTriggerForGetFromStateFileType_CMT] Fail to configure single trigger for GetFromStateFile type." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSingleTriggerForGetFromStateFileType_CMT] Fail to configure single trigger for GetFromStateFile type." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -1026,8 +1011,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_TRIGGER_ARM_WAIT_FOR_DATA_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureActiveChannelAndSingleTrigger_CMT] Fail to configure active channel, arm and wait for data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureActiveChannelAndSingleTrigger_CMT] Fail to configure active channel, arm and wait for data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureActiveChannelAndSingleTrigger_CMT] Fail to configure active channel, arm and wait for data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -1224,8 +1208,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_TRACE_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTraces_CMT] Fail to configure trace setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTraces_CMT] Fail to configure trace setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureTraces_CMT] Fail to configure trace setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -1277,8 +1260,7 @@ namespace Functions
 			if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 			{
 				ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-				tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-				tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 				goto EndOfTest;
 			}
 
@@ -1317,8 +1299,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Fail to get trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Fail to get trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Fail to get trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -1396,8 +1377,7 @@ namespace Functions
 							markerSearchSetting[i]->_search_Start	= 0.0 MHz;
 							markerSearchSetting[i]->_search_Stop	= 0.0 MHz;							
 							ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_MSMINMAX_FAIL;
-							tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] If enable SearchRangeOn, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-							tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] If enable SearchRangeOn, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+							tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] If enable SearchRangeOn, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 							goto EndOfTest;
 						}
 					}
@@ -1513,8 +1493,7 @@ namespace Functions
 				else
 				{ 
 					ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_MSMINMAX_FAIL;
-					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 					goto EndOfTest;
 				}
 			}
@@ -1612,8 +1591,7 @@ namespace Functions
 						msSetting[vnaSiteIndex].ms_SearchStart[i]	= 0.0 MHz;
 						msSetting[vnaSiteIndex].ms_SearchStop[i]	= 0.0 MHz;
 						ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_MSPEAK_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msPeak] For marker search peak, Freq & FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart. Freq must within FreqRangeStart and FreqRangeStop." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msPeak] For marker search peak, Freq & FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart. Freq must within FreqRangeStart and FreqRangeStop." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msPeak] For marker search peak, Freq & FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart. Freq must within FreqRangeStart and FreqRangeStop." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -1719,8 +1697,7 @@ namespace Functions
 					else
 					{
 						ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_MSPEAK_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msPeak] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msPeak] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msPeak] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 				}
@@ -1828,8 +1805,7 @@ namespace Functions
 						msSetting[vnaSiteIndex].ms_SearchStart[i]	= 0.0 MHz;
 						msSetting[vnaSiteIndex].ms_SearchStop[i]	= 0.0 MHz;
 						ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_MSTARGET_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msTarget] For marker search target, Freq & FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart. Freq must within FreqRangeStart and FreqRangeStop." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msTarget] For marker search target, Freq & FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart. Freq must within FreqRangeStart and FreqRangeStop." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msTarget] For marker search target, Freq & FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart. Freq must within FreqRangeStart and FreqRangeStop." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -1931,8 +1907,7 @@ namespace Functions
 					else
 					{
 						ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_MSTARGET_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msTarget] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msTarget] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msTarget] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 				}
@@ -1941,8 +1916,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT] Fail to get marker search format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT] Fail to get marker search format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT] Fail to get marker search format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -2019,8 +1993,7 @@ namespace Functions
 							markerMathSetting[i]->Marker1 = 0.0 MHz;
 							markerMathSetting[i]->Marker2 = 0.0 MHz;
 							ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMSTATISTICS_FAIL;
-							tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmStatistics] If enable StatisticsRangeOn, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-							tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmStatistics] If enable StatisticsRangeOn, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+							tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmStatistics] If enable StatisticsRangeOn, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 							goto EndOfTest;
 						}
 					}
@@ -2075,8 +2048,7 @@ namespace Functions
 				else
 				{
 					ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMSTATISTICS_FAIL;
-					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmStatistics] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmStatistics] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmStatistics] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 					goto EndOfTest;
 				}
 			}
@@ -2146,8 +2118,7 @@ namespace Functions
 						{
 							markerMathSetting[i]->Marker1 = 0.0 MHz;
 							ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMBWSEARCH_FAIL;
-							tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-							tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+							tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 							goto EndOfTest;
 						}
 
@@ -2228,8 +2199,7 @@ namespace Functions
 				else
 				{
 					ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMBWSEARCH_FAIL;
-					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 					goto EndOfTest;
 				}
 			}
@@ -2299,8 +2269,7 @@ namespace Functions
 						{
 							markerMathSetting[i]->Marker1 = 0.0 MHz;
 							ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMBWSEARCH_FAIL;
-							tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-							tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+							tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 							goto EndOfTest;
 						}
 
@@ -2413,8 +2382,7 @@ namespace Functions
 						//else
 						//{
 						//	ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_MSMINMAX_FAIL;
-						//	tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						//	tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						//	tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						//	goto EndOfTest;
 						//}
 
@@ -2505,8 +2473,7 @@ namespace Functions
 				else
 				{
 					ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMBWSEARCH_FAIL;
-					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 					goto EndOfTest;
 				}
 			}
@@ -2554,8 +2521,7 @@ namespace Functions
 						markerMathSetting[i]->Marker1 = 0.0 MHz;
 						markerMathSetting[i]->Marker2 = 0.0 MHz;
 						ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMFLATNESS_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmFlatness] For marker math flatness, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmFlatness] For marker math flatness, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmFlatness] For marker math flatness, FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 				}
@@ -2604,8 +2570,7 @@ namespace Functions
 				else
 				{
 					ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMFLATNESS_FAIL;
-					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmFlatness] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmFlatness] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmFlatness] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 					goto EndOfTest;
 				}
 			}
@@ -2677,8 +2642,7 @@ namespace Functions
 						{
 							markerMathSetting[i]->Marker1 = 0.0 MHz;
 							ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMBWSEARCH_FAIL;
-							tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-							tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+							tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] If enable SearchRefMarker, Freq cannot remain 0Hz." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 							goto EndOfTest;
 						}
 
@@ -2791,8 +2755,7 @@ namespace Functions
 						//else
 						//{
 						//	ret = ER_CONST_GET_MARKER_SEARCH_FORMAT_DATA_MSMINMAX_FAIL;
-						//	tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						//	tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						//	tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchFormatData_CMT -> msMinMax] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						//	goto EndOfTest;
 						//}
 
@@ -2883,8 +2846,7 @@ namespace Functions
 				else
 				{
 					ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_MMBWSEARCH_FAIL;
-					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT -> mmBwSearch] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 					goto EndOfTest;
 				}
 			}
@@ -2892,8 +2854,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_GET_MARKER_MATH_FORMAT_DATA_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT] Fail to get marker math format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT] Fail to get marker math format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerMathFormatData_CMT] Fail to get marker math format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -2954,8 +2915,7 @@ namespace Functions
 					markerSearchSetting[i]->_search_Start	= 0.0 MHz;
 					markerSearchSetting[i]->_search_Stop	= 0.0 MHz;
 					ret = ER_CONST_GET_MARKER_SEARCH_MIN_MAX_RIPPLE_FAIL;
-					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] FreqRangeStart & FreqRangeStop cannot remain 0Hz. FreqRangeStop cannot less than FreqRangeStart." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 					goto EndOfTest;
 				}
 			}
@@ -3047,16 +3007,14 @@ namespace Functions
 			else
 			{ 
 				ret = ER_CONST_GET_MARKER_SEARCH_MIN_MAX_RIPPLE_FAIL;
-				tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-				tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+				tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] Fail to read marker data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 				goto EndOfTest;
 			}
 		}
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_GET_MARKER_SEARCH_MIN_MAX_RIPPLE_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] Fail to get marker search min max ripple data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] Fail to get marker search min max ripple data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetMarkerSearchMinMaxRipple_CMT] Fail to get marker search min max ripple data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -3129,8 +3087,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_AVERAGING_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureAveraging_CMT] Fail to configure averaging setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureAveraging_CMT] Fail to configure averaging setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureAveraging_CMT] Fail to configure averaging setting at the active channel." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -3182,8 +3139,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_SMOOTHING_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSmoothing_CMT] Fail to configure smoothing setting at the active trace." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSmoothing_CMT] Fail to configure smoothing setting at the active trace." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> ConfigureSmoothing_CMT] Fail to configure smoothing setting at the active trace." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -3228,8 +3184,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_SOURCE_LOW_SETTING_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[PostProcessing -> PostProcessingTester -> CopperMountainVnaUtility -> SourceLowVna_CMT] Fail to source low Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[PostProcessing -> PostProcessingTester -> CopperMountainVnaUtility -> SourceLowVna_CMT] Fail to source low Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[PostProcessing -> PostProcessingTester -> CopperMountainVnaUtility -> SourceLowVna_CMT] Fail to source low Copper Mountain VNA hardware." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -3609,8 +3564,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_SAVE_TRACE_DATA_TO_TOUCHSTONE_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> SaveTraceDataToTouchstoneFile_CMT] Fail to save trace data to touchstone file." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> SaveTraceDataToTouchstoneFile_CMT] Fail to save trace data to touchstone file." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> SaveTraceDataToTouchstoneFile_CMT] Fail to save trace data to touchstone file." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -3659,8 +3613,7 @@ namespace Functions
 				if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 				{
 					ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-					tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-					tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+					tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 					goto EndOfTest;
 				}
 
@@ -3723,8 +3676,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -3768,8 +3720,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -3813,8 +3764,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -3859,8 +3809,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -3951,8 +3900,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -3996,8 +3944,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -4075,8 +4022,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -4120,8 +4066,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -4164,8 +4109,7 @@ namespace Functions
 					if (traceFormatData->realRaw->Length != traceFormatData->totalFreqPoints)
 					{
 						ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-						tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-						tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+						tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Target test frequency does not exist in the trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 						goto EndOfTest;
 					}
 
@@ -4208,8 +4152,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_GET_TRACE_FORMAT_DATA_FAIL;
-			tl->WriteToTracerLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Fail to get trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Fail to get trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, vnaSiteIndex, ERROR, "[CopperMountainVnaUtility -> GetTraceFormatData_CMT] Fail to get trace format data." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 

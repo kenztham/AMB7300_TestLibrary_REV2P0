@@ -239,14 +239,14 @@ namespace Functions
 		{
 			String ^ BoardLossFileFolderDirectory;						// Reserved for 'BoardLossFileFolder' folder path directory. Example: BoardLossFileFolder
 			String ^ BoardLossFileDirectory;							// Reserved for 'BoardLoss_TesterID_Sx.csv' file patt directory. Example: BoardLoss_TesterID_S0.csv, BoardLoss_TesterID_S1.csv
-		
+
 			array<int> ^ index;											// BoardLoss file content 'Index'
 			array<String^> ^ hardwarePath;								// BoardLoss file content 'HardwarePath'
 			array<array<double>^> ^ factorValue;						// BoardLoss file content 'S0/S1/S2/...' boardloss factor
 			String ^ BoardLossFileVersion;								// BoardLoss file header 'BoardLoss File Version'
-			
+
 			bool isCreateNewBoardLossFile;								// To determine whether to generate a new BoardLoss_TesterID_Sx.csv file
-			
+
 			Dictionary<String^, array<double>^> ^ BoardLossFactor;		// Global BoardLoss factor, to be called when necessary
 		};
 		BoardLossFileFolderProperty BoardLoss;
@@ -279,15 +279,15 @@ namespace Functions
 		{
 			String ^ FixedOffsetFileFolderDirectory;					// Reserved for 'FixedOffsetFileFolder' folder path directory. Example: FixedOffsetFileFolder
 			String ^ FixedOffsetFileDirectory;							// Reserved for 'FixedOffset_TesterID_Sx.csv' file patt directory. Example: FixedOffset_AMB73001_S0.csv, FixedOffset_AMB73001_S1.csv
-		
+
 			array<int> ^ index;											// FixedOffset file content 'Index'
 			array<String^> ^ testItem;									// FixedOffset file content 'Test Item'
 			array<String^> ^ testParameter;								// FixedOffset file content 'Test Parameter'
 			array<array<double>^> ^ offsetValue;						// FixedOffset file content 'S0/S1/S2/...' offset value
 			String ^ OffsetFileVersion;									// FixedOffset file header 'Offset File Version'
-			
+
 			bool isCreateNewFixedOffsetFile;							// To determine whether to generate a new FixedOffset_TesterID_Sx.csv file
-			
+
 			//Dictionary<String^, array<double>^> ^ ResultOffset;			// Global fixed offset factor, to be called when update result to techFlow
 
 			Dictionary<String^, double> ^ ResultOffset;			// Global fixed offset factor, to be called when update result to techFlow
@@ -359,7 +359,7 @@ namespace Functions
 
 			bool isCreateNewAppsCalFile;							// To determine whether to generate a new AppsCal_TesterID_Sx.csv file
 
-																		//Dictionary<String^, array<double>^> ^ ResultOffset;			// Global fixed offset factor, to be called when update result to techFlow
+																	//Dictionary<String^, array<double>^> ^ ResultOffset;			// Global fixed offset factor, to be called when update result to techFlow
 
 			Dictionary<String^, double> ^ AppsCalFactor;			// Global fixed offset factor, to be called when update result to techFlow
 		};
@@ -546,7 +546,7 @@ namespace Functions
 #pragma region "Test Parameter DataType Property"
 
 		value struct TestParameterDataTypeProperty
-		{			
+		{
 			String ^ StringTyperesult;
 			Int16 Int16TypeResult;
 			Int32 Int32TypeResult;
@@ -569,6 +569,7 @@ namespace Functions
 		value struct FlowVariablesProperty
 		{
 			bool AssemblyResolver;								// Set True to perform assembly resolve if the loading of.dll / .exe turns out to be unsucessfull due to different DLL Encryptor used for encryption, else False to by-pass the Assembly Resolve via current domain event handler.
+			bool bypass_HardwareInit;
 		};
 		FlowVariablesProperty FLOWVAR;
 

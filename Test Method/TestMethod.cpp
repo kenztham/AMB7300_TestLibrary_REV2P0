@@ -203,8 +203,7 @@ namespace AMB7300_TestLibrary_REV2P0
 								(startFreqCount != delayCount))
 							{
 								ret = ER_CONST_VNACONFIG_CONDITION_SEGMENT_SET_INVALID;
-								amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "[VnaConfig] VNA segment set invalid. 1x of complete segment set contains 'StartFreq' & 'StopFreq' & 'Points' & 'Ifbw' & 'Power' & 'Delay'." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-								amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "[VnaConfig] VNA segment set invalid. 1x of complete segment set contains 'StartFreq' & 'StopFreq' & 'Points' & 'Ifbw' & 'Power' & 'Delay'." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+								amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, WARNING, "[VnaConfig] VNA segment set invalid. 1x of complete segment set contains 'StartFreq' & 'StopFreq' & 'Points' & 'Ifbw' & 'Power' & 'Delay'." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 								goto EndOfTest;
 							}
 							else
@@ -226,7 +225,7 @@ namespace AMB7300_TestLibrary_REV2P0
 							}
 
 							// Execute 'VnaConfig' phase @ AMB7300
-							//ret = amb7300tl->VnaConfig(tfSite, vnaSiteIndex);
+							ret = amb7300tl->VnaConfig(tfSite, vnaSiteIndex);
 							if (ret != 0) goto EndOfTest;
 
 						}
@@ -274,7 +273,7 @@ namespace AMB7300_TestLibrary_REV2P0
 									amb7300tl->VnaDataAnalysis_TrueParallel(tfSite, l_siteIndex, result[l_siteIndex]);
 
 									// Save to Dictionary
-									ret = tl->UpdateControlStepTestResulToDictionary(site, l_siteIndex, identifier, result[l_siteIndex]);
+									ret = tl->UpdateStepTestResulToDictionary(site, l_siteIndex, identifier, result[l_siteIndex]);
 
 								}
 							}
@@ -400,7 +399,6 @@ namespace AMB7300_TestLibrary_REV2P0
 									int delayCount = 0;
 									int segmentSetCount = 0;
 
-									lineNUM = (gcnew System::Diagnostics::StackFrame(0, true))->GetFileLineNumber();
 									conditionCollection = tf_FlowStep_ConditionList(tl->glob->currentSubItemName[siteIndex]);
 									for each (condition in conditionCollection)
 									{
@@ -431,8 +429,7 @@ namespace AMB7300_TestLibrary_REV2P0
 										(startFreqCount != delayCount))
 									{
 										ret = ER_CONST_VNACONFIG_CONDITION_SEGMENT_SET_INVALID;
-										amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, WARNING, "[VnaConfig] VNA segment set invalid. 1x of complete segment set contains 'StartFreq' & 'StopFreq' & 'Points' & 'Ifbw' & 'Power' & 'Delay'." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
-										amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, WARNING, "[VnaConfig] VNA segment set invalid. 1x of complete segment set contains 'StartFreq' & 'StopFreq' & 'Points' & 'Ifbw' & 'Power' & 'Delay'." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
+										amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, WARNING, "[VnaConfig] VNA segment set invalid. 1x of complete segment set contains 'StartFreq' & 'StopFreq' & 'Points' & 'Ifbw' & 'Power' & 'Delay'." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: ");
 										goto EndOfTest;
 									}
 									else
@@ -448,13 +445,12 @@ namespace AMB7300_TestLibrary_REV2P0
 									if (ret != 0) goto EndOfTest;
 
 									// Execute 'VnaConfig' phase @ AMB7300SR
-									//ret = amb7300tl->VnaConfig(tfSite, siteIndex);
+									ret = amb7300tl->VnaConfig(tfSite, siteIndex);
 									if (ret != 0) goto EndOfTest;
 								}
 								else if (tl->glob->currentSubItemName[siteIndex]->Contains(PHASE_CONST_VNA_FETCH))
 								{
 									// Cast condition from 'VnaFetch' & perform the rest of the necessary settings @ AMB7300Utility
-									lineNUM = (gcnew System::Diagnostics::StackFrame(0, true))->GetFileLineNumber();
 									ret = TestLib_ControlStep_VnaFetch_CastCondition(site, tfSite, siteIndex);
 									if (ret != 0) goto EndOfTest;
 
@@ -485,7 +481,7 @@ namespace AMB7300_TestLibrary_REV2P0
 											amb7300tl->VnaDataAnalysis_TrueParallel(tfSite, l_siteIndex, result[l_siteIndex]);
 
 											// Save to Dictionary
-											ret = tl->UpdateControlStepTestResulToDictionary(site, l_siteIndex, identifier, result[l_siteIndex]);
+											ret = tl->UpdateStepTestResulToDictionary(site, l_siteIndex, identifier, result[l_siteIndex]);
 
 										}
 									}
@@ -520,20 +516,21 @@ namespace AMB7300_TestLibrary_REV2P0
 
 									// Result logger
 									String ^ tpUnit = tf_TestParameter_Unit(tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]]);
-									amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[DcTest Result] " + "\n" +
+									amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[DcTest Result] " + "\n" +
 										"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 										"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
 										"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
-									amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[DcTest Result] " + "\n" +
-										"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-										"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
-										"\t Test Result: " + result.ToString() + tpUnit + "\n");
 
 									// Save to result object
 									tl->glob->TestProperty[siteIndex].IsHardwareInvolved[resultIndex[siteIndex]] = true; //Set true for hardware result duplicate checking
 									TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];// +GetOffset(siteIndex, tIName, TPName);
 									result[siteIndex];
 									resultIndex[siteIndex]++;
+
+									String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+									// Save to Dictionary
+									ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 								}
 								else if (currentPhase == PHASE_CONST_PATTERN_TEST)
 								{
@@ -587,11 +584,7 @@ namespace AMB7300_TestLibrary_REV2P0
 											}
 
 											// Result logger
-											amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
-												"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-												"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
-												resultMessage + "\n");
-											amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
+											amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
 												"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 												"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
 												resultMessage + "\n");
@@ -619,11 +612,7 @@ namespace AMB7300_TestLibrary_REV2P0
 											}
 
 											// Result logger
-											amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
-												"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-												"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
-												resultMessage + "\n");
-											amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
+											amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
 												"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 												"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
 												resultMessage + "\n");
@@ -644,11 +633,7 @@ namespace AMB7300_TestLibrary_REV2P0
 											}
 
 											// Result logger
-											amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
-												"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-												"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
-												resultMessage + "\n");
-											amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
+											amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
 												"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 												"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
 												resultMessage + "\n");
@@ -657,15 +642,16 @@ namespace AMB7300_TestLibrary_REV2P0
 											TPtestResult[siteIndex, resultIndex[siteIndex]] = finalResult;
 											resultIndex[siteIndex]++;
 										}
+
+										String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+										// Save to Dictionary
+										ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 									}
 									else if ((amb7300tl->PatternControlCSC.isMultiVecToOneResult == false) && (amb7300tl->PatternControlCSC.isOneVecToMultiResult == true))
 									{
 										// Result logger
-										amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
-											"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-											"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
-											resultMessage + "\n");
-										amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
+										amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
 											"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 											"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
 											resultMessage + "\n");
@@ -678,22 +664,16 @@ namespace AMB7300_TestLibrary_REV2P0
 								else if (currentPhase == PHASE_CONST_VNA_DATA_ANALYSIS)
 								{
 									// Cast condition from 'VnaDataAnalysis' @ AMB7300Utility
-									lineNUM = (gcnew System::Diagnostics::StackFrame(0, true))->GetFileLineNumber();
 									ret = TestLib_TestParameter_VnaDataAnalysis_CastCondition(site, tfSite, siteIndex);
 									if (ret != 0) goto EndOfTest;
 
 									// Execute 'VnaDataAnalysis' phase @ AMB7300
 									result[siteIndex] = (double)CONST_INVALID_RESULT;
 									amb7300tl->VnaDataAnalysis(tfSite, siteIndex, result[siteIndex]);
-									//Util->/(tfSite, timerFilename, lineNUM.ToString() + " VNA_DataAnalysis", 1); //ticktecktock
 
 									// Result logger
 									String ^ tpUnit = tf_TestParameter_Unit(tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]]);
-									amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[VnaDataAnalysis Result] " + "\n" +
-										"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-										"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
-										"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
-									amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[VnaDataAnalysis Result] " + "\n" +
+									amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[VnaDataAnalysis Result] " + "\n" +
 										"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 										"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
 										"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
@@ -702,26 +682,25 @@ namespace AMB7300_TestLibrary_REV2P0
 									tl->glob->TestProperty[siteIndex].IsHardwareInvolved[resultIndex[siteIndex]] = true; //Set true for hardware result duplicate checking
 									TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];// +GetOffset(siteIndex, tIName, TPName);
 									resultIndex[siteIndex]++;
+
+									String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+									// Save to Dictionary
+									ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 								}
 								else if (currentPhase == PHASE_CONST_VNA_SWTIME)
 								{
 									// Cast condition from 'VnaDataAnalysis' @ AMB7300Utility
-									lineNUM = (gcnew System::Diagnostics::StackFrame(0, true))->GetFileLineNumber();
 									ret = TestLib_TestParameter_VnaSwTime_CastCondition(site, tfSite, siteIndex);
 									if (ret != 0) goto EndOfTest;
 
 									// Execute 'VnaDataAnalysis' phase @ AMB7300
 									result[siteIndex] = (double)CONST_INVALID_RESULT;
 									amb7300tl->VnaSwTime(tfSite, siteIndex, result[siteIndex]);
-									//Util->/(tfSite, timerFilename, lineNUM.ToString() + " VNA_DataAnalysis", 1); //ticktecktock
 
 									// Result logger
 									String ^ tpUnit = tf_TestParameter_Unit(tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]]);
-									amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[VnaDataAnalysis Result] " + "\n" +
-										"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-										"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
-										"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
-									amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[VnaDataAnalysis Result] " + "\n" +
+									amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[VnaDataAnalysis Result] " + "\n" +
 										"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 										"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
 										"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
@@ -730,10 +709,14 @@ namespace AMB7300_TestLibrary_REV2P0
 									tl->glob->TestProperty[siteIndex].IsHardwareInvolved[resultIndex[siteIndex]] = true; //Set true for hardware result duplicate checking
 									TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];// +GetOffset(siteIndex, tIName, TPName);
 									resultIndex[siteIndex]++;
+
+									String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+									// Save to Dictionary
+									ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 								}
 								else if (currentPhase == PHASE_CONST_MATH)
 								{
-									lineNUM = (gcnew System::Diagnostics::StackFrame(0, true))->GetFileLineNumber();
 									ret = TestLib_TestParameter_Math_CastCondition(site, tfSite, siteIndex);
 									if (ret != 0) goto EndOfTest;
 
@@ -743,6 +726,11 @@ namespace AMB7300_TestLibrary_REV2P0
 									// Save to result object
 									TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];
 									resultIndex[siteIndex]++;
+
+									String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+									// Save to Dictionary
+									ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 
 								}
 								else if (currentPhase == "Debug")
@@ -758,7 +746,7 @@ namespace AMB7300_TestLibrary_REV2P0
 									String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
 
 									// Save to Dictionary
-									ret = tl->UpdateControlStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
+									ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 								}
 							}
 							else
@@ -1084,11 +1072,7 @@ namespace AMB7300_TestLibrary_REV2P0
 
 				// Result logger
 				String ^ tpUnit = tf_TestParameter_Unit(tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]]);
-				amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[DcTest Result] " + "\n" +
-					"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-					"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
-					"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
-				amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[DcTest Result] " + "\n" +
+				amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[DcTest Result] " + "\n" +
 					"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 					"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[resultIndex[siteIndex]] + "\n" +
 					"\t Test Result: " + result[siteIndex].ToString() + tpUnit + "\n");
@@ -1097,6 +1081,11 @@ namespace AMB7300_TestLibrary_REV2P0
 				tl->glob->TestProperty[siteIndex].IsHardwareInvolved[resultIndex[siteIndex]] = true; //Set true for hardware result duplicate checking
 				TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];
 				resultIndex[siteIndex]++;
+
+				String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+				// Save to Dictionary
+				ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 			}
 			else if (currentPhase == PHASE_CONST_PATTERN_TEST)
 			{
@@ -1150,11 +1139,7 @@ namespace AMB7300_TestLibrary_REV2P0
 						}
 
 						// Result logger
-						amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
-							"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-							"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
-							resultMessage + "\n");
-						amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
+						amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
 							"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 							"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
 							resultMessage + "\n");
@@ -1182,11 +1167,7 @@ namespace AMB7300_TestLibrary_REV2P0
 						}
 
 						// Result logger
-						amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
-							"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-							"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
-							resultMessage + "\n");
-						amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
+						amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
 							"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 							"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
 							resultMessage + "\n");
@@ -1207,11 +1188,7 @@ namespace AMB7300_TestLibrary_REV2P0
 						}
 
 						// Result logger
-						amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
-							"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-							"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
-							resultMessage + "\n");
-						amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
+						amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
 							"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 							"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
 							resultMessage + "\n");
@@ -1224,11 +1201,7 @@ namespace AMB7300_TestLibrary_REV2P0
 				else if ((amb7300tl->PatternControlCSC.isMultiVecToOneResult == false) && (amb7300tl->PatternControlCSC.isOneVecToMultiResult == true))
 				{
 					// Result logger
-					amb7300tl->tl->WriteToTracerLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
-						"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
-						"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
-						resultMessage + "\n");
-					amb7300tl->tl->WriteToFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
+					amb7300tl->tl->WriteToTracerAndFileLogger(tfSite, siteIndex, INFO, "[PatternTest Result] " + "\n" +
 						"\t Test Item: " + tl->glob->TestProperty[siteIndex].TestItemName + "\n" +
 						"\t Test Parameter: " + tl->glob->TestProperty[siteIndex].TestParameterName[amb7300tl->PatternTestTPC.returnIndex] + "\n" +
 						resultMessage + "\n");
@@ -1237,6 +1210,11 @@ namespace AMB7300_TestLibrary_REV2P0
 					TPtestResult[siteIndex, resultIndex[siteIndex]] = res;
 					resultIndex[siteIndex]++;
 				}
+
+				String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+				// Save to Dictionary
+				ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 			}
 			else if (currentPhase == PHASE_CONST_MATH)
 			{
@@ -1249,6 +1227,11 @@ namespace AMB7300_TestLibrary_REV2P0
 				// Save to result object
 				TPtestResult[siteIndex, resultIndex[siteIndex]] = result[siteIndex];
 				resultIndex[siteIndex]++;
+
+				String^ identifier = testItem->Name + "_" + tl->glob->currentSubItemName[siteIndex] + "_S" + siteIndex;
+
+				// Save to Dictionary
+				ret = tl->UpdateStepTestResulToDictionary(site, siteIndex, identifier, result[siteIndex]);
 			}
 		}
 		else

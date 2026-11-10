@@ -55,8 +55,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_INIT_AM_HARDWARE_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> AM400Utility -> InitializeSmu] Fail to initialize AM series hardware (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> AM400Utility -> InitializeSmu] Fail to initialize AM series hardware (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[Load -> InitializeTester -> AM400Utility -> InitializeSmu] Fail to initialize AM series hardware (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -100,8 +99,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_UNINIT_AM_HARDWARE_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> AM400Utility -> UninitializeSmu] Fail to initialize AM series hardware (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> AM400Utility -> UninitializeSmu] Fail to initialize AM series hardware (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[Unload -> UninitializeTester -> AM400Utility -> UninitializeSmu] Fail to initialize AM series hardware (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -153,8 +151,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_CONFIGURE_AM_PIN_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> ConfigurePinSmu] Fail to configure AM pin (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> ConfigurePinSmu] Fail to configure AM pin (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> ConfigurePinSmu] Fail to configure AM pin (SMU)." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -204,8 +201,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_AM_TEST_FUNCTION_OS_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_OS] Fail at OS test." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_OS] Fail at OS test." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_OS] Fail at OS test." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -239,8 +235,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_AM_TEST_FUNCTION_MEASURE_CURRENT_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_MeasureCurrent] Fail to measure current." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_MeasureCurrent] Fail to measure current." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_MeasureCurrent] Fail to measure current." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -274,8 +269,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_AM_TEST_FUNCTION_MEASURE_VOLTAGE_FAIL;
-			tl->WriteToTracerLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_MeasureVoltage] Fail to measure voltage." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			tl->WriteToFileLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_MeasureVoltage] Fail to measure voltage." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			tl->WriteToTracerAndFileLogger(tfSite, siteIndex, ERROR, "[AM400Utility -> SmuTestFunction_MeasureVoltage] Fail to measure voltage." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 

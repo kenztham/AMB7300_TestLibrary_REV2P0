@@ -32,14 +32,16 @@ using namespace System;
 using namespace System::Reflection;
 using namespace System::Xml;
 using namespace System::Data;
-using namespace Aemulus::Hardware;
-using namespace Aemulus::Configuration;
-using namespace Microsoft::VisualBasic;
-using namespace Aemulus::Configuration::AMB7300;
-using namespace Aemulus::Tech::Flow::ProductionSystem;
 using namespace System::Runtime::Remoting;
 using namespace System::Globalization;
 using namespace System::Threading::Tasks;
+using namespace Microsoft::VisualBasic;
+
+using namespace Aemulus::Hardware;
+using namespace Aemulus::Configuration;
+using namespace Aemulus::Configuration::AMB7300;
+using namespace Aemulus::Tech::Flow::ProductionSystem;
+
 using namespace JYPXIe69852;
 
 namespace Functions
@@ -1089,7 +1091,7 @@ namespace Functions
 			array<String^>^ globalResultKey = nullptr;
 			array<int>^ GlobalResultValue_Int32 = nullptr;
 			array<double>^ GlobalResultValue_Double = nullptr;
-
+			bool IncludeOffset = true;
 		};
 		TestParameterCondition_Math MathTPC;
 
@@ -1123,7 +1125,7 @@ namespace Functions
 			int NF_counter; //debug
 		};
 		PXIe9852_Info^ pXIe9852_Info;
-#pragma endregion
+#pragma endregion "Value struct"
 
 #pragma region "Reference struct"
 
@@ -1317,7 +1319,7 @@ namespace Functions
 			array<double, 2> ^ S21Imaginary_Temp;
 			array<double, 2> ^ S22Real_Temp;
 			array<double, 2> ^ S22Imaginary_Temp;
-			
+
 			// The Second Channel <<< Total number of frequency points of the SegmentSetting. For array size usage. 
 			// Returned
 			array<double> ^ XAxis2;						// Generic API returned
@@ -1623,7 +1625,7 @@ namespace Functions
 			array<String^>^ validParams;
 		};
 
-#pragma endregion
+#pragma endregion "Reference struct"
 
 #pragma region "AMB7300.cpp"
 
@@ -1638,7 +1640,7 @@ namespace Functions
 		int PostProcessingTester(Site ^ site);
 		int VNA_Lock(Site^ site);
 		int VNA_Unlock(Site^ site);
-		
+
 		/*
 		**	----------------------------------------------------------------------------------------------------
 		**	AMB7300 VNA Global Object & Variable
@@ -1789,7 +1791,7 @@ namespace Functions
 		void ShowMessageBox(int tfSite, int siteIndex, String ^ messageBoxTitle, String ^ conditionName);
 		void ShowMessageBox(int tfSite, int siteIndex, String ^ messageBoxTitle, String ^ conditionName, String ^ additionalMessage);
 
-#pragma endregion
+#pragma endregion "AMB7300.cpp"
 
 #pragma region "CopperMountainVnaUtility.cpp"
 
@@ -1877,7 +1879,7 @@ namespace Functions
 
 		int GetTraceFormatData_CMT_Sds(int tfSite, int vnaSiteIndex);
 
-#pragma endregion
+#pragma endregion "CopperMountainVnaUtility.cpp"
 
 #pragma region "KeysightVnaUtility.cpp"
 
@@ -1998,7 +2000,7 @@ namespace Functions
 		int SharedMemoryTransfer_DataAnalysis_TrueParallel(int tfSite, int testSiteIndex);
 		int SharedMemoryTransfer_MinMaxRipple_TrueParallel(int tfSite, int testSiteIndex);
 
-#pragma endregion
+#pragma endregion "KeysightVnaUtility.cpp"
 
 #pragma region "CM400Utility.cpp"
 
@@ -2016,7 +2018,7 @@ namespace Functions
 		**	----------------------------------------------------------------------------------------------------
 		*/
 
-#pragma endregion
+#pragma endregion "CM400Utility.cpp"
 
 #pragma region "AM400Utility.cpp"
 
@@ -2038,7 +2040,7 @@ namespace Functions
 		int SmuTestFunction_MeasureCurrent(int tfSite, int siteIndex, String ^ pinAlias, double nplc, double measureDelay, double % result);
 		int SmuTestFunction_MeasureVoltage(int tfSite, int siteIndex, String ^ pinAlias, double nplc, double measureDelay, double % result);
 
-#pragma endregion
+#pragma endregion "AM400Utility.cpp"
 
 #pragma region "DM400Utility.cpp"
 
@@ -2107,7 +2109,7 @@ namespace Functions
 		int GetOperationList(array<String^> ^ mipiSetInfo, String^ mode, String^ % operation, String^ % errorMessage);
 		int GetSpeedList(array<String^> ^ mipiSetInfo, String^ mode, String^ % speed, String^ % errorMessage);
 
-#pragma endregion
+#pragma endregion "DM400Utility.cpp"
 
 #pragma region "IOM400Utility.cpp"
 
@@ -2125,7 +2127,7 @@ namespace Functions
 		**	----------------------------------------------------------------------------------------------------
 		*/
 
-#pragma endregion
+#pragma endregion "IOM400Utility.cpp"
 
 #pragma region "ACM400Utility.cpp"
 
@@ -2143,7 +2145,7 @@ namespace Functions
 		**	----------------------------------------------------------------------------------------------------
 		*/
 
-#pragma endregion
+#pragma endregion "ACM400Utility.cpp"
 
 #pragma region "TM400Utility.cpp"
 
@@ -2161,7 +2163,7 @@ namespace Functions
 		**	----------------------------------------------------------------------------------------------------
 		*/
 
-#pragma endregion
+#pragma endregion "TM400Utility.cpp"
 
 #pragma region "Get PRODUCTIONS STATUS"
 		/*

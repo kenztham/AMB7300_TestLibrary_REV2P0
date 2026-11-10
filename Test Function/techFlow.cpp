@@ -71,8 +71,7 @@ namespace Functions
 		glob->TestProperty[siteIndex].FlowStepItemDisplayName		= gcnew array<String ^>(glob->TestProperty[siteIndex].totalFlowStep);
 		glob->TestProperty[siteIndex].FlowStepItemExecuted			= gcnew array<bool>(glob->TestProperty[siteIndex].totalFlowStep);
 	
-		WriteToTracerLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Test Property] Update test property.");
-		WriteToFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Test Property] Update test property.");
+		WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Test Property] Update test property.");
 
 		try
 		{
@@ -143,8 +142,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_UPDATE_TEST_PROPERTY_FAIL;
-			WriteToTracerLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateTestProperty] Fail to update test property." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			WriteToFileLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateTestProperty] Fail to update test property." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateTestProperty] Fail to update test property." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			throw gcnew Aemulus::Hardware::AlarmException(ex->ToString(), ex->HResult);
 			goto EndOfTest;
 		}
@@ -158,7 +156,7 @@ namespace Functions
 	**	Update Test Result To Dicitionary
 	**	----------------------------------------------------------------------------------------------------
 	*/
-	int TestFunction::UpdateControlStepTestResulToDictionary(Site^ site, int siteIndex, String^ Identifier, double CSTestResult)
+	int TestFunction::UpdateStepTestResulToDictionary(Site^ site, int siteIndex, String^ Identifier, double TestResult)
 	{
 		int ret = 0;
 		int tfSite = glob->tf.TestSite;
@@ -170,15 +168,14 @@ namespace Functions
 		double OffsetFactor = 0.0;
 		String^ key;
 
-		WriteToTracerLogger(glob->tf.TestSite, siteIndex, INFO, "[Update CS Result To Dict] Updating control step result to Dictionary.");
-		WriteToFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update CS Result To Dict] Updating test result to Dictionary.");
+		WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update CS Result To Dict] Updating control step result to Dictionary.");
 
 		try {
 
 			//Identifier = glob->TestProperty[siteIndex].TestParameterDisplayName[i] + "_S" + siteIndex.ToString();
 			key = Identifier;
 			//OffsetFactor			= GetFixedOffsetValue(tfSite, siteIndex, key);
-			glob->ResultWithDataType[siteIndex].DoubleTypeResult = Convert::ToDouble(CSTestResult);// + OffsetFactor;
+			glob->ResultWithDataType[siteIndex].DoubleTypeResult = Convert::ToDouble(TestResult);// + OffsetFactor;
 
 			//Cast current results
 			if (glob->TestProperty[siteIndex].TestResults->ContainsKey(Identifier))
@@ -210,8 +207,7 @@ namespace Functions
 		catch (Exception ^ ex)
 		{
 			ret = ER_CONST_UPDATE_CONTROL_STEP_RESULT_TO_DICT_FAIL;
-			WriteToTracerLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateControlStepTestResulToDictionary] Fail to update control step result to Dictionary." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			WriteToFileLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateControlStepTestResulToDictionary] Fail to update control step result to Dictionary." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateStepTestResulToDictionary] Fail to update control step result to Dictionary." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 
@@ -249,8 +245,7 @@ namespace Functions
 		double OffsetFactor = 0.0;
 		String^ key;
 
-		WriteToTracerLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] Updating test result to techFlow.");
-		WriteToFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] Updating test result to techFlow.");
+		WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] Updating test result to techFlow.");
 
 		try
 		{
@@ -464,15 +459,7 @@ namespace Functions
 					{
 						if (ResultDataType == DataType::Double)
 						{
-							WriteToTracerLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
-								"\t Test Parameter Identifier: " + Identifier + "\n" +
-								"\t techFlow Site: Site " + glob->tf.TestSite.ToString() + "\n" +
-								"\t UUTOffset: Site " + siteIndex.ToString() + "\n" +
-								"\t Raw Test Result: " + (Convert::ToDouble(TPtestResult[siteIndex,i]) / glob->TcrLgr.PrefixValue).ToString() + ResultUnitPrefix + ResultUnit + "\n" +
-								"\t Offset Factor: " + (OffsetFactor / glob->TcrLgr.PrefixValue).ToString() + ResultUnitPrefix + ResultUnit + "\n" +
-								"\t Final Test Result: " + (glob->ResultWithDataType[siteIndex].DoubleTypeResult / glob->TcrLgr.PrefixValue).ToString() + ResultUnitPrefix + ResultUnit + "\n");
-
-							WriteToFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
+							WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
 								"\t Test Parameter Identifier: " + Identifier + "\n" +
 								"\t techFlow Site: Site " + glob->tf.TestSite.ToString() + "\n" +
 								"\t UUTOffset: Site " + siteIndex.ToString() + "\n" +
@@ -482,15 +469,7 @@ namespace Functions
 						}
 						else if (ResultDataType == DataType::Int32)
 						{
-							WriteToTracerLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
-								"\t Test Parameter Identifier: " + Identifier + "\n" +
-								"\t techFlow Site: Site " + glob->tf.TestSite.ToString() + "\n" +
-								"\t UUTOffset: Site " + siteIndex.ToString() + "\n" +
-								"\t Raw Test Result: " + (Convert::ToDouble(TPtestResult[siteIndex,i]) / glob->TcrLgr.PrefixValue).ToString() + ResultUnitPrefix + ResultUnit + "\n" +
-								"\t Offset Factor: " + (OffsetFactor / glob->TcrLgr.PrefixValue).ToString() + ResultUnitPrefix + ResultUnit + "\n" +
-								"\t Final Test Result: " + (glob->ResultWithDataType[siteIndex].IntTypeResult / glob->TcrLgr.PrefixValue).ToString() + ResultUnitPrefix + ResultUnit + "\n");
-
-							WriteToFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
+							WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
 								"\t Test Parameter Identifier: " + Identifier + "\n" +
 								"\t techFlow Site: Site " + glob->tf.TestSite.ToString() + "\n" +
 								"\t UUTOffset: Site " + siteIndex.ToString() + "\n" +
@@ -500,15 +479,7 @@ namespace Functions
 						}
 						else if (ResultDataType == DataType::String)
 						{
-							WriteToTracerLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
-								"\t Test Parameter Identifier: " + Identifier + "\n" +
-								"\t techFlow Site: Site " + glob->tf.TestSite.ToString() + "\n" +
-								"\t UUTOffset: Site " + siteIndex.ToString() + "\n" +
-								"\t Raw Test Result: " + glob->ResultWithDataType[siteIndex].StringTyperesult + "\n" +
-								"\t Offset Factor: " + "NA" + "\n" +
-								"\t Final Test Result: " + glob->ResultWithDataType[siteIndex].StringTyperesult + "\n");
-
-							WriteToFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
+							WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, INFO, "[Update Result To TF] " + "\n" +
 								"\t Test Parameter Identifier: " + Identifier + "\n" +
 								"\t techFlow Site: Site " + glob->tf.TestSite.ToString() + "\n" +
 								"\t UUTOffset: Site " + siteIndex.ToString() + "\n" +
@@ -524,8 +495,7 @@ namespace Functions
 		catch (Exception^ ex)
 		{
 			ret = ER_CONST_UPDATE_RESULT_TO_TF3_FAIL;
-			WriteToTracerLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateTestResultWithOffsetToTechFlow] Fail to update test result to techFlow." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
-			WriteToFileLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateTestResultWithOffsetToTechFlow] Fail to update test result to techFlow." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
+			WriteToTracerAndFileLogger(glob->tf.TestSite, siteIndex, ERROR, "[UpdateTestResultWithOffsetToTechFlow] Fail to update test result to techFlow." + " | " + "Error Code: " + ret.ToString() + " | " + "Detail: " + ex->Message);
 			goto EndOfTest;
 		}
 

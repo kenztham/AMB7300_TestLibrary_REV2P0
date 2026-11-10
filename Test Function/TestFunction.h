@@ -182,6 +182,9 @@ namespace Functions
 		void WriteToFileLgr(String ^ fileDirectory, String ^ message);
 		int UninitializeFileLogger();
 
+		void WRITETOTRACERANDFILELOGGER(int tfSite, int siteIndex, String ^ messageType, String ^ message);
+#define WriteToTracerAndFileLogger(tfSite, siteIndex, messageType, message) WRITETOTRACERANDFILELOGGER(tfSite, siteIndex, messageType, message);
+
 		/*
 		**	----------------------------------------------------------------------------------------------------
 		**	Check Error
@@ -278,10 +281,10 @@ namespace Functions
 
 		/*
 		**	----------------------------------------------------------------------------------------------------
-		**	Update Control Step Test Result To Dicitionary
+		**	Update Step Test Result To Dicitionary
 		**	----------------------------------------------------------------------------------------------------
 		*/
-		int UpdateControlStepTestResulToDictionary(Site^ site, int siteIndex, String^ Identifier, double CSTestResult);
+		int UpdateStepTestResulToDictionary(Site^ site, int siteIndex, String^ Identifier, double TestResult);
 
 		/*
 		**	----------------------------------------------------------------------------------------------------

@@ -72,6 +72,17 @@ namespace Functions
 
 #pragma endregion
 
+#pragma region "Bypass Hardware Init"
+		if ((bool)tf_ControlItem_ConditionExist("BypassHardwareInit"))
+		{
+			glob->FLOWVAR.bypass_HardwareInit = (bool)tf_ControlItem_ConditionCast("BypassHardwareInit");
+		}
+		else
+		{
+			glob->FLOWVAR.bypass_HardwareInit = false;
+		}
+#pragma endregion
+
 		// Get techFlow site property
 		GetTechFlowSiteProperty(site);
 
@@ -3118,6 +3129,11 @@ namespace Functions
 
 	EndOfTest:
 		return ret;
+	}
+
+	void TestFunction::WRITETOTRACERANDFILELOGGER(int tfSite, int siteIndex, String ^ messageType, String ^ message)
+	{
+		WriteToTracerAndFileLogger(tfSite, siteIndex, messageType, message);
 	}
 
 	/*
