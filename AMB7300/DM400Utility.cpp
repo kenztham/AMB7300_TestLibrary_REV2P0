@@ -3,7 +3,7 @@ Copyright (c) Aemulus Corporation Sdn Bhd
 Title:				DM400Utility.cpp
 Purpose:			Contain DM400x related utility functions
 Supported Module:	DM481e, DM482e, DM483e
-Version:			v1.0.0.1
+Version:			v1.0.0.2
 ----------------------------------------------------------------------*/
 
 
@@ -3013,11 +3013,10 @@ namespace Functions
 * Revision Log
 * &Log: DM400Utility.cpp.rca&
 
-
-*** Version	:
-*** Date	:
-*** PIC		:
-*
+*** Version	: v1.0.0.2
+*** Date	: 12 November 2026
+*** PIC		: Zhi Kean
+* SUpport DmConfigureDmOutputTrigger
 
 *** Version	: v1.0.0.1
 *** Date	: 31 March 2023

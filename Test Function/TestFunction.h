@@ -2,7 +2,7 @@
 Copyright (c) Aemulus Corporation Sdn Bhd
 Title:			TestFunction.h
 Purpose:		Declare all test functions
-Version:		v1.0.0.3
+Version:		v1.0.0.4
 ----------------------------------------------------------------------*/
 
 
@@ -361,6 +361,11 @@ namespace Functions
 /*----------------------------------------------------------------------
 * Revision Log
 * &Log: TestFunction.h.rca&
+
+*** Version	: v1.0.0.4
+*** Date	: 12 November 20256
+*** PIC		: Tham Zhi Kean
+* Added UpdateStepTestResulToDictionary()
 
 *** Version	: v1.0.0.3
 *** Date	: 4 April 2025

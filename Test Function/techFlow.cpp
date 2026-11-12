@@ -2,7 +2,7 @@
 Copyright (c) Aemulus Corporation Sdn Bhd
 Title:			techFlow.cpp
 Purpose:		Contain techFlow3 opearion functions
-Version:		v1.0.0.3
+Version:		v1.0.0.4
 ----------------------------------------------------------------------*/
 
 
@@ -643,6 +643,12 @@ namespace Functions
 /*----------------------------------------------------------------------
 * Revision Log
 * &Log: techFlow.cpp.rca&
+
+*** Version	: v1.0.0.4
+*** Date	: 12 November 2026
+*** PIC		: Tham Zhi Kean
+* Support UpdateStepTestResulToDictionary
+* Add duplicate result checking if test is hardware involved
 
 *** Version	: v1.0.0.3
 *** Date	: 18 February 2025

@@ -2,7 +2,7 @@
 Copyright (c) Aemulus Corporation Sdn Bhd
 Title:			Globals.h
 Purpose:		Define common global variables
-Version:		v1.0.0.5
+Version:		v1.0.0.6
 ----------------------------------------------------------------------*/
 
 
@@ -595,6 +595,11 @@ namespace Functions
 /*----------------------------------------------------------------------
 * Revision Log
 * $Log: Globals.h.rca$
+
+*** Version	: v1.0.0.6
+*** Date	: 12 November 2026
+*** PIC		: Tham Zhi Kean
+* Add PreviousTestResults
 
 *** Version	: v1.0.0.5
 *** Date	: 4 April 2025
