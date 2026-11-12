@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{072A8AFD-37B9-494F-8D55-7C43EE17692F}</ProjectGuid>
+    <ProjectGuid>{DFED80C3-14B7-4C58-9C83-7D458AA646EC}</ProjectGuid>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
-    <RootNamespace>XML_Verify_V1</RootNamespace>
+    <RootNamespace>AMB7300_TestLibrary_REV2P1</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -66,9 +66,9 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>mkdir "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P0"
-copy "$(TargetPath)" "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P0\$(TargetFileName)"
-copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P0"</Command>
+      <Command>mkdir "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P1"
+copy "$(TargetPath)" "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P1\$(TargetFileName)"
+copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P1"</Command>
     </PostBuildEvent>
     <Xdcmake>
       <OutputFile>..\..\..\..\TestPrograms\SampleProfile\$(TargetName)\$(TargetName).xml</OutputFile>
@@ -84,9 +84,9 @@ copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\AM
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1"
-copy "$(TargetPath)" "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1\$(TargetFileName)"
-copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\XML_Verify_V1"</Command>
+      <Command>mkdir "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P1"
+copy "$(TargetPath)" "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P1\$(TargetFileName)"
+copy "$(TargetDir)\$(TargetName).pdb" "..\..\..\..\TestPrograms\SampleProfile\AMB7300_TestLibrary_REV2P1"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

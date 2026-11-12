@@ -32,7 +32,7 @@ using namespace Aemulus::TestLib::Utility;
 
 
 
-namespace AMB7300_TestLibrary_REV2P0
+namespace AMB7300_TestLibrary_REV2P1
 {
 	public ref class TestProgram : ITestProgram
 	{

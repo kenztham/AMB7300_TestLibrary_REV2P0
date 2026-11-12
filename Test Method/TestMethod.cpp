@@ -11,7 +11,7 @@ Version:		v1.0.0.5
 
 #include "..\\TestProgram.h"
 
-namespace AMB7300_TestLibrary_REV2P0
+namespace AMB7300_TestLibrary_REV2P1
 {
 	/*
 	**	----------------------------------------------------------------------------------------------------
